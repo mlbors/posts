@@ -1,0 +1,1174 @@
+<p>Choosing a technology to create a simple web-application can be really tough. Many tools are at our disposal and each of them seems to promise us the Holy Grail. Let's try some of them to get a better idea.</p>
+
+<p>Through this article, we are going to overview different frameworks and libraries by creating the same To-Do List app five times. We are going to try <em>Angular</em>, <em>Aurelia</em>, <em>Ember.js</em>, <em>React</em> and <em>Polymer 2</em>. We are not going to focus on <em>TDD</em> or how to write tests. We are just going to create a really simple basic app to see how each of these tools work.</p>
+
+<h2 id="angular">Angular</h2>
+
+<p><em>Angular</em> is a development platform for building mobile and desktop web applications using <em>Typescript/JavaScript</em>.</p>
+
+<h3 id="settingupaproject">Setting up a project</h3>
+
+<h4 id="installingangularcli">Installing Angular CLI</h4>
+
+<p>First, we need to install <em>Angular CLI</em>. We can do it like so:</p>
+
+<pre><code>npm install -g @angular/cli
+</code></pre>
+
+<p><small><em>Installing Anguar CLI with npm</em></small></p>
+
+<h4 id="generatingtheproject">Generating the project</h4>
+
+<p>We are now going to generate a new project:</p>
+
+<pre><code>ng new todo
+cd todo
+</code></pre>
+
+<p><small><em>Generating the project</em></small></p>
+
+<p>We now have to install the Node modules and run our project:</p>
+
+<pre><code>npm install
+ng serve
+</code></pre>
+
+<p><small><em>Installing dependencies and running the server</em></small></p>
+
+<p>Now our app is available at <em>localhost:4200</em>. We are going to create a class for our tasks and a service:</p>
+
+<pre><code>ng g class task
+ng g service task
+</code></pre>
+
+<p><small><em>Creating our class and our service</em></small></p>
+
+<h3 id="letscode">Let's code</h3>
+
+<p>For the sake of this example, we are also going to create mock data.</p>
+
+<pre><code>import { Task } from './task';
+
+export const TASKS: Task[] = [
+  { id: 1, title: 'Take out the trash', status: false },
+  { id: 2, title: 'Fix the roof', status: false },
+  { id: 3, title: 'Clean the house', status: false }
+];
+</code></pre>
+
+<p><em>mock-tasks.ts file</em></p>
+
+<p>Now, let's define first our <em>Task class</em>:</p>
+
+<pre><code>export class Task {
+    id: number;
+    title: string;
+    status: boolean;
+
+    constructor(id?: number, title?: string, status?: boolean) {
+        this.id = id;
+        this.title = title || '';
+        this.status = status || false;
+    }
+
+}
+</code></pre>
+
+<p><small><em>task.ts file</em></small></p>
+
+<p>Now we can create our service:</p>
+
+<pre><code>import { Injectable } from '@angular/core';
+
+import { Task } from './task';
+import { TASKS } from './mock-tasks';
+
+@Injectable()
+export class TaskService  {
+
+  tasks: Task[] = TASKS;
+
+  constructor() { }
+
+  getTasks(): Promise&lt;Task[]&gt; {
+    return Promise.resolve(this.tasks);
+  }
+
+  add(title: string): Promise&lt;Task&gt; {
+    return new Promise(() =&gt; {
+        const newTask = new Task(this.tasks.length + 1, title, false);
+        this.tasks.push(newTask);
+        return newTask;
+      }
+    );
+  }
+
+  delete(task: Task): Promise&lt;number&gt; {
+    return new Promise(() =&gt; {
+        const index = this.tasks.findIndex((obj =&gt; obj.id === task.id));
+        this.tasks.splice(index, 1);
+        return task.id;
+      }
+    );
+  }
+
+  changeStatus(task: Task): Promise&lt;Task&gt; {
+    return new Promise(() =&gt; {
+        task.status = true;
+        return task;
+      }
+    );
+  }
+
+}
+</code></pre>
+
+<p><small><em>task.service.ts file</em></small></p>
+
+<p>Now that our main class and our service are ready, we can set our <em>app.component.ts</em> like so:</p>
+
+<pre><code>import { Component, OnInit } from '@angular/core';
+
+import { Task } from './task';
+import { TaskService } from './task.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  providers: [TaskService]
+})
+
+export class AppComponent implements OnInit {
+
+  title = 'To-do List';
+  tasks: Task[];
+
+  constructor(private taskService: TaskService) { }
+
+  ngOnInit(): void {
+    this.getTasks();
+  }
+
+  getTasks(): void {
+    this.taskService.getTasks().then(tasks =&gt; this.tasks = tasks);
+  }
+
+  addTask(title: string): void {
+    title = title.trim();
+    if (!title) { return; }
+    this.taskService.add(title)
+      .then(task =&gt; {
+        this.tasks.push(task);
+      });
+  }
+
+  deleteTask(task: Task): void {
+    this.taskService.delete(task)
+      .then(() =&gt; {
+        const index = this.findTaskIndex(task.id);
+        this.tasks.splice(index, 1);
+      });
+  }
+
+  changeStatus(task: Task): void {
+    this.taskService.changeStatus(task)
+      .then(updatedTask =&gt; {
+        const index = this.findTaskIndex(task.id);
+        this.tasks[index] = updatedTask;
+      });
+  }
+
+  findTaskIndex(id: number): number {
+    return this.tasks.findIndex((obj =&gt; obj.id === id));
+  }
+
+}
+</code></pre>
+
+<p><small><em>app.component.ts.file</em></small></p>
+
+<p>And finally, we can define our component's template:</p>
+
+<pre><code>&lt;h1&gt;{{title}}&lt;/h1&gt;
+
+&lt;div&gt;
+  &lt;label&gt;New task:&lt;/label&gt; &lt;input #taskTitle /&gt;
+  &lt;button (click)="addTask(taskTitle.value); taskTitle.value=''"&gt;
+    Add
+  &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;h2&gt;Tasks&lt;/h2&gt;
+&lt;ul class="tasks"&gt;
+  &lt;li *ngFor="let task of tasks"&gt;
+    {{task.id}} - {{task.title}}
+
+    &lt;div *ngIf="task.status; else notDoneBlock"&gt;Done&lt;/div&gt;
+    &lt;ng-template #notDoneBlock&gt;
+      &lt;p&gt;Not done&lt;br /&gt;
+      &lt;button (click)="changeStatus(task)"&gt;Done!&lt;/button&gt;&lt;/p&gt;
+    &lt;/ng-template&gt;
+
+    &lt;p&gt;&lt;button (click)="deleteTask(task)"&gt;Delete&lt;/button&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p><small><em>app.component.html</em></small></p>
+
+<h3 id="checkpoint">Checkpoint</h3>
+
+<p>If we go to <em>localhost:4200</em>, we can note that we have a really basic app where we can see some default tasks, create new ones and delete some others. We can argue that our code isn't good enough, that there is no data persistence or that the tests are missing. But that is not the point.</p>
+
+<p>With this simple project, we saw how we can initialize an <em>Angular</em> project and how it is structured. We can also see that with just a few lines of code written with <em>TypeScript</em>, we are able to generate something very quickly. We now have a better idea of how much time we need to set up a basic project and how we can go further.</p>
+
+<h3 id="buildingforproduction">Building for production</h3>
+
+<p>We can build our project for production like so:</p>
+
+<pre><code>ng build -prod --base-href ./
+</code></pre>
+
+<p><small><em>Building for production</em></small></p>
+
+<p>This last command will generate a <em>bundle</em> for us.</p>
+
+<h3 id="somenumbers">Some numbers</h3>
+
+<h4 id="github">GitHub</h4>
+
+<p><strong>Angular:</strong> 481 contributors; 144 releases; 8147 commits; 1551 issues</p>
+
+<p><strong>Angular CLI:</strong> 270 contributors; 100 releases; 1698 commits; 419 issues</p>
+
+<h4 id="stackoverflow">Stack Overflow</h4>
+
+<p><strong>Angular:</strong> 61654 tagged questions</p>
+
+<h2 id="aurelia">Aurelia</h2>
+
+<p><em>Aurelia</em> is a <em>JavaScript</em> client framework for mobile, desktop and web leveraging simple conventions.</p>
+
+<h3 id="settingupaproject-1">Setting up a project</h3>
+
+<h4 id="installingaureliacli">Installing Aurelia CLI</h4>
+
+<p>First, we need to install <em>Aurelia CLI</em>. We can do it like so:</p>
+
+<pre><code>npm install aurelia-cli -g
+</code></pre>
+
+<p><small><em>Installing Aurelia CLI</em></small></p>
+
+<h4 id="generatingtheproject-1">Generating the project</h4>
+
+<p>We are now going to generate a new project:</p>
+
+<pre><code>au new todo
+cd todo
+</code></pre>
+
+<p><small><em>Generating the project</em></small></p>
+
+<p>A list of questions will be presented to us. For the sake of this example, we will select default values. We can now run the project that will be available at <em>localhost:9000</em> with the following command:</p>
+
+<pre><code>au run --watch
+</code></pre>
+
+<p><small><em>Running the server</em></small></p>
+
+<h3 id="letscode-1">Let's code</h3>
+
+<p>For the sake of this example, we are also going to create mock data.</p>
+
+<pre><code>export const TASKS = [
+  { id: 1, title: 'Take out the trash', status: false },
+  { id: 2, title: 'Fix the roof', status: false },
+  { id: 3, title: 'Clean the house', status: false }
+];
+</code></pre>
+
+<p><small><em>mock-tasks.js file</em></small></p>
+
+<p>Now, we are going to create a <em>task.js</em> file:</p>
+
+<pre><code>export class Task {
+  constructor(id, title) {
+    this.id = id;
+    this.title = title;
+    this.status = false;
+  }
+}
+</code></pre>
+
+<p><small><em>task.js file</em></small></p>
+
+<p>We also need to create a service:</p>
+
+<pre><code>import { Task } from './task';
+import { TASKS } from './mock-tasks';
+
+export class TaskService  {
+
+  tasks = TASKS;
+
+  constructor() { }
+
+  getTasks() {
+    return Promise.resolve(this.tasks);
+  }
+
+  add(title) {
+    return new Promise(() =&gt; {
+        const newTask = new Task(this.tasks.length + 1, title, false);
+        this.tasks.push(newTask);
+        return newTask;
+      }
+    );
+  }
+
+  delete(task) {
+    return new Promise(() =&gt; {
+        const index = this.tasks.findIndex((obj =&gt; obj.id === task.id));
+        this.tasks.splice(index, 1);
+        return task.id;
+      }
+    );
+  }
+
+  changeStatus(task) {
+    return new Promise(() =&gt; {
+        task.status = true;
+        return task;
+      }
+    );
+  }
+
+}
+</code></pre>
+
+<p><small><em>task-service.js file</em></small></p>
+
+<p>Now we can fill our <em>app.js</em> file:</p>
+
+<pre><code>import { Task } from './task';
+import { TaskService } from './task-service';
+import { inject } from 'aurelia-framework';
+
+@inject(TaskService)
+export class App {
+
+  constructor(taskService) {
+    this.taskService = taskService;
+    this.title = 'To-do List';
+    this.tasks = [];
+    this.taskTitle = '';
+  }
+
+  created() {
+    this.taskService.getTasks().then(tasks =&gt; this.tasks = tasks);
+  }
+
+  addTask() {
+        const title = this.taskTitle.trim();
+    if (!title) { return; }
+    this.taskService.add(title)
+      .then(task =&gt; {
+                this.tasks.push(task);
+                this.taskTitle = '';
+    });
+  }
+
+  deleteTask(task) {
+    this.taskService.delete(task)
+      .then(() =&gt; {
+        const index = this.findTaskIndex(task.id);
+        this.tasks.splice(index, 1);
+      });
+  }
+
+  changeStatus(task) {
+    this.taskService.changeStatus(task)
+      .then(updatedTask =&gt; {
+        const index = this.findTaskIndex(task.id);
+        this.tasks[index] = updatedTask;
+      });
+  }
+
+  findTaskIndex(id) {
+    return this.tasks.findIndex((obj =&gt; obj.id === id));
+  }
+
+}
+</code></pre>
+
+<p><small><em>app.js file</em></small></p>
+
+<p>Finally, we have to edit our template <em>app.html</em> like so:</p>
+
+<pre><code>&lt;template&gt;
+  &lt;h1&gt;${title}&lt;/h1&gt;
+
+  &lt;form submit.trigger="addTask()"&gt;
+    &lt;input type="text" value.bind="taskTitle"&gt;
+    &lt;button type="submit"&gt;Add&lt;/button&gt;
+  &lt;/form&gt;
+
+  &lt;ul&gt;
+    &lt;li repeat.for="task of tasks"&gt;
+      ${task.id} - ${task.title}
+      &lt;div show.bind="!task.status"&gt;
+        &lt;p&gt;Not done&lt;br /&gt;
+        &lt;button click.trigger="changeStatus(task)"&gt;Done!&lt;/button&gt;&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div show.bind="task.status"&gt;
+        &lt;p&gt;&lt;button click.trigger="deleteTask(task)"&gt;Delete&lt;/button&gt;&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;    
+  &lt;/ul&gt;
+
+&lt;/template&gt;
+</code></pre>
+
+<p><small><em>app.html file</em></small></p>
+
+<h3 id="checkpoint-1">Checkpoint</h3>
+
+<p>If we go to <em>localhost:9000</em>, we can note that we have a really basic app where we can see some default tasks, create new ones and delete some others. In fact, our app is pretty similar to the one we created with <em>Angular</em>.</p>
+
+<p>With this simple project, we saw how we can initialize an <em>Aurelia</em> project and how it is structured. We now have a better idea of how much time we need to set up a basic project and how we can go further. In fact, it was pretty easy because, even here if we don't use <em>TypeScript</em> but only <em>JavaScript</em>, our code is quite similar to our previous app. </p>
+
+<h3 id="buildingforproduction-1">Building for production</h3>
+
+<p>We can build our project for production like so:</p>
+
+<pre><code>au build --env prod
+</code></pre>
+
+<p><small><em>Building for production</em></small></p>
+
+<p>This last command will generate a <em>bundle</em> for us.</p>
+
+<h3 id="somenumbers-1">Some numbers</h3>
+
+<h4 id="github-1">GitHub</h4>
+
+<p><strong>Aurelia:</strong> 86 contributors; 85 releases; 572 commits; 54 issues</p>
+
+<p><strong>Aurelia CLI:</strong> 53 contributors; 38 releases; 834 commits; 93 issues</p>
+
+<h4 id="stackoverflow-1">Stack Overflow</h4>
+
+<p><strong>Aurelia:</strong> 2370 tagged questions</p>
+
+<h2 id="emberjs">Ember.js</h2>
+
+<p><em>Ember.js</em> is an open-source <em>JavaScript</em> web framework, based on the <em>Model–view–viewmodel</em> (MVVM) pattern. Although primarily considered a framework for the web, it is also possible to build desktop and mobile applications in <em>Ember</em>.</p>
+
+<h3 id="settingupaproject-2">Setting up a project</h3>
+
+<h4 id="installingembercli">Installing Ember CLI</h4>
+
+<p>First, we need to install <em>Ember CLI</em>. We can do it like so:</p>
+
+<pre><code>npm install -g ember-cli
+</code></pre>
+
+<p><small><em>Installing Ember CLI</em></small></p>
+
+<h4 id="generatingtheproject-2">Generating the project</h4>
+
+<p>We are now going to generate a new project and run it:</p>
+
+<pre><code>ember new todo
+cd todo
+ember serve
+</code></pre>
+
+<p><small><em>Generating the project and running the server</em></small></p>
+
+<p>Our app will be available at <em>localhost:4200</em>. Now we are going to generate what we need:</p>
+
+<pre><code>ember g model task title:string status:boolean
+ember g route tasks --path '/'
+ember g route tasks/index
+ember g http-mock tasks
+ember g adapter application
+ember generate serializer application
+ember g controller tasks
+</code></pre>
+
+<p><small><em>Generating model, routes, adapter, serializer and controller</em></small></p>
+
+<h3 id="letscode-2">Let's code</h3>
+
+<p>Let's start by creating some fake data. We are going to place what we need into the file <em>server/mocks/tasks.js</em>:</p>
+
+<pre><code>...
+tasksRouter.get('/', function(req, res) {
+    res.send({
+      'tasks': [
+        { taskId: 1, title: 'Take out the trash', status: false },
+        { taskId: 2, title: 'Fix the roof', status: false },
+        { taskId: 3, title: 'Clean the house', status: false }
+      ]
+    });
+});
+...
+</code></pre>
+
+<p><small><em>server/mocks/tasks.js files</em></small></p>
+
+<p>Our <em>Task model</em> should look like so:</p>
+
+<pre><code>import DS from 'ember-data';
+
+export default DS.Model.extend({
+    title: DS.attr('string'),
+    isCompleted: DS.attr('boolean')
+});
+</code></pre>
+
+<p><small><em>models/tasks.js file</em></small></p>
+
+<p>In our <em>controllers/tasks.js</em> file, we are going to put the following code:</p>
+
+<pre><code>import Ember from 'ember';
+
+export default Ember.Controller.extend({
+
+  actions: {
+
+    addTask() {
+        const title = this.get('newTitle');
+        if (!title.trim()) { return; }
+        const id = this.get('model.length') + 1 + new Date().getTime();
+        const task = this.store.createRecord('task', {
+            id,
+            title,
+            status: false
+        });
+        this.set('newTitle', '');
+        task.save();
+    },
+
+    deleteTask(id) {
+      this.store.findRecord('task', id).then((task) =&gt; task.destroyRecord());
+    },
+
+    changeStatus(id){
+      this.store.findRecord('task', id).then((task) =&gt; task.set('status', true));
+    }
+
+  }
+
+});
+</code></pre>
+
+<p><small><em>controllers/tasks.js file</em></small></p>
+
+<p>Now we have to define our <em>Routes</em>. First, in our <em>routes/tasks.js</em> file, let's place the following code:</p>
+
+<pre><code>import Ember from 'ember';
+
+export default Ember.Route.extend({
+
+    model: function() {
+    return this.store.findAll('task');
+    }
+
+});
+</code></pre>
+
+<p><small><em>routes/tasks.js file</em></small></p>
+
+<p>Our <em>router.js</em> file should also look like this:</p>
+
+<pre><code>import Ember from 'ember';
+import config from './config/environment';
+
+const Router = Ember.Router.extend({
+  location: config.locationType,
+  rootURL: config.rootURL
+});
+
+Router.map(function() {
+  this.route('tasks', { path: '/' }, function() {});
+});
+
+export default Router;
+</code></pre>
+
+<p><small><em>router.js file</em></small></p>
+
+<p>Now, we have to define our <em>Adapter</em> and our <em>Serializer</em>. Let's do it like so:</p>
+
+<pre><code>import DS from 'ember-data';
+
+export default DS.RESTAdapter.extend({
+  contentType: 'application/json',
+  dataType: 'json',
+  namespace: 'api'
+});
+</code></pre>
+
+<p><small><em>adapters/application.js file</em></small></p>
+
+<pre><code>import DS from 'ember-data';
+
+export default DS.RESTSerializer.extend({
+  primaryKey: 'taskId'
+});
+</code></pre>
+
+<p><small><em>serializers/application.js file</em></small></p>
+
+<p>We are almost done. We just have to set our templates.</p>
+
+<pre><code>{{outlet}}
+</code></pre>
+
+<p><small><em>templates/application.hbs</em></small></p>
+
+<pre><code>&lt;h1&gt;To-do List&lt;/h1&gt;
+
+&lt;div&gt;
+  &lt;label&gt;New task:&lt;/label&gt; {{input type="text" value=newTitle}}
+  &lt;button {{action "addTask"}}&gt;Add&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;h2&gt;Tasks&lt;/h2&gt;
+&lt;ul class="tasks"&gt;
+  {{#each model as |task|}}
+    &lt;li&gt;
+      {{task.id}} - {{task.title}}
+      {{#if task.status}}
+        &lt;p&gt;&lt;button {{action "deleteTask" task.id}}&gt;Delete&lt;/button&gt;&lt;/p&gt;
+      {{else}}
+        &lt;p&gt;Not done&lt;br /&gt;
+        &lt;button {{action "changeStatus" task.id}}&gt;Done!&lt;/button&gt;&lt;/p&gt;
+      {{/if}}
+    &lt;/li&gt;
+  {{/each}}
+&lt;/ul&gt;
+</code></pre>
+
+<p><small><em>templates/tasks.hbs</em></small></p>
+
+<h3 id="checkpoint-2">Checkpoint</h3>
+
+<p>If we go to <em>localhost:4200</em>, we can note that we have a really basic app where we can see some default tasks, create new ones and delete some others.</p>
+
+<p>With this simple project, we saw how we can initialize an <em>Ember.js</em> project and how it is structured. We now have a better idea of how much time we need to set up a basic project and how we can go further. We can also see that, even if it has common concepts with the other frameworks, Ember.js is significantly different and we need to take another approach.</p>
+
+<h3 id="buildingforproduction-2">Building for production</h3>
+
+<p>We can build our project for production like so:</p>
+
+<pre><code>ember build
+</code></pre>
+
+<p><small><em>Building for production</em></small></p>
+
+<p>This last command will generate a <em>bundle</em> for us.</p>
+
+<h3 id="somenumbers-2">Some numbers</h3>
+
+<h4 id="github-2">GitHub</h4>
+
+<p><strong>Ember.js:</strong> 673 contributors; 255 releases; 14762 commits; 242 issues</p>
+
+<p><strong>Ember CLI:</strong> 369 contributors; 140 releases; 7546 commits; 151 issues</p>
+
+<h4 id="stackoverflow-2">Stack Overflow</h4>
+
+<p><strong>Ember.js:</strong> 21528 tagged questions</p>
+
+<h2 id="react">React</h2>
+
+<p><em>React</em> is a <em>JavaScript</em> library for building user interfaces. <em>React</em> allows us to create large web-applications that use data that can change over time, without reloading the page. It aims primarily to provide speed, simplicity and scalability. React processes only user interfaces in applications. This corresponds to <em>View</em> in the <em>Model-View-Controller</em> (MVC) template, and can be used in combination with other <em>JavaScript</em> libraries or frameworks in <em>MVC</em>.</p>
+
+<h3 id="settingupaproject-3">Setting up a project</h3>
+
+<h4 id="installingcreatereactapp">Installing Create React App</h4>
+
+<p>To start our project, we need to install <em>Create React App</em>. We can do it like so:</p>
+
+<pre><code>npm install -g create-react-app
+</code></pre>
+
+<p><em>Installing Create React App</em></p>
+
+<h4 id="generatingtheproject-3">Generating the project</h4>
+
+<p>We are now going to generate a new project and run it:</p>
+
+<pre><code>create-react-app todo
+cd todo
+npm start
+</code></pre>
+
+<p><small><em>Generating the project and running the server</em></small></p>
+
+<p>Our project is now available at <em>localhost:3000</em>.</p>
+
+<h3 id="letscode-3">Let's code</h3>
+
+<p>For the sake of this example, we are also going to create mock data. Let's create a file <em>mock/Tasks.js</em>:</p>
+
+<pre><code>export const TASKS = [
+  { id: 1, title: 'Take out the trash', status: false },
+  { id: 2, title: 'Fix the roof', status: false },
+  { id: 3, title: 'Clean the house', status: false }
+];
+
+export default TASKS;
+</code></pre>
+
+<p><small><em>mock/Tasks.js file</em></small></p>
+
+<p>Now we have to define a model for <em>Task</em> and an <em>Interface</em> like so:</p>
+
+<pre><code>function guidGenerator() {
+  function S4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return S4()+S4()+'-'+S4()+'-'+S4()+'-'+S4()+'-'+S4()+S4()+S4();
+}
+
+export default class Task {
+
+    constructor(title, status, id) {
+      this.title = title || '';
+      this.status = status || false;
+      this.id = id || guidGenerator();
+    }
+
+}
+</code></pre>
+
+<p><small><em>lib/Task.js file</em></small></p>
+
+<pre><code>import Task from './Task';
+import TASKS from '../mock/Tasks'
+
+import { findIndex } from 'lodash';
+
+export default class TaskDataInterface {
+  constructor() {
+    this.tasks = TASKS;
+  }
+
+  addTask(title) {
+      const newTask = new Task(title);
+      this.tasks.push(newTask);
+      return newTask;
+  }
+
+  changeStatus(taskId) {
+    const taskIndex = findIndex(this.tasks, (task) =&gt; task.id === taskId);
+    if (taskIndex &gt; -1) {
+      this.tasks[taskIndex].status = !this.tasks[taskIndex].status;
+    }
+  }
+
+  deleteTask(taskId) {
+    const taskIndex = findIndex(this.tasks, (task) =&gt; task.id === taskId);
+    if (taskIndex &gt; -1) {
+      this.tasks.splice(taskIndex, 1);
+    }
+  }
+
+  getAllTasks() {
+    return this.tasks.map(task =&gt; task);
+  }
+}
+</code></pre>
+
+<p><small><em>lib/TaskDataInterface.js file</em></small></p>
+
+<p>We can now create two components: one for the list itself and another for each item.</p>
+
+<pre><code>import React from 'react';
+import SingleTask from './SingleTask'
+
+export default class TasksList extends React.Component {
+  render() {
+    return (
+      &lt;div&gt;
+
+        &lt;ul&gt;
+          {this.props.tasks.map(
+            (task) =&gt;
+              &lt;SingleTask
+                key={task.id}
+                taskId={task.id}
+                title={task.title}
+                status={task.status}
+                changeStatus={this.props.changeStatus}
+                deleteTask={this.props.deleteTask}
+              /&gt;
+          )}
+        &lt;/ul&gt;
+
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+
+<p><small><em>components/TasksList.js file</em></small></p>
+
+<p>import React from 'react';</p>
+
+<pre><code>export default class TaskTask extends React.Component {
+  render() {
+    return (
+      &lt;li&gt;
+
+        {this.props.taskId} - {this.props.title}
+
+        {this.props.status ? (
+
+          &lt;p&gt;&lt;button
+            onClick={() =&gt; this.props.deleteTask(this.props.taskId)}&gt;
+              Delete
+          &lt;/button&gt;&lt;/p&gt;
+
+        ) : (
+
+          &lt;p&gt;Not done&lt;br /&gt;
+          &lt;button
+            onClick={() =&gt; this.props.changeStatus(this.props.taskId)}&gt;
+              Done!
+          &lt;/button&gt;&lt;/p&gt;
+
+        )}
+
+      &lt;/li&gt;
+    );
+  }
+}
+</code></pre>
+
+<p><small><em>components/SingleTask.js file</em></small></p>
+
+<p>We can now edit the <em>App.js</em> and <em>index.js</em> files like so:</p>
+
+<pre><code>import React, { Component } from 'react';
+import './App.css';
+
+import TasksList from './components/TasksList';
+
+class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      tasks: this.props.dataInterface.getAllTasks()
+    };
+  }
+
+  addTask = () =&gt; {
+    if (this._taskInputField.value) {
+      this.props.dataInterface.addTask(this._taskInputField.value);
+      this.setState({tasks: this.props.dataInterface.getAllTasks()});
+      this._taskInputField.value = '';
+    }
+  }
+
+  changeStatus = taskId =&gt; {
+    this.props.dataInterface.changeStatus(taskId);
+    this.setState({tasks: this.props.dataInterface.getAllTasks()});
+  }
+
+  deleteTask = taskId =&gt; {
+    this.props.dataInterface.deleteTask(taskId);
+    this.setState({tasks: this.props.dataInterface.getAllTasks()});
+  }
+
+  render() {
+
+    return (
+      &lt;div&gt;
+        &lt;h1&gt;To-do List&lt;/h1&gt;
+
+        &lt;div&gt;
+          &lt;label&gt;New task: &lt;/label&gt;
+          &lt;input
+            type="text"
+            ref={(c =&gt; this._taskInputField = c)}
+          /&gt;
+          &lt;button onClick={this.addTask}&gt;Add&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;h2&gt;Tasks&lt;/h2&gt;
+        &lt;TasksList
+          tasks={this.state.tasks}
+          changeStatus={this.changeStatus}
+          deleteTask={this.deleteTask}
+        /&gt;
+
+      &lt;/div&gt;
+    );
+  }
+
+}
+
+export default App;
+</code></pre>
+
+<p><small><em>App.js file</em></small></p>
+
+<pre><code>import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+
+import TaskDataInterface from './lib/TaskDataInterface';
+import App from './App';
+
+import registerServiceWorker from './registerServiceWorker';
+
+const taskDataInterface = new TaskDataInterface();
+ReactDOM.render(&lt;App dataInterface={taskDataInterface} /&gt;, document.getElementById('root'));
+registerServiceWorker();
+</code></pre>
+
+<p><small><em>index.js file</em></small></p>
+
+<h3 id="checkpoint-3">Checkpoint</h3>
+
+<p>If we go to <em>localhost:3000</em>, we can note that we have a really basic app where we can see some default tasks, create new ones and delete some others.</p>
+
+<p>With this simple project, we saw how we can initialize a <em>React</em> project and how it is structured. We now have a better idea of how much time we need to set up a basic project and how we can go further. We can also see, even if it has common concepts with the other frameworks, how React differs and how, with just a few lines of code, we can quickly achieve something.</p>
+
+<h3 id="buildingforproduction-3">Building for production</h3>
+
+<p>We can build our project for production like so:</p>
+
+<pre><code>npm run build
+</code></pre>
+
+<p><small><em>Building for production</em></small></p>
+
+<p>This last command will generate a <em>bundle</em> for us.</p>
+
+<h3 id="somenumbers-3">Some numbers</h3>
+
+<h4 id="github-3">GitHub</h4>
+
+<p><strong>React:</strong> 1039 contributors; 63 releases; 8811 commits; 580 issues</p>
+
+<p><strong>Create React App:</strong> 346 contributors; 127 releases; 1143 commits; 216 issues</p>
+
+<h4 id="stackoverflow-3">Stack Overflow</h4>
+
+<p><strong>React:</strong> 51656 tagged questions</p>
+
+<h2 id="polymer2">Polymer 2</h2>
+
+<p><em>Polymer</em> is an open-source <em>JavaScript</em> library for building web applications using web components. <em>Polymer</em> lets us build encapsulated, reusable elements that work just like standard <em>HTML</em> elements, to use in building web applications.</p>
+
+<h3 id="settingupaproject-4">Setting up a project</h3>
+
+<h4 id="installingpolymercli">Installing Polymer CLI</h4>
+
+<p>To start our project, we need to install <em>Polymer CLI</em>. We can do it like so:</p>
+
+<pre><code>npm install -g polymer-cli
+</code></pre>
+
+<p><small><em>Installing Polymer CLI</em></small></p>
+
+<h4 id="generatingtheproject-4">Generating the project</h4>
+
+<p>We are now going to generate a new project and run it:</p>
+
+<pre><code>cd todo
+polymer init
+polymer serve
+</code></pre>
+
+<p><small><em>Generating the project and running the server</em></small></p>
+
+<p>During the process, we are going to be asked a few questions. In particular, we have to choose a template. We are going to select <em>polymer-2-application</em>. If everything is alright, our project will be available at <em>localhost:8081</em>.</p>
+
+<h3 id="letscode-4">Let's code</h3>
+
+<p>For the sake of this example, we are also going to create mock data. Let's create a file <em>mock/tasks.js</em>:</p>
+
+<pre><code>const TASKS = [
+  { id: 1, title: 'Take out the trash', status: false },
+  { id: 2, title: 'Fix the roof', status: false },
+  { id: 3, title: 'Clean the house', status: false }
+];
+</code></pre>
+
+<p><small><em>mock/tasks.js file</em></small></p>
+
+<p>Now we are going to fill our <em>todo-app.html</em> file like so:</p>
+
+<pre><code>&lt;link rel="import" href="../../bower_components/polymer/polymer.html"&gt;
+&lt;link rel="import" href="../../bower_components/polymer/polymer-element.html"&gt;
+
+&lt;script src="mock/tasks.js"&gt;&lt;/script&gt;
+
+&lt;dom-module id="todo-app"&gt;
+  &lt;template&gt;
+    &lt;style&gt;
+      :host {
+        display: block;
+      }
+    &lt;/style&gt;
+    &lt;h1&gt;[[title]]&lt;/h1&gt;
+
+    &lt;div&gt;
+      &lt;label&gt;New task:&lt;/label&gt; &lt;input type="text" id="newTask" value="{{term::input}}" /&gt;
+      &lt;button on-click="addTask"&gt;
+        Add
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;h2&gt;Tasks&lt;/h2&gt;
+
+    &lt;ul&gt;
+      &lt;template id="list" is="dom-repeat" items="[[tasks]]"&gt;
+        &lt;li&gt;
+          {{item.id}} - {{item.title}}
+
+          &lt;template is="dom-if" if="{{item.status}}"&gt;
+            &lt;p&gt;&lt;button on-click="deleteTask"&gt;Delete&lt;/button&gt;&lt;/p&gt;
+          &lt;/template&gt;
+
+          &lt;template is="dom-if" if="{{!item.status}}"&gt;
+            &lt;p&gt;Not done&lt;br /&gt;
+            &lt;button on-click="changeStatus"&gt;Done!&lt;/button&gt;&lt;/p&gt;
+          &lt;/template&gt;
+
+        &lt;/li&gt;
+      &lt;/template&gt;
+    &lt;/ul&gt;
+
+  &lt;/template&gt;
+
+  &lt;script&gt;
+
+    class TodoApp extends Polymer.Element {
+
+      static get is() { return 'todo-app'; }
+
+      static get properties() {
+
+        return {
+
+          title: {
+            type: String,
+            value: 'To-do List'
+          },
+
+          term: {
+            type: String,
+            value: ''
+          },
+
+          tasks: {
+            type: Array,
+            value: []
+          }
+
+        };
+
+      }
+
+      ready() {
+        super.ready();
+        this.set('tasks', TASKS);
+      }
+
+      addTask() {
+        this.term = this.term.trim();
+        if (!this.term) { return; }
+        this.push('tasks', {id: this.guidGenerator(), title: this.term, status: false});
+        this.term = '';
+      }
+
+      deleteTask(e) {
+        const index = this.findTaskIndex(e.model.item.id);
+        this.splice('tasks', index, 1);
+      }
+
+      changeStatus(e) {
+        const index = this.findTaskIndex(e.model.item.id);
+        const oldTask = this.tasks[index];
+        this.set(`tasks.${index}.status`, true);
+      }
+
+      findTaskIndex(id) {
+        return this.tasks.findIndex((obj =&gt; obj.id === id));
+      }
+
+      guidGenerator() {
+        function S4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return S4()+S4()+'-'+S4()+'-'+S4()+'-'+S4()+'-'+S4()+S4()+S4();
+      }
+
+    }
+
+    window.customElements.define(TodoApp.is, TodoApp);
+  &lt;/script&gt;
+&lt;/dom-module&gt;
+</code></pre>
+
+<p><small><em>todo-app.html file</em></small></p>
+
+<h3 id="checkpoint-4">Checkpoint</h3>
+
+<p>If we go to <em>localhost:8081</em>, we can note that we have a really basic app where we can see some default tasks, create new ones and delete some others.</p>
+
+<p>With this simple project, we saw how we can initialize a Polymer project and how it is structured. We now have a better idea of how much time we need to set up a basic project and how we can go further. We can also see that, even if it has common concepts with the other frameworks, <em>Polymer</em> has a different philosophy.</p>
+
+<h3 id="buildingforproduction-4">Building for production</h3>
+
+<p>We can build our project for production like so:</p>
+
+<pre><code>polymer build
+</code></pre>
+
+<p><small><em>Building for production</em></small></p>
+
+<p>This last command will generate a <em>bundle</em> for us. Most optimizations are disabled by default. To make sure the correct build enhancements are always used, we have to provide a set of build configurations via the "<em>builds</em>" field of our <em>polymer.json</em> file:</p>
+
+<pre><code>"builds": [{
+  "bundle": true,
+  "js": {"minify": true},
+  "css": {"minify": true},
+  "html": {"minify": true}
+}]
+</code></pre>
+
+<p><small><em>polymer.json file</em></small></p>
+
+<h3 id="somenumbers-4">Some numbers</h3>
+
+<h4 id="github-4">GitHub</h4>
+
+<p><strong>Polymer:</strong> 119 contributors; 115 releases; 5433 commits; 668 issues</p>
+
+<p><strong>Polymer CLI:</strong> 34 contributors; 46 releases; 576 commits; 164 issues;</p>
+
+<h4 id="stackoverflow-4">Stack Overflow</h4>
+
+<p><strong>Polymer:</strong> 7105 tagged questions</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>How can we conclude this article and can we really do it? That is a good question. Through our different tryouts we played with different tools that share same concepts, but have a different philosophy. Unfortunately for us, there is no magic formula that will tell us which one to pick.</p>
+
+<p>It is sad, but true. We have to try the tools that we think could fit to our needs, then compare them on various points. Aside of performance and ease of use, looking at the community that may have grown around a specific tool can be a relevant point.</p>

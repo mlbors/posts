@@ -1,0 +1,108 @@
+<p>In this article, we are going to take a look at the <em>State Pattern</em>. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>State Pattern</em> is a <em>Behavioral Pattern</em> in which the behavior of a class changes based on its state. This pattern implements a <em>state machine</em> in an object-oriented way and can be a solution to the problem where an object has to change its behavior at runtime without using large monolithic conditional statements.</p>
+
+<h2 id="statemachine">State Machine</h2>
+
+<p>But what is a <em>state machine</em>? Basically, a <em>state machine</em> is a mathematical abstraction that stores the status of something at a given time. It will read a series of external inputs, does some operations and eventually switch to a different state. There are several real-world examples like elevators, whose sequence of stops is determined by the floors requested by riders or traffic lights, which change sequence when cars are waiting.</p>
+
+<h2 id="thepattern">The pattern</h2>
+
+<p>So, with the <em>State pattern</em>, we create objects which represent various <em>States</em> and a <em>Context</em> object whose behavior varies as its state object changes.</p>
+
+<p>The <em>Context</em> is class that presents a single interface to the outside world where we will keep a pointer to the current <em>State</em>. To change the <em>State</em> of the <em>state machine</em>, we will have to change the current <em>State</em> pointer.</p>
+
+<p>We will also create an <em>abstract class State</em> on which every <em>State</em> will be based.</p>
+
+<p>The <em>State Pattern</em> is useful when an object's behavior depends on its state and it must change its behavior at run-time or when we have operations that have multipart conditional statements that depend on the object's state.</p>
+
+<p>This pattern is similar to <em>Strategy</em> but in this last one, the choice of algorithm is more stable. The <em>State Pattern</em> has also the same structure as the <em>Bridge Pattern</em> but they solve different problems: <em>State</em> allows the behavior of an object to change along with its <em>State</em>, while <em>Bridge</em> aims to "decouple an abstraction from its implementation so that the two can vary independently".</p>
+
+<h2 id="example">Example</h2>
+
+<p>Now, let's make a very simple example with <em>PHP</em>. And because it is always funnier, we are going to say that we are making an awesome video game despite the fact that it is unlikely that we really create a video game with <em>PHP</em>.</p>
+
+<p>First, let's define our <em>interface</em> for our <em>States</em>:</p>
+
+<pre><code>interface EnemyState
+{
+    public function groan();
+}
+</code></pre>
+
+<p>Now, we can create a few <em>States</em>:</p>
+
+<pre><code>class NotAngry implements EnemyState
+{
+    public function groan(): String
+    {
+        echo 'Groan';
+    }
+}
+
+class Angry implements EnemyState
+{
+    public function groan()
+    {
+        echo 'Groan louder';
+    }
+}
+
+class VeryAngry implements EnemyState
+{
+    public function groan()
+    {
+        echo 'GROAN LOUDER';
+    }
+}
+</code></pre>
+
+<p>And now we can create our <em>Context</em>:</p>
+
+<pre><code>class Enemy
+{
+    protected $state;
+
+    public function __construct(EnemyState $state)
+    {
+        $this-&gt;state = $state;
+    }
+
+    public function setState(EnemyState $state)
+    {
+        $this-&gt;state = $state;
+    }
+
+    public function groan()
+    {
+        $this-&gt;state-&gt;groan();
+    }
+}
+</code></pre>
+
+<p>And it can be used like so:</p>
+
+<pre><code>$hero = new Hero();
+$enemy = new Enemy(new NotAngry());
+
+$hero-&gt;move();
+$enemy-&gt;groan();
+
+$hero-&gt;fire($enemy);
+$enemy-&gt;setState(new Angry());
+$enemy-&gt;groan();
+
+$hero-&gt;fire($enemy);
+$enemy-&gt;setState(new VeryAngry());
+$enemy-&gt;groan();
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we saw how works the <em>State Pattern</em> and on which principles it relies. We saw how useful it can be and how to implement it with a really simple example. In brief, the <em>State Pattern</em> allows an object to alter its behavior when its internal state changes. The object will appear to change its class. In this pattern, we define a <em>Context</em>, an <em>abstract State</em> and some <em>concrete States</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

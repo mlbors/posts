@@ -1,0 +1,167 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/160872455020/a-word-about-factories">A word about Factories</a></h2>
+
+<p>Through this article, we are going to overview the <i>Factory</i> pattern that belongs to <i>Creational design patterns</i>.</p><p><i>Creational patterns</i> offer ways to instantiate an object or group of related objects. They deal with object creation mechanisms, trying to create objects in a manner suitable to the situation.</p><p>Here, we are going to talk about three different kinds of factories: <i>Simple Factory</i>, <i>Factory Method</i> and <i>Abstract Factory</i>. Our examples will be written in <i>PHP</i>.</p><h2>Simple Factory</h2><p><i>Simple factory simply</i> generates an instance for client without exposing any instantiation logic to the client. In other words, a factory is a function or method that returns objects from some method call, which is assumed to be “new”.</p><p>We can use this pattern when creating an object is not just a few assignments and involves some logic.</p><p>Let’s make a simple example with houses. First of all we have a house interface and its implementation:</p><pre><code>interface HouseInterface
+{
+    public function getWidth(): float;
+    public function getHeight(): float;
+}
+
+class WoodenHouse implements HouseInterface
+{
+    protected $width;
+    protected $height;
+
+    public function __construct(float $width, float $height)
+    {
+        $this-&gt;width = $width;
+        $this-&gt;height = $height;
+    }
+
+    public function getWidth(): float
+    {
+        return $this-&gt;width;
+    }
+
+    public function getHeight(): float
+    {
+        return $this-&gt;height;
+    }
+}</code></pre><p>Now, we can make our house factory that makes houses and returns them:</p><pre><code>class HouseFactory
+{
+    public static function makeHouse($width, $height): HouseInterface
+    {
+        return new WoodenHouse($width, $height);
+    }
+}</code></pre><p>We can use it like so:</p><pre><code>$house = HouseFactory::makeHouse(100, 200);
+echo $house-&gt;getWidth() . '&lt;br /&gt;';
+echo $house-&gt;getHeight() . '&lt;br /&gt;';</code></pre><h2>Factory Method</h2><p>This pattern provides a way to delegate the instantiation logic to child classes. The factory method pattern deals with the problem of creating objects without having to specify the exact class of the object that will be created.</p><p>The <i>Factory Method</i> is useful when the client doesn’t know what exact sub-class it might need.</p><p>Now, for example, let’s say we have a music band where every member plays a different instrument. We firstly create a musician interface and two concrete implementations:</p><pre><code>interface MusicianInterface
+{
+    public function plays(): String;
+}
+
+class Guitarist implements MusicianInterface
+{
+    public function plays(): String
+    {
+        return 'Playing guitar.';
+    }
+}
+
+class Pianist implements MusicianInterface
+{
+    public function plays(): String
+    {
+        return 'Playing piano';
+    }
+}</code></pre><p>Now we define an abstract class for the band members:</p><pre><code>abstract class BandMember
+{
+    abstract public function makeMusician(): MusicianInterface;
+
+    public function makeTheShow(): String
+    {
+        $musician = $this-&gt;makeMusician();
+        return $musician-&gt;plays();
+    }
+}</code></pre><p>The above <i>abtract class</i> will delegate te creation of a band member to every class that extends it:</p><pre><code>class GuitaristMember extends BandMember
+{
+    public function makeMusician(): MusicianInterface
+    {
+        return new Guitarist();
+    }
+}
+
+class PianistMember extends BandMember
+{
+    public function makeMusician(): MusicianInterface
+    {
+        return new Pianist();
+    }
+}</code></pre><p>We can use it like this:</p><pre><code>$guitaristMember = new GuitaristMember();
+echo $guitaristMember-&gt;makeTheShow() . '&lt;br /&gt;';
+
+$pianistMember= new PianistMember();
+echo $pianistMember-&gt;makeTheShow() . '&lt;br /&gt;';</code></pre><h2>Abstract Factory</h2><p>The <i>Abstract Factory pattern</i> is a factory of factory. It groups the individual but related factories together without specifying their concrete classes.</p><p>We can use this pattern when there are interrelated dependencies with complex creation logic involved.</p><p>Let’s imagine an example with trains. For the sake of this example, we are going to assume that we have different kinds of trains and each kind has a specific kind of pilot.</p><p>First, we define a interface for trains and another one for pilots.</p><pre><code>interface TrainInterface
+{
+    public function getDescription(): String;
+}
+
+interface PilotInterface
+{
+    public function getDescription(): String;
+}</code></pre><p>Now we can define another interface for the train factory:</p><pre><code>interface TrainFactoryInterface
+{
+    public function makeTrain(): TrainInterface;
+    public function makePilot(): PilotInterface;
+}</code></pre><p>Now we can create our different factories:
+
+</p><pre><code>class ToyTrainFactory implements TrainFactoryInterface
+{
+    public function makeTrain(): TrainInterface
+    {
+        return new ToyTrain();
+    }
+
+    public function makePilot(): PilotInterface
+    {
+        return new ToyTrainPilot();
+    }
+}
+
+class VaporTrainFactory implements TrainFactoryInterface
+{
+    public function makeTrain(): TrainInterface
+    {
+        return new VaporTrain();
+    }
+
+    public function makePilot(): PilotInterface
+    {
+        return new VaporTrainPilot();
+    }
+}</code></pre><p>Now we have to define our trains and our pilots:
+
+</p><pre><code>class ToyTrain implements TrainInterface
+{
+    public function getDescription(): String
+    {
+        return 'I am a toy train.';
+    }
+}
+
+class ToyTrainPilot implements PilotInterface
+{
+    public function getDescription(): String
+    {
+        return 'I am a toy trains pilot.';
+    }
+}
+
+class VaporTrain implements TrainInterface
+{
+    public function getDescription(): String
+    {
+        return 'I am a vapor train.';
+    }
+}
+
+class VaporTrainPilot implements PilotInterface
+{
+    public function getDescription(): String
+    {
+        return 'I am a vapor trains pilot.';
+    }
+}</code></pre><p>We can use it like so:</p><pre><code>$vaporTrainFactory = new VaporTrainFactory();
+$vaporTrain = $vaporTrainFactory-&gt;makeTrain();
+$vaporTrainPilot = $vaporTrainFactory-&gt;makePilot();
+
+echo $vaporTrain-&gt;getDescription() . '&lt;br /&gt;';
+echo $vaporTrainPilot-&gt;getDescription() . '&lt;br /&gt;';
+
+$toyTrainFactory = new ToyTrainFactory();
+$toyTrain = $toyTrainFactory-&gt;makeTrain();
+$toyTrainPilot = $toyTrainFactory-&gt;makePilot();
+
+echo $toyTrain-&gt;getDescription() . '&lt;br /&gt;';
+echo $toyTrainPilot-&gt;getDescription() . '&lt;br /&gt;';</code></pre>
+

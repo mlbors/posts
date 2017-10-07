@@ -1,0 +1,89 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/160767437630/getting-started-with-threejs">Getting started with three.js</a></h2>
+
+<p>In this small post, we are going to see how to simply use <i>WebGL</i> with <i>three.js</i>.</p><p><i>WebGL</i> is a <i>JavaScript API</i> for rendering 3D graphics within a compatible web browser. <i>WebGL</i> is based on <i>OpenGL</i> and, through <i>JavaScript</i>, uses <i>OpenGL Shading Language</i> (GLSL) that is really similar to <i>C</i> or <i>C++</i>. <i>three.js</i> is library that lets you use <i>WebGL</i> easily.</p><p>Let’s make a small project to learn this tool. First, we need to download <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fthreejs.org%2F&amp;t=NjY3ZTdhMjVkODE0N2UxZDgwNGRhN2FkMjdhMWUxZTA4ZmE1YzlhZSx2ZXBza0JkRw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160767437630%2Fgetting-started-with-threejs&amp;m=1"><i>three.js</i></a>. When it is done, we two create files: <i>index.html </i>and <i>app.js</i>.</p><p>We start by filling the <i>index.html </i>file:</p><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+
+        &lt;title&gt;ThreeJS - Basic Scene&lt;/title&gt;
+
+        &lt;style type="text/css"&gt;
+
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+
+            canvas {
+                background: red;
+            }
+
+        &lt;/style&gt;
+
+    &lt;/head&gt;
+
+    &lt;body&gt;
+        &lt;canvas id="canvas"&gt;
+            Your browser does not support HTML 5.
+        &lt;/canvas&gt;
+    &lt;/body&gt;
+
+    &lt;script src="three.min.js" type="text/javascript"&gt;&lt;/script&gt;
+    &lt;script src="app.js" type="text/javascript"&gt;&lt;/script&gt;
+
+&lt;/html&gt;</code></pre><p><small><i>index.html file</i></small></p><p>Now let’s focus on the <i>app.js</i> file. First, we tell <i>three.js</i> where to display our scene:</p><pre><code>var renderer = new THREE.<i>WebGL</i>Renderer({
+    canvas: document.getElementById('canvas'),
+    antialiasing: true
+});</code></pre><p>Then we set a few things:</p><pre><code>renderer.setClearColor(0x000000);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);</code></pre><p>Here we set the background of our scene, the ratio of our device and we resize our output canvas.</p><p>We also need a camera:</p><pre><code>var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 3000);</code></pre><p>Here we set the vertical field of view in degrees of our camera and its aspect ratio. The two lasts arguments tell <i>three.js</i> where to start and where to stop rendering things.</p><p>We can now create our scene:</p><pre><code>var scene = new THREE.Scene();</code></pre><p>Unfortunately, we won’t see anything without light! So, let’s create two lights:</p><pre><code>var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+var pointLight = new THREE.PointLight(0xffffff, 0.5); 
+scene.add(pointLight);</code></pre><p>For each light, we set the color and the intensity. We also add them to our scene. An ambient light globally illuminates all objects in the scene and a point light gets emitted from a single point in all directions.</p><p>It is time to add some mesh to our scene:</p><pre><code>var geometry = new THREE.BoxGeometry(100, 100, 100);
+var material = new THREE.MeshLambertMaterial({color: 0xF3FFE2});
+var mesh = new THREE.Mesh(geometry, material);
+mesh.position.set(0, 0, -1000);
+
+scene.add(mesh);</code></pre><p>Here, we firstly create a box then some matte material. We then use these two objects to create our mesh. We also set the position of our mesh. We use a negative value for the z position of our mesh because, otherwise, due to the position of the camera (0, 0, 0), this last one would be at the top of our mesh and we wouldn’t see it.</p><p>To make our scene more interesting, we are going to create a small function to make our cube rotate:</p><pre><code>requestAnimationFrame(render);
+
+function render() {
+    mesh.rotation.x += 0.05;
+    mesh.rotation.y += 0.05;
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+}</code></pre><p>If everything is alright, we should see a sweet rotating cube when we open the <i>index.html </i>file in a web browser.</p><pre><code>var renderer = new THREE.<i>WebGL</i>Renderer({
+    canvas: document.getElementById('canvas'),
+    antialiasing: true
+});
+
+renderer.setClearColor(0x000000);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 3000);
+
+var scene = new THREE.Scene();
+
+var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+var pointLight = new THREE.PointLight(0xffffff, 0.5); 
+scene.add(pointLight);
+
+var geometry = new THREE.BoxGeometry(100, 100, 100);
+var material = new THREE.MeshLambertMaterial({color: 0xF3FFE2});
+var mesh = new THREE.Mesh(geometry, material);
+mesh.position.set(0, 0, -1000);
+
+scene.add(mesh);
+
+requestAnimationFrame(render);
+
+function render() {
+    mesh.rotation.x += 0.05;
+    mesh.rotation.y += 0.05;
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+}</code></pre><p><small><i>app.js file</i></small></p>
+

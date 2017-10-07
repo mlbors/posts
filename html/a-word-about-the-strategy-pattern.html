@@ -1,0 +1,58 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159189453135/a-word-about-the-strategy-pattern">A word about the Strategy pattern</a></h2>
+
+<p><i>The Strategy pattern</i> is a behavioural design pattern. Let’s talk a bit about it!</p><p><i>The Strategy pattern</i> allows you to switch the algorithm or strategy based upon the situation. The pattern defines a family of algorithms, encapsulate each one, and make them interchangeable and lets the algorithm vary independently from clients that use it.</p><p>Down below, a simple implementation of the Strategy pattern made with <i>PHP</i>:</p><p>First, a comparator interface and two concrete implementations.</p><pre><code>interface ComparatorInterface
+{
+  public function compare($a, $b): int;
+}
+</code></pre><pre><code>class DateComparator implements ComparatorInterface
+{
+  public function compare($a, $b): int
+  {
+    $aDate = new \DateTime($a['date']);
+    $bDate = new \DateTime($b['date']);
+    return $aDate &lt;=&gt; $bDate;
+  }
+}
+</code></pre><pre><code>class IdComparator implements ComparatorInterface
+{
+  public function compare($a, $b): int
+  {
+    return $a['id'] &lt;=&gt; $b['id'];
+  }
+}
+</code></pre><p>…and an object comparator</p><pre><code>class ObjectComparator
+{
+  private $elements;
+  private $comparator;
+
+  public function __construct(array $elements = [])
+  {
+    $this-&gt;elements = $elements;
+  }
+
+  public function sort(): array
+  {
+    if (!$this-&gt;comparator) {
+      throw new \LogicException('Comparator is not set');
+    }
+        
+    uasort($this-&gt;elements, [$this-&gt;comparator, 'compare']);
+    return $this-&gt;elements;
+  }
+
+  public function setComparator(ComparatorInterface $comparator)
+  {
+    $this-&gt;comparator = $comparator;
+  }
+}</code></pre><p>…and in use!</p><pre><code>$data = [['date' =&gt; '2014-03-03'], ['date' =&gt; '2015-03-02'], ['date' =&gt; '2013-03-01']];
+$obj = new ObjectComparator($data);
+$obj-&gt;setComparator(new DateComparator());
+$elements = $obj-&gt;sort();
+
+$data = [['id' =&gt; 2], ['id' =&gt; 1], ['id' =&gt; 3]]
+$obj = new ObjectComparator($data);
+$obj-&gt;setComparator(new IdComparator());
+$elements = $obj-&gt;sort();
+</code></pre>
+

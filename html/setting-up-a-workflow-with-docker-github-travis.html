@@ -1,0 +1,253 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/161459770660/setting-up-a-workflow-with-docker-github-travis">Setting up a workflow with Docker, GitHub, Travis and AWS</a></h2>
+
+<p>In this post, we are going to set up a workflow to test and deploy automatically a <i>PHP</i> app on <i>Amazon Web Services Elastic Beanstalk</i>.</p><p>The aim of this article is to set up a basic workflow using a few tools to automate our deployment process. First of all, we need to have an account on each of these platforms: <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2F&amp;t=YTg1NzQ3MzdiMWUwYmYyODQwMTdmYTRiMDU5ZTkzMTYyMWE5YTBkYSxIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">GitHub</a>, <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fhub.docker.com&amp;t=YjdjNmQ4MGI3YzlkZGQ3OTYyYWI5OWU1NmU1ODM4OGIzNWY4NTU5MixIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">Docker Hub</a>, <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Faws.amazon.com%2Ffr%2F&amp;t=MDNlYjY1ZWYxZWZkMWI0NTgyODQyNmNjYzg5MDE2MjY1ODE5ZjIzNyxIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">Amazon Web Services</a> (AWS) and <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Ftravis-ci.org%2F&amp;t=YjFmYmQzYmQ4ZjIxN2E5OTJmMGJjZThjY2FjY2EzMjc5ZjU1NDhmZixIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">Travis CI</a>. We also need to have <i>Docker</i> and <i>Git</i> installed on our machine.</p><p>Basically, we are going to do the following things: use <i>Docker</i> to create our environment, develop our app, create a repository, commit and push everything to <i>GitHub</i>, let <i>Travis CI</i> do the tests, build a <i>Docker image</i> with our code and push everything to <i>Elastic Beanstalk</i> (EB).</p><h2>Setting up the environment</h2><p>To create our environment, we are going to use the <i>PHP Docker Boilerplate</i> from <i>WebDevOps</i>. We can clone the repository by simply use:</p><pre><code>git clone <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2Fwebdevops%2Fphp-docker-boilerplate.git&amp;t=NGY3NTI1MWMzMWVhN2FjNDQ5OTc3NzJlMDllYTQ1ZmQ2ZTMwNDI5MyxIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">https://github.com/webdevops/php-docker-boilerplate.git</a> our-appt</code></pre><p><small><i>Cloning webdevops/php-docker-boilerplate</i></small></p><p>We will just adjust a very few things. First, in the <i>Dockerfile.production</i> file, at the end of it, we are going to add this simple line:</p><pre><code>COPY ./app/. /app/</code></pre><p>Here, we are copying our app folder instead of sharing it with the host.</p><p>If we use another image, we may also need to expose ports and run a command when launching our container like so:</p><pre><code>EXPOSE 80 
+EXPOSE 443 
+CMD ["supervisord"]</code></pre><h2>Initializing our project</h2><p>We can now go to GitHub and create a new repository. After that, we can make our first commit:</p><pre><code>git init
+git add .
+git commit –m "First commit"
+git remote add origin <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2Fuser%2Frepository.git&amp;t=NDU5OWEyNmM1NjJkYjUyZjE5MjhjYWZkYzQ5MTk3YjI1ZDAxNTM1MixIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">https://github.com/user/repository.git</a>
+git push –u origin master</code></pre><h2>Initializing our repository</h2><p>For our example, we create a really simple app using Composer. We must be sure to have the appropriate <i>.gitignore</i> file. A <i>.dockerignore</i> file could also be a good idea:</p><pre><code>*.md
+.git*
+backup/*
+bin/*
+documentation/*</code></pre><p><small><i>.dockerignore file example</i></small></p><p>We can now link our <i>GitHub repository</i> to <i>Travis CI</i>.</p><h2>AWS / EB</h2><p>We are now going to set a few things on <i>AWS</i>. First, we need to create a new application on <i>EB</i>. We can name it however we want. Then, we have to create new environment. Here, we need to select “<i>Docker Multicontainers</i>” for the <i>platform option</i>. We also need to enable <i>VPC</i>. We can then proceed.</p><p>When it is done, we need to assure that our instance profile can communicate with <i>Amazon ECS</i>. To be sure of this, we can attach the <i>AWSElasticBeanstalkMulticontainerDocker policy</i> to it. To set the instance profile, in the <i>EB dashboard</i>, we can go to <i>Configuration &gt; Instances settings</i>. To attach a policy to a role, in the <i>IAM dashboard</i>, we can go to <i>Roles</i>, choose the concerned role and then attach the desired policy.</p><p>We also need to create a new user. If there is no available group, we have to create on first. When our user is created, we can request credentials. We need to be sure to keep the secret key somewhere because we won’t be able to access it later.</p><h2>Information we need</h2><p>Before going any further, we need to be sure to have the following information:</p><ul><li>Our app name (APP_NAME)</li><li>Our Docker username (DOCKER_USERNAME)</li><li>Our Docker repository name (DOCKER_REPOSITORY)</li><li>Our Docker password (DOCKER_PASSWORD - secure)</li><li>Our email adress used with Docker (DOCKER_EMAIL)</li><li>An image name (IMAGE_NAME)</li><li>The AWS bucket name (BUCKET_NAME)</li><li>Our deployment region (DEPLOYMENT_REGION)</li><li>The deployment bucket (DEPLOYMENT_BUCKET)</li><li>The deployment environment (DEPLOYMENT_ENV_NAME)</li><li>The deployment’s id (DEPLOYMENT_ENV - secure)</li><li>Our AWS access key (AWS_ACCESS_KEY - secure)</li><li>Our AWS secret key (AWS_SECRET_KEY - secure)</li></ul><p>Because we are using <i>Travis CI</i>, we can set these values in our <i>Travis CI</i> account in the settings sections of our project or put them in the <i>.travis.yml</i> file and encrypt the private ones with the following command (<i>Travis CI gem</i> need to be installed):</p><pre><code>travis encrypt SOMEVAR=secretvalue --add</code></pre><h2>Docker Configuration</h2><p>In case we would like to use a private repository on <i>Docker Hub</i>, we need to create a file named <i>.dockercfg</i> like so:</p><pre><code>{
+  "https://index.docker.io/v1/": {
+    "auth": "",
+    "email": ""
+  }
+}</code></pre><p><small><i>.dockercfg file</i></small></p><p>The <i>Amazon ECS</i> container agent will use this file for authentication. Because <i>Docker</i> create a file with another format, we are going to feed this file later with the values that in the files generated by <i>Docker</i>.</p><p>Now we can create another file named <i>Dockerrun.aws.json</i>. This file will be used by <i>EB</i> to deploy our <i>Docker containers</i>. Here again, we are going to replace values in this file later.</p><pre><code>{
+ "AWSEBDockerrunVersion": 2,
+ "authentication": {
+   "bucket": "",
+   "key": ".dockercfg"
+ },
+ "volumes": [
+   {
+     "name": "storage",
+     "host": {
+       "sourcePath": "/var/data"
+     }
+   },
+   {
+      "name": "app",
+      "host": {
+        "sourcePath": "/var/app/current/app"
+      }
+    }
+ ],
+ "containerDefinitions": [
+   {
+     "name": "db",
+     "image": "mysql:5.6",
+     "essential": true,
+     "memory": 512,
+     "portMappings": [
+        {
+          "hostPort": 3306,
+          "containerPort": 3306
+        }
+     ]
+     "mountPoints": [
+       {
+         "sourceVolume": "storage",
+         "containerPath": "/var/lib/mysql"
+       }
+     ],
+    "environment": [
+      {
+        "name": "MYSQL_ROOT_PASSWORD",
+        "value": "password"
+      },
+      {
+        "name": "MYSQL_DATABASE",
+        "value": "my_db"
+      }
+    ]
+   },
+   {
+     "name": "app",
+     "image": "<img/>:",
+     "essential": true,
+     "memory": 256,
+     "portMappings": [
+       {
+         "hostPort": 80,
+         "containerPort": 80
+       }
+     ],
+     "links": [
+       "db"
+     ],
+     "mountPoints": [
+        {
+          "sourceVolume": "app",
+          "containerPath": "/var/www/html",
+          "readOnly": true
+        }
+     ]
+   }
+ ]
+}</code></pre><p><small><i>Dockerrun.aws.json file</i></small></p><h2>We tell Travis CI what to do</h2><p>Now, with the <i>.travis.yml</i> file, we can tell <i>Travis CI</i> what to do.</p><pre><code>sudo: required
+language: php
+python:
+- "3.4"
+- "pypy-5.3.1"
+
+services:
+- docker
+
+before_install:
+# Install dependencies
+- gem update --system
+- sudo apt-get install -y python3.4
+- sudo apt-get install --upgrade -y python-pip
+- sudo apt-get install jq
+- sudo pip install --user virtualenv
+# Create a virtual environment for AWS CLI
+- virtualenv my_py3 --python=/usr/bin/python3.4
+- source my_py3/bin/activate
+- pip install --upgrade awscli
+- pip install --upgrade awsebcli
+# Set AWS information
+- aws configure set aws_access_key_id $AWS_ACCESS_KEY
+- aws configure set aws_secret_access_key $AWS_SECRET_KEY
+- aws configure set default.region $DEPLOYMENT_REGION
+- aws configure set metadata_service_timeout 1200
+- aws configure set metadata_service_num_attempts 3
+- aws configure list
+# Copy the docker-compose.production.yml file to docker-compose.yml file
+- cp docker-compose.production.yml docker-compose.yml
+# Build and create our containers
+- docker-compose up -d
+- docker ps -a
+
+before_script:
+# Install dependencies in the app container
+- docker-compose exec -T app composer self-update
+- docker-compose exec -T app composer install --no-interaction
+- docker-compose exec -T app composer dump-autoload -o 
+
+script:
+# Run unit tests in the app container
+- docker-compose exec -T app vendor/bin/php-cs-fixer fix app --verbose
+- docker-compose exec -T app vendor/bin/phpunit --coverage-clover=coverage.xml
+
+after_success:
+# Stop containers and build our image
+- docker-compose stop
+- docker-compose build --no-cache
+# Send coverage information to Codecov (if needed)
+- bash &lt;(curl -s <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fcodecov.io%2Fbash&amp;t=OGM3ZjJmMGQxYjJjNzgzNTAyYTdiZDY4N2QxZWQzMDMwNDNmOTUwNixIMlJsTWVmMw%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F161459770660%2Fsetting-up-a-workflow-with-docker-github-travis&amp;m=1">https://codecov.io/bash</a>)
+# Push image to Docker Hub and update EB environment
+- if [ "$TRAVIS_BRANCH" == "master" ]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  docker tag $IMAGE_NAME $DOCKER_USERNAME/$DOCKER_REPOSITORY:$TRAVIS_BUILD_ID; 
+  docker push $DOCKER_USERNAME/$DOCKER_REPOSITORY:$TRAVIS_BUILD_ID;
+  ./scripts/upload_image_to_elastcbeanstalk.sh $TRAVIS_BUILD_ID $DEPLOYMENT_BUCKET $DEPLOYMENT_ENV $APP_NAME $DEPLOYMENT_REGION $IMAGE_NAME $DEPLOYMENT_ENV_NAME $DOCKER_USERNAME $DOCKER_REPOSITORY $DOCKER_PASSWORD $DOCKER_EMAIL;
+  fi
+
+notifications:
+  email: false
+  
+env:
+  global:
+  - APP_NAME=app_name
+  - DOCKER_USERNAME=docker_username
+  - DOCKER_REPOSITORY=docker_repository (here same as app_name)
+  - IMAGE_NAME=image_name
+  - BUCKET_NAME=bucket_name (here same as app_name)
+  - DEPLOYMENT_REGION=us-east-2 (for example)
+  - DEPLOYMENT_BUCKET=elasticbeanstalk-us-east-2-xxxxxxxxxxxx
+  - DEPLOYMENT_ENV_NAME=env_name
+  - DOCKER_EMAIL=docker_email
+  - secure: some_secure_value
+  - secure: some_secure_value
+  - secure: some_secure_value
+  - secure: some_secure_value</code></pre><p><small><i>.travis.yml file</i></small></p><p>Let’s recap what we are doing here:</p><ul><li>We install the dependencies we need</li><li>We install <i>AWS CLI</i> in a virtual environment to avoid conflicts and set information</li><li>Create a <i>docker-compose.yml</i> file from the <i>docker-compose.production.yml</i> file</li><li>Start our containers</li><li>Install dependencies in the app container</li><li>Run tests in the app container</li><li>Build our image</li><li>If everything is alright and if we are on master branch, we push the image to <i>Docker Hub</i> and call our script to update the <i>EB</i> environment</li></ul><h2>EB environment</h2><p>In our <i>.travis.yml</i> file, we call a script named <i>upload_image_to_elastcbeanstalk.sh</i>. Let’s see what it is:</p><pre><code>#! /bin/bash
+
+# Variables
+DOCKER_TAG=$1
+DOCKERRUN_FILE="Dockerrun.aws.json"
+DOCKERCFG=".dockercfg"
+DOCKER_CONFIG="/home/travis/.docker/config.json"
+EB_BUCKET=$2
+EB_ENV=$3
+PREFIX="deploy/$DOCKER_TAG"
+APP_NAME=$4
+DEPLOYMENT_REGION=$5
+IMAGE_NAME=$6
+DEPLOYMENT_ENV_NAME=$7
+DOCKER_USERNAME=$8
+DOCKER_REPOSITORY=$9
+DOCKER_PASSWORD=${10}
+DOCKER_EMAIL=${11}
+DOCKER_IMAGE="$DOCKER_USERNAME/$DOCKER_REPOSITORY"
+
+# Generate dockercfg
+echo "::::: Creating .dockercfg file :::::"
+
+DOCKER_AUTH=($(sudo jq -r '.auths["https://index.docker.io/v1/"].auth' $DOCKER_CONFIG))
+
+cat "$DOCKERCFG" \
+  | sed 's||'$DOCKER_AUTH'|g' \
+  | sed 's||'$DOCKER_EMAIL'|g' \
+  &gt; $DOCKERCFG
+
+sleep 30
+
+aws s3 cp $DOCKERCFG s3://$EB_BUCKET/.dockercfg
+
+sleep 30
+
+echo "::::: Creating Dockerrun.aws.json file :::::"
+
+# Replace vars in the DOCKERRUN_FILE 
+cat "$DOCKERRUN_FILE" \
+  | sed 's||'$EB_BUCKET'|g' \
+  | sed 's|<img/>|'$DOCKER_IMAGE'|g' \
+  | sed 's||'$DOCKER_TAG'|g' \
+  &gt; $DOCKERRUN_FILE
+
+sleep 30
+
+aws s3 cp $DOCKERRUN_FILE s3://$EB_BUCKET/$PREFIX/$DOCKERRUN_FILE
+sleep 30
+
+echo "::::: Creating new Elastic Beanstalk version :::::"
+
+# Run aws command to create a new EB application with label
+aws elasticbeanstalk create-application-version \
+	--region=$DEPLOYMENT_REGION \
+	--application-name $APP_NAME \
+  --version-label $DOCKER_TAG \
+	--source-bundle S3Bucket=$EB_BUCKET,S3Key=$PREFIX/$DOCKERRUN_FILE
+  
+sleep 30  
+
+echo "::::: Updating Elastic Beanstalk environment :::::"
+
+aws elasticbeanstalk update-environment \
+  --environment-id $EB_ENV \
+  --environment-name $DEPLOYMENT_ENV_NAME \
+  --application-name $APP_NAME \
+  --version-label $DOCKER_TAG
+
+echo "::::: Removing file :::::"
+
+sleep 30  
+rm $DOCKERCFG
+rm $DOCKERRUN_FILE</code></pre><p><small><i>upload_image_to_elastcbeanstalk.sh file</i></small></p><p>Let’s recap what we are doing here:</p><ul><li>We parse the file <i>/home/travis/.docker/config.json</i> and extract the “<i>auth</i>” value from it</li><li>We replace values in the <i>.dockercfg</i> and upload it on <i>AWS S3</i></li><li>We replace values in <i>Dockerrun.aws.json</i> file and upload it on <i>AWS S3</i></li><li>We create a new version for the application</li><li>We update the <i>EB</i> environment</li><li>We remove the configuration files</li></ul><h2>The end!</h2><p>If everything is alright, our app will be deployed on <i>AWS EB</i> by the next push.</p><h2>Test locally and fix problems</h2><p>If we need to run our image locally, we can do the following thing:</p><pre><code>docker pull username/repository:tag
+docker run --expose 80 -p 80:80 -it username/repository:tag</code></pre><p>Or if we need to use <i>sh</i>:</p><pre><code>docker run -ti username/repository:tag sh</code></pre><p>To get console output from the instance, we can use the following command (<i>awscli</i> has to be installed; we may need to run <i>aws configure</i> first):</p><pre><code>aws ec2 get-console-output --instance-id instance_id</code></pre><p><small><i>Getting console output</i></small></p><p>We may also want to connect to our instance using <i>SSH</i>. To do so, we just have to use the following command (<i>awsebcli</i> has to be installed; we may need to run <i>eb init</i> first):</p><pre><code>eb ssh --setup // If needed
+eb ssh environment-name</code></pre><p><small><i>Using SSH</i></small></p><p>We can retrieve and display <i>logs</i> like so:</p><pre><code>eb logs</code></pre><p><small><i>Displaying logs</i></small></p><h2>Further configuration and optimization</h2><p>We may want to extend our configuration. For that, we can place some <i>.config</i> files in the <i>.ebextentions</i> folder. For example, we may need a script to clean unused images:</p><pre><code>option_settings:
+  - namespace: aws:elasticbeanstalk:command
+    option_name: Timeout
+    value: 1200
+
+commands:
+  docker_clean_containers:
+    command: docker rm -v $(docker ps -a -q)
+    ignoreErrors: true
+  docker_clean_images:
+    command: docker rmi $(docker images -q)
+    ignoreErrors: true</code></pre><p><small><i>Cleaning unused images - .ebextentions/docker.config</i></small></p><p>In our example, we also use a <i>MYSQL</i> container for our database. Using <i>AWS RDS</i> instead can be a reliable choice for production.</p><h2>Conclusion</h2><p>Setting up this whole process may seem to be quite a headache that involves many different tools. On the other hand, we have the opportunity to automate our deployment process while preserving control and security.</p>
+

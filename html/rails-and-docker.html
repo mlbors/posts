@@ -1,0 +1,62 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/160836332260/rails-and-docker">Rails and Docker</a></h2>
+
+<p>In this post, we are going to set up a <i>Ruby on Rails</i> project using <i>Docker</i>.</p><p><i>Docker</i> is an open-source platform that enables a <i>Linux</i> application and its dependencies to be packaged as a container. Container-based virtualization isolates applications from each other on a <i>shared operating system</i>. Because they share the same <i>OS</i>, containers are portable among different <i>Linux distributions</i> and are smaller than <i>virtual machine</i> (VM) images.</p><p>The first thing we have to do is to download and install <i><a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fwww.docker.com%2F&amp;t=YjY0MWYwYmFlYzFiMTliNmNjYzIxOTAxODY2OTM2NTY5MWYwOGEzZiw5OGFRTHJudg%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160836332260%2Frails-and-docker&amp;m=1">Docker</a></i>. When it is done, we can create a folder where ever we want. In this folder, we are firstly going to create the <i>Gemfile</i> and the <i>Gemfile.lock</i> files like so:</p><pre><code>source 'https://rubygems.org'
+
+gem 'rails'
+gem 'pg'</code></pre><p><small><i>Gemfile</i></small></p><pre><code><i>empty</i></code></pre><p><small><i>Gemfile.lock</i></small></p><p>Then, we are going to create the docker-compose.yml file:
+
+</p><pre><code>version: '2'
+
+services:
+  app:
+    build: .
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - "3000:3000"
+
+  db:
+    image: postgres:9.5
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    logging:
+      driver: none
+
+volumes:
+  db_data:
+    driver: local</code></pre><p><small><i>docker-compose.yml file</i></small></p><p>Here, we create our main container, called “app”, map the ports and link this container to the one called “db”. This last one is responsible of the database. In this part of the file, we also set a volume for the database to ensure the data’s persistence. We can now create the <i>Dockerfile</i>:</p><pre><code>FROM ruby:2.4.1
+
+RUN apt-get update -qq &amp;&amp; apt-get install -y build-essential libpq-dev nodejs
+
+RUN mkdir /app
+WORKDIR /app
+
+ADD Gemfile /app/Gemfile
+ADD Gemfile.lock /app/Gemfile.lock
+
+RUN bundle install
+
+ADD . /app</code></pre><p><small><i>Dockerfile</i></small></p><p>Now, we are going to initialize our application and build the <i>containers</i>:</p><pre><code>docker-compose run app rails new . --force --database=postgresql --skip-bundle
+docker-compose build
+docker-compose up -d</code></pre><p><small><i>Creating the app</i></small></p><p>To make things work, we have to change a few things in the <i>database.yml</i> file:</p><pre><code>-----
+
+development:
+  &lt;&lt;: *default
+  database: app_development
+  username: postgres
+  password:
+  host: db
+  port: 5432
+
+-----</code></pre><p><small><i>databse.yml file</i></small></p><p>To make things a little more funny, we are going to create a <i>scaffold</i>. A <i>scaffold</i> in <i>Rails</i> is a full set of model, database migration for that model, controller to manipulate it, views to view and manipulate the data, and a test suite for each of the above.</p><pre><code>docker-compose run --rm app rails g scaffold post title body:text</code></pre><p><small><i>Scaffolding</i></small></p><p>Let’s create our database and a migration:</p><pre><code>docker-compose run app rake db:create
+docker-compose run --rm app rake db:migrate</code></pre><p><small><i>Database creation and migration</i></small></p><p>Now, if we go to <i>http://localhost:3000</i>, we will see the Rails homepage and if we go to<i> http://localhost:3000/posts</i>, we will see a simply interface that let us play with <i>CRUD operations</i>.</p>
+

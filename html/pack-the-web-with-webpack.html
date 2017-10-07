@@ -1,0 +1,330 @@
+Pack the Web with webpack
+
+<p>The number of available tools for Web development can sometimes make our life difficult because choosing the right one to use can be a tough task. Fortunately, <i>webpack</i> seems to want to make our life easier and allows us to quickly set up a nice workflow. Let's see how it works.</p>
+
+<p><i>webpack</i> is a module <i>bundler</i> able to pack <i>JavaScript</i> files or any other resource or asset for usage in a browser.</p>
+
+<h2>Installing webpack</h2>
+
+<p>To install <i>webpack</i>, we need to have <a href="https://nodejs.org/en/" target="_blank"><i>node.js</i></a> installed. Then, to install <i>webpack</i> globally, we can do the following command:</p>
+
+<pre><code class="console">$ npm install webpack -g</code></pre>
+
+<h2>Creating a project</h2>
+
+<p>For our first try with <i>webpack</i>, we will create a directory with the following hierarchy:</p>
+
+<pre><code>src/
+main.js
+index.html
+wepack.config.js</code></pre>
+
+<p><small><i>Project hierarchy</i></small></p>
+
+<p>In our <i>index.html</i> file, we are going to write the following lines:</p>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;webpack&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;script src="./dist/bundle.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p><small><i>index.html file</i></small></p>
+
+<p>We are also going to keep our <i>main.js</i> file very simple:</p>
+
+<pre><code class="javascript">console.log("Hello World!");</code></pre>
+
+<p><small><i>main.js file</i></small></p>
+
+<h2>Defining the config file</h2>
+
+<p>For the moment our project is very simple and we could just run the following command to create a <i>build</i>:</p>
+
+<pre><code class="console">webpack src/main.js dist/bundle.js</code></pre>
+
+<p><small><i>Building our project manually</i></small></p>
+
+<p>We would see a <i>dist</i> folder and a <i>bundle.js</i> file appear. But our project is going to be more complex and that is where the <i>webpack.config.js</i> file is useful. So, let's fill this last one with the following lines:</p>
+
+<pre><code class="javascript">module.exports = {
+
+    // Entry point
+    entry: './src/main.js',
+
+    // Output point
+    output: {
+        path: __dirname + '/dist',
+        filename: 'bundle.js'
+    }
+
+};</code></pre>
+
+<p><small><i>webpack.config.js file</i></small></p>
+
+<p>Now, from our root directory, we can run the next command:</p>
+
+<pre><code class="console">wepack</code></pre>
+
+<p><small><i>Using our webpack.config.js file</i></small></p>
+
+<p>If everything is alright, our <i>bundle</i> will be generated. But what are we doing here? The <i>webpack</i> command takes two arguments, the <i>entry</i> and the <i>output</i> points. That is what we did when we ran the first command. The configuration file we created allows us to specify those parameters.</p>
+
+<h2>Using loaders</h2>
+
+<p>Out of the box, <i>webpack</i> only understands <i>.js</i> files. Loaders tell <i>webpack</i> how to load files for bundling. To use them, we first need to create a <i>package.json</i> file by running the following command:</p>
+
+<pre><code class="console">npm init</code></pre>
+
+<p><small><i>Creating package.json file</i></small></p>
+
+<p>Nowadays, we are very tempted to write <i>JavaScript</i> using <i>es6</i>. Unfortunately, not every browser supports it and we have to convert our code. We can do this with <i>Babel</i>:</p>
+
+<pre><code class="console">npm install babel-loader babel-core babel-preset-es2015 --save-dev</code></pre>
+
+<p><small><i>Installing Babel</i></small></p>
+
+<p>Now, in our webpack.config.js file, we can add our module like so:</p>
+
+<pre><code class="javascript">module: {
+	loaders: [
+		{
+			test: /\.js$/,
+			exclude: /node_modules/,
+			loader: 'babel-loader',
+			query: {
+				presets: ['es2015']
+			}
+		}
+	],
+}</code></pre>
+
+<p><small><i>Adding module</i></small></p>
+
+<p>Here we tell <i>webpack</i> to run through the <i>Babel Loader</i> every <i>JS</i> file, excluding those in <i>node_modules</i>, and to use the <i>es2015</i> preset for <i>Babel</i>. So, adding the following lines in our <i>main.js</i> file won't be a problem:</p>
+
+<pre><code class="javascript">const name = 'John Doe';
+setTimeout(() => alert(`Hey ${name}!`), 300);</code></pre>
+
+<p><small><i>Editing main.js file</i></small></p>
+
+<p>We can also use loaders for <i>CSS</i> and <i>SASS</i>. Let's give it a shot!</p>
+
+<h3>CSS</h3>
+
+<p>We will start first with <i>CSS</i> and for that, we need to install a bunch of <i>loaders</i>:</p>
+
+<pre><code class="console">npm install css-loader style-loader --save-dev</code></pre>
+
+<p><small><i>Installing loaders</i></small></p>
+
+<p>Now, just for fun, we are going to create another file in the <i>src</i> folder named <i>assets.js</i>.</p>
+
+<pre><code class="javascript">require('./css/main.css');</code></pre>
+
+<p><small><i>assets.js file</i></small></p>
+
+<p>We now have to modify our <i>main.js</i> file. Let's put the following line at the top of this last one:</p>
+
+<pre><code class="javascript">require('./assets.js');</code></pre>
+
+<p><small><i>Editing main.js file</i></small></p>
+
+<p>It is time to create the <i>main.css</i> file in the <i>src/css</i> folder. Nothing really fancy for the moment:</p>
+
+<pre><code class="css">body {
+    background-color: #f3f3f3;
+}</code></pre>
+
+<p><small><i>main.css file</i></small></p>
+
+<p>Now, in the <i>webpack.config.js</i> file, in the loaders section, we can add the following lines:</p>
+
+<pre><code class="javascript">{
+	test: /\.css$/,
+	exclude: /node_modules/,
+	loader: 'style-loader!css-loader'
+}</code></pre>
+
+<p><small><i>Adding CSS and Style Loaders</i></small></p>
+
+<p>Magically, the next time we will create a <i>bundle</i>, our <i>CSS</i> file will be included for our greatest pleasure!</p>
+
+<h3>SASS</h3>
+
+<p>Using <i>SASS</i> with <i>webpack</i> is a little bit trickier than using standard <i>CSS</i>. Let's start by installing what we need:</p>
+
+<pre><code class="console">npm install sass-loader node-sass extract-text-webpack-plugin install html-webpack-plugin clean-webpack-plugin --save-dev</code></pre>
+
+<p><small><i>Installing some plugins</i></small></p>
+
+<p>Here, we are going to place standard <i>CSS</i> and <i>SASS</i> into a same file and then inject our <i>bundles</i>, <i>js</i> and <i>css</i>, into an <i>index.html</i> file generated on the fly.</p>
+
+<p>In the src folder, let's create some new files with the following hierarchy:</p>
+
+<pre><code>src/
+	css/
+		main.css
+	scss/
+		partials/
+			_main.scss
+		app.scss</code></pre>
+		
+<p><small><i>Adding files</i></small></p>
+		
+<p>For our example, we are going to feed our files like so:</p>
+
+<pre><code class="sass">@import "partials/main";</code></pre>
+
+<p><small><i>app.scss file</i></small></p>
+
+<pre><code class="sass">h1 {
+    color: #f5f341;
+    font-weight: bold;
+}</code></pre>
+
+<p><small><i>_main.scss file</i></small></p>
+
+<p>We also need to edit our <i>index.html</i> file:</p>
+
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;webpack&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p><small><i>Edited index.html file</i></small></p>
+
+<p>We can now edit our <i>webpack.config.js</i> file like so:</p>
+
+<pre><code class="javascript">const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+
+let pathsToClean = [
+  'dist'
+];
+
+module.exports = {
+
+    entry: ['./src/main.js', './src/scss/app.scss'],
+
+    output: {
+        path: __dirname + '/dist',
+        filename: 'bundle.[hash].js'
+    },
+
+    watch: true,
+    devtool: "source-map",
+
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                query: {
+                    presets: ['es2015']
+                }
+            },
+            {
+                test: /\.css$/,
+                exclude: /node_modules/,
+                use: ExtractTextPlugin.extract({
+                    use: [{
+                        loader: "css-loader"
+                    }]
+                }),
+            },
+            {
+                test: /\.scss$/,
+                exclude: /node_modules/,
+                use: ExtractTextPlugin.extract({
+                    use: [{
+                        loader: "css-loader"
+                    }, {
+                        loader: "sass-loader"
+                    }],
+                    fallback: "style-loader"
+                })
+            }
+        ]
+    },
+    plugins: [
+		new CleanWebpackPlugin(pathsToClean),
+        new ExtractTextPlugin({
+            filename: 'bundle.[contenthash].css',
+            allChunks: true
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Custom template',
+            filename: 'index.html',
+            template: __dirname + '/index.html'
+        })
+    ]
+
+};</code></pre>
+
+<p><small><i>Edited webpack.config.js file</i></small></p>
+
+<p>As we can see, we made a lot of changes, but there is nothing horrible! We changed the entry point, created a few rules for our <i>CSS</i> and <i>SCSS</i> files. Finally, we used <i>ExtractTextPlugin</i> to create a <i>bundle</i> for our <i>CSS</i> and <i>SCSS</i> files and <i>HtmlWebpackPlugin</i> to inject our files in a brand new <i>index.html</i> file placed in the <i>dist</i> folder and based on our <i>index.html</i> file at the root. We also cleaned the <i>dist</i> folder before building with <i>CleanWebpackPlugin</i>.</p>
+
+<h3>Copying our images</h3>
+
+<p>We may also want to place our images in our <i>dist</i> folder. <i>CopyWebpackPlugin</i> offers a solution to do that. Let's install it like so:</p>
+
+<pre><code class="console">npm install --save-dev copy-webpack-plugin</code></pre>
+
+<p><small><i>Installing CopyWebpackPlugin</i></small></p>
+
+<p>To use this plugin, we have to edit our <i>webpack.config.js</i> file like so:</p>
+
+<pre><code class="javascript">...
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+...
+plugins: [
+	...
+	new CopyWebpackPlugin([
+		{ from: __dirname + '/src/assets/img', to: __dirname + '/dist/assets/img' }
+	])
+]</code></pre>
+
+<p><small><i>Adding CopyWebpackPlugin</i></small></p>
+
+<p>If we want to process images, <a href="https://github.com/tcoopman/image-webpack-loader" target="_blank"><i>ImageWebpackLoader</i></a> can also do the job.</p>
+
+<h2>Watch mode</h2>
+
+<p>As we can see, in the previous section, we also added the <i>watch</i> parameter. This allows us to change our code and automatically have it compiled.</p>
+
+<h2>Server</h2>
+
+<p><i>webpack</i> can create a server that listens for any change in our project and then injects that change into our browser. For that, we first need to install the development server:</p>
+
+<pre><code class="console">npm install webpack-dev-server -g</code></pre>
+
+<p><small><i>Installing webpack development server</i></small></p>
+
+<p>Then we can run the following command:</p>
+
+<pre><code class="console">webpack-dev-server</code></pre>
+
+<p><small><i>Running webpack development server</i></small></p>
+
+<p>Our project will be available at <i>http://localhost:8080/</i> and we will see our changes every time we save our files.</p>
+
+<h2>Conclusion</h2>
+
+<p>Through this brief introduction, we saw that <i>webpack</i> is a really powerful tool than can easily be integrated into our workflow. But we can go further by exploring the various options of this tool. For example, we could choose to do only certain operations under our development environment and others in production.</p>

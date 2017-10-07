@@ -1,0 +1,123 @@
+<p>Through this small post, we are going to see what <i>Stacks</i> are.</p>
+
+<p>A <i>Stack</i> is a <i>data structure</i> that behaves like a real-world stack, for example a deck of cards. And like in real-world, we can only add a new element to the <i>top</i> of the <i>Stack</i> or remove the element from the <i>top</i> of the <i>Stack</i>.</p>
+
+<p>A <i>Stack</i> keeps elements in a <i>last-in first-out order</i> (LIFO). A <i>Stack</i> can be implemented using <i>Array, Structure, Pointer</i> or <i>Linked List</i>.</p>
+
+<p>When we add an element to the <i>Stack</i>, we <i>push</i> and when we remove the element from the <i>top</i>, we <i>pop</i>. We can also peek to get the element from the <i>top</i> without removing it.</p>
+
+<p>The <i>push</i> and <i>pop</i> operations occur only at one end of the structure: the <i>top</i> of the <i>Stack</i>. If we want, we can constraint the <i>Stack</i> to have a fixed size and when it is full, so no entity can bw pushed to the <i>top</i> anymore, it is considered to be in an <i>overflow</i> state.</p>
+
+<p>Let's make a quick and small implementation using <i>Java</i> where we will use <i>Array</i> and a fixed size.</p>
+
+<pre><code class="java">public class TheStack {
+	
+	private String[] stackArray;
+	private int stackSize;
+	private int topOfStack = -1;
+	
+	TheStack(int size) {
+		
+		stackSize = size;
+		stackArray = new String[size];
+		Arrays.fill(stackArray, "-1");
+		
+	}
+	
+    // Push operation
+	public void push(String input) {
+		
+		if(topOfStack + 1 < stackSize) {
+			
+			topOfStack++;
+			stackArray[topOfStack] = input;
+            System.out.println("PUSH: " + input + "was added to the Stack.");
+			
+		} else {
+			System.out.println("The Stack is full!");
+		}
+	
+	}
+	
+    // Pop operation
+	public String pop() {
+		
+		if(topOfStack >= 0){
+			
+			System.out.println("POP: " + stackArray[topOfStack] + " was removed from the Stack.");
+			stackArray[topOfStack] = "-1";
+			return stackArray[topOfStack--];
+	
+		} else {
+			
+			displayTheStack();
+			System.out.println("Sorry but the stack is empty");
+			return "-1";
+		}
+		
+	}
+	
+    // Peek operation
+	public String peek() {
+		
+		System.out.println("PEEK: " + stackArray[topOfStack] + " is at the top of the Stack.");
+		return stackArray[topOfStack];
+		
+	}
+	
+    // Using our Stack
+	public static void main(String[] args ) {
+		
+		TheStack theStack = new TheStack(10);
+		theStack.push("10");
+		theStack.push("15");
+		theStack.peek();
+		theStack.pop();
+		
+	}
+	
+}</code></pre>
+
+<p>We can also do it with <i>Python</i> using <i>Linked List</i> just for pleasure:</p>
+
+<pre><code class="python"># The Node class for our Linked List
+class Node(object):
+
+    def __init__(self, data, next=None):
+        self.data = data
+        self.next = next
+
+
+# Our Stack class
+class Stack(object):
+
+    def __init__(self, top = None):
+        self.top = top
+
+    # Push operation
+    def push(self, data):
+        self.top = Node(data, self.top)
+
+    # Pop operation
+    def pop(self):
+        if self.top is None:
+            return None
+        data = self.top.data
+        self.top = self.top.next
+        return data
+
+    # Peek operation
+    def peek(self):
+        return self.top.data if self.top is not None else None
+
+    def is_empty(self):
+        return self.peek() is None
+
+
+# Using our Stack
+if __name__ == '__main__':
+    stack = Stack()
+    stack.push(10)
+    stack.push(15)
+    print(stack.pop())
+    print(stack.peek())</code></pre>

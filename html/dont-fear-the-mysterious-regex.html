@@ -1,0 +1,132 @@
+<p>Don't fear the mysterious regex</p>
+
+<p><em>Regular expressions</em>, or <em>regex</em>, are something powerful because they allow us to define a search pattern, but they can also be really frightening. Let's try to understand them a little more.</p>
+
+<p>A <em>regex</em> is nothing more than a sequence of characters that defines a search pattern. This pattern can then be used by string searching algorithms for "<em>find</em>" or "<em>find and replace</em>" operations on strings. The main problem with <em>regex</em> it's that they can really afraid us because we, human beings, have some trouble to read them. So, <em>we give regex a bad name</em>.</p>
+
+<p>If we take a closer look at <em>regex</em> on <em>PHP</em> side, we notice that we can use regex of two kinds:</p>
+
+<ul>
+<li>POSIX Regular Expressions</li>
+
+<li>PERL Style Regular Expressions (PCRE)</li>
+</ul>
+
+<p>As of <em>PHP 5.3.0</em>, the <em>POSIX Regex extension</em> is deprecated, so we are going to make our examples with <em>PCRE</em>. <em>Perl-style</em> regular expressions are similar to their <em>POSIX</em> counterparts.</p>
+
+<h2 id="helloregex">Hello regex</h2>
+
+<p>So, let's try to use regular expressions by starting with a really basic example:</p>
+
+<pre><code>preg_match("/hello world/", "hello world");
+</code></pre>
+
+<p>This line will return <em>true</em> because here, we are searching the pattern "<em>hello world</em>" (first argument) in the string "<em>hello world</em>" (second argument). Now, if we use the string "<em>Hello world</em>", it will return <em>false</em> because, by default, regex are case-sensitive. We can make them case-insensitive like so:</p>
+
+<pre><code>preg_match("/hello world/i", "Hello world");
+</code></pre>
+
+<h2 id="oroperator">OR operator</h2>
+
+<p>Let's go a little further by using the <em>OR operator</em>, represented by |.</p>
+
+<pre><code>preg_match("/hello world|john/i", "Hello world");
+preg_match("/hello world|john/i", "hello John");
+</code></pre>
+
+<p>Here, both expressions will return <em>true</em>.</p>
+
+<h2 id="delimiters">Delimiters</h2>
+
+<p>Now, we can be more precise by using <em>delimiters</em> that will let us define if we want to look at the start of the end of the line.</p>
+
+<ul>
+<li><p>^ targets the line's start</p></li>
+
+<li><p>$ targets the line's end</p>
+</ul>
+
+<pre><code>preg<em>match("/^hello world|john/i", "Hello world! It's a sunny day.");
+preg</em>match("/fun$/i", "regex are fun");</code></pre>
+    
+<p>The first expression says that the line must <em>start</em> with "<em>hello world OR john</em>" and the second that the line must <em>end</em> with "<em>fun</em>".</p>
+
+<h2 id="brackets">Brackets</h2>
+
+<p>We can now be better wizards if we use <em>brackets</em>. <em>Brackets</em> are used to find a range of characters.</p>
+
+<pre><code>preg_match("/^[a-z]/i", "This line starts with some character.");
+preg_match("/[^0-9]/", "This string doesn't contain any number.");
+</code></pre>
+
+<p>Both expressions will return <em>true</em>. In the second expression, we use the "^" symbol inside brackets. Here, this last one means that we don't want something in our string.</p>
+
+<h2 id="quantifiers">Quantifiers</h2>
+
+<p>We are now able to do pretty amazing things, but we can do more with <em>quantifiers</em>. <em>Quantifiers</em> can manage the position or the frequency of character sequences or single characters. A <em>quantifier</em> is applied directly to the character that precedes it.</p>
+
+<pre><code>preg_match("/^hey+/i", "hey");
+preg_match("/^heyy+/i", "hey");
+preg_match("/[0-9]{1,6}/", "123456");
+preg_match("/[0-9]{1,6}/", "1234");
+preg_match("/^a*/i", "bbbb");
+preg_match("/u?/i", "ooo");
+</code></pre>
+
+<p>If we take a moment, we can notice that quantifiers used some characters like "# ! ^ $ ( ) [ ] { } ? + * . \". So, how can we do if we want to target the "?" character and not use the quantifier. We simply have to escape it!</p>
+
+<pre><code>preg_match("/how are you\?/i", "How are you?");
+preg_match("/I\'m fine\! And you\?/i", "I'm fine! And you?");
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through some basic examples, we saw how <em>regular expressions</em> work and that, behind their monstrous appearance, they a really powerful. We don't have to be afraid of them anymore.</p>
+
+<h2 id="quickreference">Quick reference</h2>
+
+<p>Down below is a quick reference:</p>
+
+<pre><code>[abc]       A single character: a, b or c
+[^abc]      Any single character but a, b, or c
+[a-z]       Any single character in the range a-z
+[a-zA-Z]    Any single character in the range a-z or A-Z
+^           Start of line
+$           End of line
+\A          Start of string
+\z          End of string
+.           Any single character
+\s          Any whitespace character
+\S          Any non-whitespace character
+\d          Any digit
+\D          Any non-digit
+\w          Any word character (letter, number, underscore)
+\W          Any non-word character
+\b          Any word boundary character
+(...)       Capture everything enclosed
+(a|b)       a or b
+a?          Zero or one of a
+a*          Zero or more of a
+a+          One or more of a
+a{3}        Exactly 3 of a
+a{3,}       3 or more of a
+a{3,6}      Between 3 and 6 of a
+
+options:
+i           case insensitive 
+m           make dot match newlines 
+x           ignore whitespace in regex 
+o           perform #{...} substitutions only once
+</code></pre>
+
+<h2 id="sometools">Some tools</h2>
+
+<p>The following websites can help to build regex:</p>
+
+<ul>
+<li><a href="http://www.phpliveregex.com/">PHP Live Regex</a></li>
+
+<li><a href="https://regex101.com/">Regex 101</a></li>
+
+<li><a href="http://regexr.com/">RegExr</a></li>
+</ul>

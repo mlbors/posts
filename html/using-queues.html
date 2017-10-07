@@ -1,0 +1,142 @@
+<p>Through this small article, we are going to see what <i>Queue</i>s are. Let's get into it!</p>
+
+<p>A <i>Queue</i> is a <i>data structure</i> that is really similar to a real-world queue. A <i>Queue</i> is open at both ends and one end is used to insert data while the other is used to remove data.</p>
+
+<p>A <i>Queue</i> keeps elements in <i>first-in first-out</i> order (FIFO), so the first element we inserted is the first one to come out.</p>
+
+<p>In a way, <i>Queue</i>s are similar to Stacks and can be implemented using <i>Array, Structure, Pointer</i> or <i>Linked List</i>.</p>
+
+<p>When we add an item to the <i>Queue</i>, we <i>enueue</i> and when we remove an item from the <i>Queue</i>, we <i>dequeue</i>. We can also <i>peek</i> to get the element at the front of the <i>Queue</i> without removing it.</p>
+
+<p>Let’s make a quick and small implementation using Java where we will use Array.</p>
+
+<pre><code class="java">public class TheQueue {
+	
+	private String[] queueArray;
+	private int queueSize;
+	
+	private int front, rear, numberOfItems = 0;
+	
+	TheQueue(int size) {
+		
+		queueSize = size;
+		queueArray = new String[size];
+		front = 0;
+		rear = -1;
+		numberOfItems = 0;
+		
+	}
+	
+	// Enqueue operation
+	public void enqueue(String input) {
+		
+		if(numberOfItems + 1 <= queueSize) {
+			
+			rear++;
+		
+			queueArray[rear] = input;
+			
+			numberOfItems++;
+			
+			System.out.println("ENQUEUE: " + input + " was added to the Queue.");
+		
+		} else {
+			
+			System.out.println("The Queue is full.");
+			
+		}
+		
+	}
+	
+	// Dequeue operation
+	public void dequeue() {
+		
+		if(numberOfItems > 0) {
+			
+			System.out.println("DEQUEUE: " + queueArray[front] + " was removed from the Queue.");
+			
+			queueArray[front] = "-1";
+			
+			front++;
+		
+			numberOfItems--;
+		
+		} else {
+			
+			System.out.println("The Queue is empty");
+			
+		}
+		
+	}
+	
+	// Peek front operation
+	public void peekFront() {
+		
+		System.out.println("PEEK FRONT: " + queueArray[front]);
+		
+	}
+	
+	// Peek rear operation
+	public void peekRear() {
+		
+		System.out.println("PEEK REAR: " + queueArray[rear]);
+	}
+	
+	
+	// Using our Queue
+	public static void main(String[] args){
+		
+		TheQueue theQueue = new TheQueue(10);
+		
+		theQueue.enqueue("45");
+		theQueue.enqueue("100");
+		theQueue.enqueue("98");
+		theQueue.enqueue("25");
+		theQueue.enqueue("11");
+		theQueue.peekFront();
+		theQueue.peekRear();
+		theQueue.dequeue();
+		theQueue.dequeue();
+		theQueue.peekFront();
+		theQueue.peekRear();
+		
+	}
+
+}</code></pre>
+
+<p>We can also do something similar using Python:
+
+<pre><code class="python">class Queue:
+    def __init__(self, size):
+        self.queue = []
+        self.size = size
+
+    # Enqueue operation
+    def enqueue(self, item):
+        if len(self.queue) < self.size:
+            self.queue.append(item)
+            return self.queue
+        else:
+            return "The Queue is full."
+
+    # Deqeueue operation
+    def dequeue(self):
+        if len(self.queue) > 0:
+            return self.queue.pop(0)
+        else:
+            return "The Queue is empty."
+
+
+# Using our Queue
+if __name__ == '__main__':
+    queue = Queue(10)
+    queue.enqueue("45")
+    queue.enqueue("100")
+    queue.enqueue("98")
+    queue.enqueue("25")
+    queue.enqueue("11")
+    print(queue.queue)
+    queue.dequeue()
+    queue.dequeue()
+    print(queue.queue)</code></pre>
+

@@ -1,0 +1,141 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159898682575/a-small-introduction-to-linked-lists">A small introduction to Linked Lists</a></h2>
+
+<p>A <i>linked list</i> is a linear collection of data elements, which are connected together via <i>links</i>. Let’s have a quick look at it!</p><p>A <i>linked list</i> is a sequence of data items, just like an array. The main difference between an array and a <i>linked list</i> is while an array needs a big block of memory to store the objects, the elements in a <i>linked list</i> are totally separate objects in memory and are connected through <i>links</i>.</p><p>The elements of a <i>linked list</i> are referred to as <i>nodes</i> and each <i>node</i> has a <i>reference</i> (or “pointer”) to the next <i>node</i>. We need to keep track of where the list begins and it is usually done with a <i>pointer</i> called the <i>head</i>. It also can be useful to have a <i>reference</i> to the end of the list called the <i>tail</i>. <i>The next pointer of the last node is nil</i>, just like <i>the previous pointer of the first node</i>.</p><pre><code>| node 0 |---&gt;| node 1 |---&gt;| node 2 |---&gt;| node 3 |</code></pre><p>We can also have something called <i>doubly linked list</i>, where <i>each node has a pointer to the previous node</i>.</p><p>A <i>singly linked list</i> uses less memory than a <i>doubly linked list</i> because it does not need to store all <i>previous pointers</i>. However, with a <i>singly linked list</i>, if we need to find the <i>previous pointer of any node</i>, we have to start at the <i>head</i> of the list and iterate through the entire list until we get to the right <i>node</i>.</p><p>Most operations on a <i>linked list</i> have <i>O(n)</i> time, and so <i>linked lists</i> are generally slower than arrays. The main reason for that is we can’t access directly to a specific <i>node</i>. If we don’t have a <i>reference</i> to that specific <i>node</i> already, we have to start at the <i>head</i> (or at the tail) of the list and work our way down (or up) to the desired <i>node</i> by following the <i>next pointers</i> (our previous).</p><p>Nevertheless, once we have a reference to a <i>node</i>, operations like <i>insertion</i> and <i>deletion</i> are really fast.</p><p>Let’s have a really simple example written in <i>Java </i>of a <i>singly list</i> implementation. For the sake of our example, we will work with books and we will define everything as <i>public</i> so <i>getters</i> and <i>setters</i> aren’t needed.</p><p>First of all, we define a <i>LinkList class</i> like so:</p><pre><code>public class LinkList {
+	
+	public Link firstLink;
+	
+	LinkList() {
+		firstLink = null;
+	}
+	
+	public boolean isEmpty() {
+		return(firstLink == null);
+	}
+	
+	public void insertFirstLink(String bookName) {
+		
+		Link newLink = new Link(bookName);
+		newLink.next = firstLink;
+		firstLink = newLink;
+		
+	}
+	
+	public Link removeFirst() {
+		
+		Link linkReference = firstLink;
+		
+		if (!isEmpty()) {
+			firstLink = firstLink.next;
+		} else {
+			System.out.println("Empty LinkedList");
+		}
+		
+		return linkReference;
+		
+	}
+	
+	public void display() {
+		
+		Link theLink = firstLink;
+		
+		while(theLink != null) {
+			
+			theLink.display();
+			System.out.println("Next link: " + theLink.next);
+			theLink = theLink.next;
+			System.out.println();
+			
+		}
+		
+	}
+	
+	public Link find(String bookName) {
+		
+		Link theLink = firstLink;
+		
+		if (!isEmpty()) {
+			
+			while(theLink.bookName != bookName ) {
+				
+				if (theLink.next == null) {
+					return null;
+				} else {
+					theLink = theLink.next;
+				}
+				
+			}
+			
+		} else {
+			System.out.println("Empty LinkedList");
+		}
+		
+		return theLink;
+		
+	}
+	
+	public Link removeLink(String bookName) {
+		
+		Link currentLink = firstLink;
+		Link previousLink = firstLink;
+		
+		while(currentLink.bookName != bookName ) {
+			
+			if (currentLink.next == null) {
+				return null;
+			} else {
+				previousLink = currentLink;
+				currentLink = currentLink.next;
+			}
+			
+		}
+		
+		if (currentLink == firstLink) {
+			firstLink = firstLink.next;
+		} else {
+			previousLink.next = currentLink.next;
+		}
+		
+		return currentLink;
+		
+	}
+	
+}</code></pre><p>Then we define a <i>Link class</i> and do some basic operations in the <i>main</i> just to illustrate our example:</p><pre><code>public class Link {
+	
+	public String bookName;
+	
+	public Link next;
+	
+	public Link(String bookName) {
+		this.bookName = bookName;
+	}
+	
+	public void display() {
+		System.out.println(bookName);
+	}
+	
+	public String toString() {
+		return bookName;
+	}
+	
+	public static void main(String[] args ) {
+		
+		LinkList theLinkedList = new LinkList();
+		
+		theLinkedList.insertFirstLink("2001 A Space Odyssey");
+		theLinkedList.insertFirstLink("Twenty Thousand Leagues Under the Sea");
+		theLinkedList.insertFirstLink("The Lord of the Rings");
+		theLinkedList.insertFirstLink("1984";
+		
+		theLinkedList.display();
+		theLinkedList.removeFirst();
+		theLinkedList.display();
+		
+		System.out.println(theLinkedList.find("The Lord of the Rings").bookName + " was found");
+		theLinkedList.removeLink("The Lord of the Rings");
+		theLinkedList.display();
+		
+	}
+	
+}</code></pre>
+

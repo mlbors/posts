@@ -1,0 +1,18 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159302658655/discovering-firebase">Discovering Firebase</a></h2>
+
+<p>Firebase is a mobile and web application platform that includes a real-time database. Let’s start using it with JS in a really simple manner.</p><p>First, we include Firebase in our project by using <i><a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F3.7.5%2Ffirebase.js&amp;t=N2ExNmVmMDQ1ZjkwYWZhOGM4MDZkN2UxYmRiOTQyYmQ0YWYxNWE4MCxDV1RMa0FHSQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F159302658655%2Fdiscovering-firebase&amp;m=1">https://www.gstatic.com/firebasejs/3.7.5/firebase.js</a></i></p><p>Now, let’s initialize the app!</p><pre><code>var firebaseConfig = {
+    apiKey: "apiKey",
+    authDomain: "yourProtectedID.firebaseapp.com",
+    databaseURL: "https://databasename.firebaseio.com",
+    storageBucket: "yourProtectedID.appspot.com",
+    messagingSenderId: "messagingSenderId"
+};
+
+var firebaseApp = firebase.initializeApp(firebaseConfig);
+var firebaseDatabase = firebaseApp.database();</code></pre><p>Then, because we’d like to retrieve some data, we create a reference to the query location, in the example, “posts”.</p><pre><code>var ref = firebaseDatabase.ref("posts");</code></pre><p>We can now retrieve data from “posts” like so:</p><pre><code>ref.on('value', function(data) {
+    doSomethingWithData(data.val());
+});</code></pre><p>The <i>on</i> method listens for changes permanently. If we need to listen only once, we can use the method <i>once</i> like this:</p><pre><code>ref.once('value').then(function(data) {
+    doSomethingWithData(item);
+});</code></pre><p>And now, let’s delete some data!</p><pre><code>firebaseDatabase.ref("posts").child(item.key).remove();</code></pre>
+

@@ -1,0 +1,50 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159638107370/prototype-proto-and-classes-with-js">prototype, __proto__ and classes with JS</a></h2>
+
+<p>Those aforementioned three words are relative to <i>JavaScript</i> and could sound very weird. Let’s try to understand them!</p><p><i>JavaScript’s</i> object system is based on <i>prototypes</i>, not <i>classes</i>. But what is the difference?</p><p>A <i>class</i> is like a blueprint. It is  a description of the object to be created. <i>Classes</i> inherit from classes and create subclass relationships.</p><p>A <i>prototype</i> is a working object instance. Objects inherit directly from other objects.</p><p>Every <i>JavaScript</i> object has a <i>prototype</i>. The <i>prototype</i> is also an object. All <i>JavaScript</i> objects inherit their properties and methods from their <i>prototype</i>. Objects created using an object literal, or with <i>new Object()</i>, inherit from a <i>prototype</i> called <i>Object.prototype</i>. The <i>Object.prototype</i> is on the top of the <i>prototype chain</i>.</p><pre><code>function talk() {
+  console.log(this.sound);
+}
+
+let animal() {
+  talk;
+}
+
+let cat() {
+  sound: "Dog"
+}
+
+let cat() {
+  sound: "Maouw"
+}
+
+Object.setPrototypeOf(dog, animal);
+Object.setPrototypeOf(cat, animal);
+
+dog.talk; //will output "Woof"
+cat.talk; //will output "Maouw"</code></pre><p>If we want to add a property or a method to the <i>prototype</i>, we can do it like so:</p><pre><code>Animal.prototype.name = "My pet"; 
+Animal.prototype.beNice = function() {
+    console.log("I am nice");
+};</code></pre><p>We can also use the <i>new</i> operator which will call a <i>constructor</i> function. A <i>constructor</i> could be any function. Basically, when a <i>constructor</i> function is called, the following things happen:</p><ul><li>A new object is created</li><li>The <i>constructor</i> property of the object is set</li><li>The object is set to delegate to the <i>prototype</i></li><li>The <i>prototype</i> is called in the context of the new object</li></ul><p>So, with a <i>constructor</i> function, we can use the <i>new</i> keyword to create new objects from the same <i>prototype</i>:</p><pre><code>function Animal(sound) {
+  this.sound = sound;
+
+  this.makeSound = function() {
+    console.log(this.sound);
+  }
+}
+
+var dog = new Animal("Woof");
+var cat = new Animal("Maouw"); 
+
+dog.makeSound(); //will output "Woof"
+cat.makeSound(); //will output "Maouw"</code></pre><p>Adding a new property to an existing object can be done like that:</p><pre><code>dog.color = "Brown";</code></pre><p>The property will be added to <i>dog</i>, not to <i>cat</i> and not to any other <i>Animal objects</i>.</p><p>Adding a new method to an existing object can be done this way:</p><pre><code>cat.playWithMouse = function () {
+    return "I am playing with a mouse!";
+};</code></pre><p>The method will only be added to <i>cat</i>.</p><p>Now, maybe you saw something like <i>__proto__</i> and asked what it is.</p><p><i>__proto__</i> is the actual object that is used in the lookup chain to resolve methods. It is a property that all objects have. This is the property which is used by the <i>JavaScript</i> engine for inheritance. According to <i>ECMA specifications</i> it is supposed to be an internal property, however most vendors allow it to be accessed and modified. The use of <i>__proto__</i> is controversial, and has been discouraged. It was never originally included in the <i>ECMA specifications</i>, but modern browsers decided to implement it anyway.</p><p><i>prototype</i> is a property belonging only to functions. It is used to build <i>__proto__</i> when the function happens to be used as a <i>constructor</i> with the <i>new</i> keyword.</p><p>So, where are the <i>classes</i>? In essence, a <i>JavaScript class</i> is just a Function object that serves as a <i>constructor</i> plus an attached <i>prototype</i> object Empty also referred as this. <i>Classes</i> in <i>ES6</i> don’t add any functionality to what we already have in the language, they are just a simpler syntax for building the same objects as we had before. The <i>class</i> syntax is not introducing a new object-oriented inheritance model to <i>JavaScript</i>. <i>JavaScript classes</i> provide a much simpler and clearer syntax to create objects and deal with inheritance.</p><pre><code>class Animal {
+    constructor(sound) {
+        this.sound = sound;
+    }
+
+    talk() {
+        console.log(this.sound);
+    }
+}</code></pre>
+

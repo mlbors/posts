@@ -1,0 +1,26 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159603253345/a-word-about-the-insertion-sort">A word about the insertion sort</a></h2>
+
+<p><i>Insertion sort</i> is a simple sorting algorithm that builds the final sorted array or list one item at a time.</p><p><i>The insertion</i> sort is relatively efficient for small lists and works as follows:</p><p>That’s why we called this algorithm “insertion sort”: we take a number from the pile and insert it in the array in its proper sorted position.</p><p>A concrete example could be when people manually sort cards in a bridge hand, most use a method that is similar to insertion sort.</p><p>Down below, you will find the pseudo-code of the <i>insertion sort</i> algorithm:</p><pre><code>for i = 1 to length(Array)
+    temp = Array[i]
+    j = i - 1
+    while j &gt;= 0 and Array[j] &gt; temp
+        Array[j+1] = A[j]
+        j = j - 1
+    end while
+    Array[j+1] = temp[4]
+ end for</code></pre><p>Let’s try a concrete implementation with <i>Ruby</i>:</p><pre><code>module InsertionSort
+  def self.sort(array)
+    1.upto(array.size - 1) do |i|
+      j = i
+      while j &gt; 0 &amp;&amp; array[j] &lt; array[j - 1]
+        array[j], array[j - 1] = array[j - 1], array[j]
+        j -= 1
+      end
+    end
+
+    return array
+
+  end
+end</code></pre><p><b>Runtime:</b></p><ul><li>Average: O(N)</li><li>Worst: O(N^2)</li></ul>
+

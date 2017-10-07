@@ -1,0 +1,216 @@
+<p>https://www.pexels.com/photo/abstract-art-blur-bulb-287748/</p>
+
+<p>In this article we are going to see how to build a really simple <em>Node.js</em> app and how to deploy it on <em>Heroku</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The project we are going to make is very simple. Its goal is to discover how to build a <em>Node.js</em> app quickly and how to deploy this last one on <em>Heroku</em>. It is going to be really straight forward and we are not going to use additional frameworks like <em>Express</em>. Our application is just going to be a timestamp microservice that we are going to be able to reach with something like <em>http://localhost:3000/September%2026,%202017</em> or <em>http://localhost:3000/1506384000</em> and it is going to return a human readable date and a timestamp. </p>
+
+<h2 id="whatisnodejs">What is Node.js?</h2>
+
+<p>If we go on <a href="https://nodejs.org/en/"><em>Node.js</em>'s official website</a>, we can read the following statement:</p>
+
+<p>"<em>Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js' package ecosystem, npm, is the largest ecosystem of open source libraries in the world.</em>"</p>
+
+<p>It can be tough to understand. We can simplify it like so: <em>Node.js</em> is an open source server framework that runs on various platforms and allows us to use <em>JavaScript</em> on the server side. This is a basic explanation, but we can get the picture.</p>
+
+<p>So, we are going to use <em>Node.js</em> to build a really simple application that we are going to deploy on <em>Heroku</em>.</p>
+
+<h2 id="whatisheroku">What is Heroku?</h2>
+
+<p><a href="https://www.heroku.com/"><em>Heroku</em>'s website</a> says things like so: "<em>Heroku is a platform as a service that enables developers to build, run, and operate applications entirely in the cloud</em>". In other words, with <em>Heroku</em>, we can simply push our code to a remote repository and everything we need to deploy our application will be run for us. The <em>Heroku</em> platform supports development in <em>Ruby on Rails</em>, <em>Java</em>, <em>Node.js</em>, <em>Python</em>, <em>Scala</em> and <em>Clojure</em>.</p>
+
+<p>In our small project, we are going to use the <em>Heroku</em> platform to deploy our application.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>To achieve our goal, we need to install a few things. Let's grab <a href="https://nodejs.org/en/"><em>Node</em> and <em>NPM</em></a> and <a href="https://git-scm.com/"><em>Git</em></a>. We also need an account on <a href="https://github.com/"><em>GitHub</em></a> and <a href="https://www.heroku.com/"><em>Heroku</em></a>. When it is done, we'll have to install <a href="https://devcenter.heroku.com/articles/heroku-cli"><em>Heroku CLI</em></a>.</p>
+
+<p>Now, let's build our app!</p>
+
+<h2 id="initializingourapp">Initializing our app</h2>
+
+<p>First, let's create a directory. We can then go into that last one. We now have to run the following command:</p>
+
+<pre><code>npm init
+</code></pre>
+
+<p><em>Initializing the project</em></p>
+
+<p>A few questions will be asked during the process. Our app is now in place.</p>
+
+<h2 id="pushingitongithub">Pushing it on GitHub</h2>
+
+<p>It is time to create a repository on GitHub. When it is done, in our directory, we can run the following commands:</p>
+
+<pre><code>git init
+git add .
+git commit -m "First commit"
+git remote add origin REPOSITORY
+git push -u origin master
+</code></pre>
+
+<p><em>Linking our code to our remote repository</em></p>
+
+<p>Our app is on <em>GitHub</em>. We can move to the next step!</p>
+
+<h2 id="finishingthecode">Finishing the code</h2>
+
+<p>In our file <em>package.json</em>, in the scripts section, let's add the following line:</p>
+
+<pre><code>"start": "node index.js"
+</code></pre>
+
+<p><em>Package.json file</em></p>
+
+<p>This line allows us to execute our application with the following command:</p>
+
+<pre><code>npm start
+</code></pre>
+
+<p><em>Running our app</em></p>
+
+<p>We are now going to create a file called <em>index.js</em> where we are going to put the following code:</p>
+
+<pre><code>const http = require('http')
+const url = require('url')
+
+const service = require('./service')
+
+const hostname = '0.0.0.0';
+const port = process.env.PORT || 3000
+
+const server = http.createServer((req, res) =&gt; {
+
+  if (req.method === 'GET') {
+
+    const path = url.parse(req.url).pathname.slice(1).replace(/%20/g, ' ')
+
+    res.writeHead(200, {'Content-Type': 'application/json'})    
+    res.write(JSON.stringify(service(path)));
+    res.end();
+
+  }
+
+}).listen(port, hostname, function(){
+  console.log('Server running at http://${' + hostname + '}:${' + port + '}/');
+})
+</code></pre>
+
+<p><em>index.js file</em></p>
+
+<p>With the first two lines, we import two core modules that we are going to use to create our server and to parse our URL. The <em>HTTP module</em> allows <em>Node.js</em> to transfer data over the <em>Hyper Text Transfer Protocol</em> while the <em>URL module</em> splits up a web address into readable parts. The next line imports another module that we will talk about later.</p>
+
+<p>The port that we listen to will be the one defined in the <em>environment variables</em> on <em>Heroku</em> or <em>3000</em>.</p>
+
+<p>Then, we create an <em>HTTP server</em> with a request handler function as parameters. We have access to two objects, <em>request</em> (req) and <em>response</em> (res).  </p>
+
+<p>After this, we check the method used for the request, get the <em>pathname</em> attribute from our <em>URL</em> and the set the headers before sending a response body in <em>JSON</em>. Then we just end the response.</p>
+
+<p>With <em>listen</em>, we bind a port and listen for incoming connections. It is important to note that the <em>listen</em> method needs to be called on the <em>server object</em>.</p>
+
+<p>Now, let's take a closer look at the service module. This just another file, called <em>service.js</em>, where we just export one function:</p>
+
+<pre><code>'use strict'
+
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+const isValidDate = date =&gt; {
+  return date.getTime() === date.getTime()
+} 
+
+const parseTimeStamp = timestamp =&gt; {
+  const date = new Date(timestamp)
+  return months[date.getMonth()] +  ' ' + date.getDate() + ', ' + date.getFullYear()
+}
+
+const fromTs = timestamp =&gt; {
+  return {unixtime: timestamp, natural: parseTimeStamp(timestamp*1000)}
+}
+
+const fromNatural = date =&gt; {
+  const ts = date.getTime()
+  return {unixtime: ts/1000, natural: parseTimeStamp(ts)}
+}
+
+const prepareDate = str =&gt; {
+  let output = {}
+
+  if (typeof str !== 'undefined' &amp;&amp; str !== '' &amp;&amp; str !== null) {
+
+    const input = parseInt(str)
+
+    if (isNaN(input)) {
+      const date = new Date(str)
+
+      if (isValidDate(date)) {
+        output = fromNatural(date)
+      } else {
+        output = {error: 'invalid date format'}
+      }
+
+    } else {
+      const pattern = /\d{10}/g
+      const regex = new RegExp(pattern)
+      let m
+      if ((m = regex.exec(input)) !== null) {
+        output = fromTs(input)
+      } else {
+        output = {error: 'invalid timestamp'}
+      }
+    }
+
+  }
+  return output
+}
+
+module.exports = prepareDate
+</code></pre>
+
+<p><em>service.js</em></p>
+
+<p>This is not a perfect code neither the cleanest, but it is just for the example. But in the end, it means that we can reach our application with something like <em>http://localhost:3000/September%2026,%202017</em> or <em>http://localhost:3000/1506384000</em> and it is going to return a human readable date and a timestamp.</p>
+
+<h2 id="preparing">Preparing</h2>
+
+<p>We now have to tell <em>Heroku</em> what command to execute to start our app. For that, we need to create a file called <em>Procfile</em> without extension. In this last one, we are simply going to place the following line:</p>
+
+<pre><code>web: node index.js
+</code></pre>
+
+<p><em>Procfile file</em></p>
+
+<h2 id="deployment">Deployment</h2>
+
+<p>Now, we can deploy our app on <em>Heroku</em>. In our directory, we have to run the following commands:</p>
+
+<pre><code>heroku login
+heroku create
+git push heroku master
+</code></pre>
+
+<p><em>Pushing our application</em></p>
+
+<p>The application is now deployed. We can ensure that at least one instance of the app is running like so:</p>
+
+<pre><code>heroku ps:scale web=1
+</code></pre>
+
+<p><em>Scaling our app</em></p>
+
+<p>We can now visit our app through our <em>Heroku</em> dashboard or with the next command:</p>
+
+<pre><code>heroku open
+</code></pre>
+
+<p><em>Opening our app</em></p>
+
+<p>In our dashboard, we can also set an additional option that will link our <em>GitHub</em> repository to Heroku and execute the deployment process every time we push something on our <em>master branch</em>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we saw how to install <em>Node.js</em> and how to initialize a simple application. We used core modules to create a really basic application to get more familiar with <em>Node.js</em>. We also deployed our code on <em>Heroku</em> in a very smooth way with just a few commands. As an aside note, we can say that we did not really use <em>NPM</em>, the package manager for <em>Node.js</em>. We used it just to initialize our app. That's why there's no <em>node</em>modules_ folder in our app directory. We could also do it with <em>Yarn</em> which is pretty close to <em>NPM</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

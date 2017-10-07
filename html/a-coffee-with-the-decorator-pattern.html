@@ -1,0 +1,71 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159862673400/a-coffee-with-the-decorator-pattern">A coffee with the Decorator pattern</a></h2>
+
+<p>The <i>Decorator pattern</i> is structural pattern that adds new functionality to class instances. Let’s have a coffee with it!</p><p>In plain words, the <i>Decorator pattern</i> lets you dynamically change the behavior of an object at run time by wrapping it in an object of a decorator class. <i>Decorators</i> provide a flexible alternative to subclassing for extending functionality.</p><p>Let’s make a quick and simple example with coffee and <i>PHP</i>!</p><p>First of all, we define a <i>CoffeeInterface</i>:</p><pre><code>interface CoffeeInterface
+{
+    public function getCost();
+    public function getDescription();
+}</code></pre><p>And now we create a <i>SimpleCoffee</i> class that implements the <i>CoffeeInterface</i>:</p><pre><code>class SimpleCoffee implements CoffeeInterface
+{
+    public function getCost()
+    {
+        return 10;
+    }
+
+    public function getDescription()
+    {
+        return 'Simple coffee';
+    }
+}</code></pre><p>But what would happen if we took a coffee with milk or with chocolate or with both? If we create a concrete implementation for each, it will be very tedious to manage. And how could we handle a thousand of different kinds of coffee? That is where we can use the <i>Decorator pattern</i>! With that pattern, we can easily manage a coffee with milk and chocolate or with something else.</p><p>So, we have a coffee with milk:</p><pre><code>class MilkCoffee implements CoffeeInterface
+{
+    protected $coffee;
+
+    public function __construct(CoffeeInterface $coffee)
+    {
+        $this-&gt;coffee = $coffee;
+    }
+
+    public function getCost()
+    {
+        return $this-&gt;coffee-&gt;getCost() + 2;
+    }
+
+    public function getDescription()
+    {
+        return $this-&gt;coffee-&gt;getDescription() . ', milk';
+    }
+}</code></pre><p>…and with chocolate:
+
+</p><pre><code>class ChocolateCoffee implements CoffeeInterface
+{
+    protected $coffee;
+
+    public function __construct(CoffeeInterface $coffee)
+    {
+        $this-&gt;coffee = $coffee;
+    }
+
+    public function getCost()
+    {
+        return $this-&gt;coffee-&gt;getCost() + 4;
+    }
+
+    public function getDescription()
+    {
+        return $this-&gt;coffee-&gt;getDescription() . ', chocolate';
+    }
+}</code></pre><p>And we use them like so:</p><pre><code>//A simple coffee
+$someCoffee = new SimpleCoffee();
+echo $someCoffee-&gt;getCost();
+echo $someCoffee-&gt;getDescription();
+
+//A coffee with milk
+$someCoffee = new MilkCoffee($someCoffee);
+echo $someCoffee-&gt;getCost();
+echo $someCoffee-&gt;getDescription();
+
+//A coffee with milk and chocolate
+$someCoffee = new ChocolateCoffee($someCoffee);
+echo $someCoffee-&gt;getCost();
+echo $someCoffee-&gt;getDescription();</code></pre>
+

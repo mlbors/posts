@@ -1,0 +1,261 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/160471409055/angular-2-travis-ci-coveralls-and-open-sauce">Angular 2, Travis CI, Coveralls and Open Sauce</a></h2>
+
+<p>In this post, we are going to see how we can make an <i>Angular 2</i> app work with <i>Travis CI</i>, <i>Coveralls</i> and <i>Open Sauce</i>.</p><p>In a previous post, we saw how to set up a <i>PHP</i> project using <i>Travis CI</i>, <i>StyleCI</i> and <i>Codecov</i>. We are now going to do quite the same, but with a small <i>Angular 2</i> app. Our purpose here is to test our app under multiple environments on each commit.</p><p>So the first thing we need to do is to sign up for a <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2F&amp;t=NWU1NjA1NGQwZThjZGIzMzBhYThhMGVkMzg4NzVjOTVjNTQzNGMyNixTMDBCaDUycQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160471409055%2Fangular-2-travis-ci-coveralls-and-open-sauce&amp;m=1"><i>GitHub</i></a> account, then we will have access to <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fcoveralls.io%2F&amp;t=MzYxOGRlMWM0YWZhZTRkNDFlZTEzMWViMjdmOTY3YjJlMWQxYTgyMCxTMDBCaDUycQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160471409055%2Fangular-2-travis-ci-coveralls-and-open-sauce&amp;m=1"><i>Coveralls</i></a> with that same account. The next thing is to open another account on <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fsaucelabs.com%2Fopen-source&amp;t=NTMzY2E3M2I4NzdlZDcxYzY1YzYzMDVkNzE0MWY5ZGM0MDZhZDc1MCxTMDBCaDUycQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160471409055%2Fangular-2-travis-ci-coveralls-and-open-sauce&amp;m=1"><i>Open Sauce</i></a>. We are now ready to begin! Let’s create our repository, commit and push!</p><p>To achieve our goal, it is important that our project runs with <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2Fangular%2Fangular-cli&amp;t=MTJkNDliYjE0NTI3ZmNhZjM1NDUxMzEzM2Y2ZDI0MDg2ODNkZTc0OCxTMDBCaDUycQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160471409055%2Fangular-2-travis-ci-coveralls-and-open-sauce&amp;m=1"><i>angular-cli</i></a>. We are going to assume that is the case and that <i>Git</i> is also installed.</p><h2>Dependencies</h2><p>For a start, we need to install several dependencies with <i>NPM</i>. Let’s do it like so in the terminal:</p><pre><code>npm install karma-coverage karma-coveralls karma-firefox-launcher angular-cli-ghpages --save-dev</code></pre><p><small><i>Install dependencies</i></small></p><p>With that last command, we installed <i>karma-coverage</i> that is responsible for code instrumentation and <i>coverage reporting</i>. <i>karma-coveralls</i> will help us to transmit the report to <i>Coveralls</i>. <i>karma-firefox-launcher</i> is a <i>Karma</i> plugin that will help us with our tests. Finally, <i>angular-cli-ghpages</i> will help us to deploy our app on <i>GitHub Pages</i>.</p><h2>Karma</h2><p>Now we need to set a few things in the <i>karma.conf.js</i> file that is included in the root of our folder. The file will look like so:</p><pre><code>module.exports = function (config) {
+  config.set({
+    basePath: '',
+    frameworks: ['jasmine', '@angular/cli'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
+      require('@angular/cli/plugins/karma'),
+      require('karma-coverage')
+    ],
+    client:{
+      clearContext: false // leave Jasmine Spec Runner output visible in browser
+    },
+    files: [
+      { pattern: './src/test.ts', watched: false }
+    ],
+    preprocessors: {
+      'dist/app/**/!(*spec).js': ['coverage'],
+      './src/test.ts': ['@angular/cli']
+    },
+    mime: {
+      'text/x-typescript': ['ts','tsx']
+    },
+    coverageReporter: {
+      dir : 'coverage/',
+        reporters: [
+          { type: 'html' },
+          { type: 'lcov' }
+        ]
+    },
+    angularCli: {
+      config: './angular-cli.json',
+      codeCoverage: 'coverage',
+      environment: 'dev'
+    },
+    reporters: config.angularCli &amp;&amp; config.angularCli.codeCoverage
+              ? ['progress', 'coverage']
+              : ['progress'],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ['Chrome', 'Firefox'],
+    singleRun: false
+  });
+};</code></pre><p><small><i>karma.conf.js file</i></small></p><p><i>Karma</i> is a test runner that is ideal for writing and running <i>unit tests</i> while developing the application.</p><h2>Protractor</h2><p>We are now going to configure <i>Protractor</i> for <i>e2e testing</i>. There is already a file for that in the root of our folder, but is only suitable for local tests with a single browser. Let’s create a new one a folder called <i>config</i>. We will name that file <i>protractor.sauce.conf.js</i> and it will be like the following:</p><pre><code>var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
+
+var buildNumber = 'travis-build#'+process.env.TRAVIS_BUILD_NUMBER;
+
+exports.config = {
+  sauceUser: process.env.SAUCE_USERNAME,
+  sauceKey: process.env.SAUCE_ACCESS_KEY,
+  allScriptsTimeout: 72000,
+  getPageTimeout: 72000,
+  specs: [
+    '../dist/out-tsc-e2e/**/*.e2e-spec.js',
+    '../dist/out-tsc-e2e/**/*.po.js'
+  ],
+  multiCapabilities: [
+    {
+      browserName: 'safari',
+      platform: 'macOS 10.12',
+      name: "safari-osx-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'chrome',
+      platform: 'Linux',
+      name: "chrome-linux-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'chrome',
+      platform: 'macOS 10.12',
+      name: "chrome-macos-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'chrome',
+      platform: 'Windows 10',
+      name: "chrome-latest-windows-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'firefox',
+      platform: 'Linux',
+      name: "firefox-linux-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'firefox',
+      platform: 'macOS 10.12',
+      name: "firefox-macos-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'firefox',
+      platform: 'Windows 10',
+      name: "firefox-latest-windows-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'internet explorer',
+      platform: 'Windows 10',
+      name: "ie-latest-windows-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    },
+    {
+      browserName: 'MicrosoftEdge',
+      platform: 'Windows 10',
+      name: "edge-latest-windows-tests",
+      shardTestFiles: true,
+      maxInstances: 5
+    }
+  ],
+  sauceBuild: buildNumber,
+  directConnect: false,
+  baseUrl: 'YOUR_GITHUB_PAGE',
+  framework: 'jasmine',
+  jasmineNodeOpts: {
+    showColors: true,
+    defaultTimeoutInterval: 360000,
+    print: function() {}
+  },
+  useAllAngular2AppRoots: true,
+  beforeLaunch: function() {
+    require('ts-node').register({
+      project: 'e2e'
+    });
+  },
+  onPrepare: function() {
+    jasmine.getEnv().addReporter(new SpecReporter());
+  }
+};</code></pre><p><small><i>protractor.sauce.conf.js file</i></small></p><p>We can notice that there are two environment values: <i>SAUCE_USERNAME</i> and <i>SAUCE_ACCESS_KEY</i>. We can set theses values in our <i>Travis CI</i> account in the settings sections of our project. The information can be found in our <i>Sauce Labs</i> account settings.</p><p><i>Protractor</i> is an <i>end-to-end</i> test framework for <i>Angular</i>. <i>Protractor</i> runs tests against our application running in a real browser, interacting with it as a user would.</p><h2>e2e configuration</h2><p>In the <i>e2e</i> folder of our application, we need to place a file called <i>tsconfig.json</i>.</p><pre><code>{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../dist/out-tsc-e2e",
+    "sourceMap": true,
+    "target": "es5",
+    "typeRoots": [
+      "../node_modules/@types"
+    ]
+  }
+}</code></pre><p><small><i>tsconfig.json file in e2e folder</i></small></p><p>We also need to place a similar file at the root of our application.</p><pre><code>{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "baseUrl": "src",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2016",
+      "dom"
+    ]
+  }
+}</code></pre><p><small><i>tsconfig.json file</i></small></p><p><i>End-to-end</i> (e2e) tests explore the application as users experience it. In <i>e2e</i> testing, one process runs the real application and a second process runs <i>Protractor</i> tests that simulate user behavior and assert that the application respond in the browser as expected.</p><h2>Coveralls</h2><p>In our folder, we are now going to create a file called <i>.coverall.yml</i> with the token corresponding to our respository that can be found in our <i>Coveralls</i> account.</p><pre><code>repo_token: YOUR_TOKEN</code></pre><p><small><i>.coverall.yml file</i></small></p><h2>Travis CI</h2><p>Now it is time to tell <i>Travis CI</i> what to do with our files. Let’s create a file called <i>.travis.yml</i> and fill it like so:</p><pre><code>language: node_js
+sudo: true
+dist: trusty
+
+node_js:
+  - '6'
+
+branches:
+    only:
+        - master
+
+env:
+    global:
+        - CHROME_BIN=/usr/bin/google-chrome
+        - DISPLAY=:99.0
+
+cache:
+  directories:
+     - node_modules
+
+before_install:
+     - ./scripts/install-dependencies.sh
+     - ./scripts/setup-github-access.sh
+
+after_success:
+    - ./scripts/delete-gh-pages.sh
+    - git status
+    - npm run build-gh-pages
+    - npm run deploy-gh-pages
+    - git checkout master
+    - sleep 10
+    - tsc -p e2e
+    - npm run e2e ./config/protractor.sauce.conf.js
+
+notifications:
+email: false</code></pre><p><small><i>.travis.yml file</i></small></p><h2>GitHub Token</h2><p>Before we go any further, we need to create an access token on our <i>GitHub</i> account. We can do that in the settings of our account.</p><h2>Scripts</h2><p>In the previous section, we told <i>Travis CI</i> to use three <i>bash</i> scripts: <i>install-dependencies.sh</i>, <i>setup-github-access.sh</i> and <i>delete-gh-pages.sh</i>. We are now going to create a folder called <i>scripts</i> and create those three different scripts like so:</p><p>The first script, as its name lets us figure out, just install our dependencies.</p><pre><code>#!/bin/bash
+
+export CHROME_BIN=/usr/bin/google-chrome
+export DISPLAY=:99.0
+
+#Install chrome stable version
+sh -e /etc/init.d/xvfb start
+sudo apt-get update
+sudo apt-get install -y libappindicator1 fonts-liberation
+wget <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fdl.google.com%2Flinux%2Fdirect%2Fgoogle-chrome-stable_current_amd64.deb&amp;t=ZGI4NTY4MDMwYzcwOGJiYTgyODQzNjU2YjljYTUwNWI2ZDQ2OGRjNixTMDBCaDUycQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160471409055%2Fangular-2-travis-ci-coveralls-and-open-sauce&amp;m=1">https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb</a>
+
+sudo dpkg -i google-chrome*.deb
+
+rm -f google-chrome-stable_current_amd64.deb</code></pre><p><small><i>install-dependencies.sh file</i></small></p><p>The second script ensures that we can access to our <i>GitHub</i> repository during the build. We can see in this script that a variable called <i>$GH_TOKEN</i> is used. This environment variable can be set in <i>Travis CI</i> by clicking on Settings in our repositories list.</p><pre><code>#!/bin/bash
+set -e
+echo "machine github.com" &gt;&gt; ~/.netrc
+echo "login your@email.com" &gt;&gt; ~/.netrc
+echo "password $GITHUB_TOKEN" &gt;&gt; ~/.netrc</code></pre><p><small><i>setup-github-access.sh file</i></small></p><p>The last script deletes the branch <i>gh-pages</i> to let us deploy our app on <i>GitHub Pages</i> (we can’t do it if the branch is already here).</p><pre><code>#!/bin/bash
+set -e
+
+git ls-remote --heads | grep gh-pages &gt; /dev/null
+
+if [ "$?" == "0" ]; then
+  git push origin --delete gh-pages
+fi</code></pre><p><small><i>delete-gh-pages.sh file</i></small></p><p>Now, we need to tell <i>GitHub</i> and <i>Travis CI</i> that these files are executable. We can do that with the following command:</p><pre><code>chmod +x the_file</code></pre><p><small><i>Git command to change chmod</i></small></p><p>Perhaps the following command may also be needed:</p><pre><code>git update-index --chmod=+x the_file</code></pre><p><small><i>Git command to update index</i></small></p><h2>package.json</h2><p>We now have to make a few adjustments in our <i>package.json</i> file, more specifically, in the scripts section. We can see that use once again the <i>$GH_TOKEN</i> variable.</p><pre><code>"scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test --code-coverage true --watch false &amp;&amp; cat ./coverage/*/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "lint": "ng lint",
+    "pree2e": "webdriver-manager update --standalone false --gecko false",
+    "e2e": "protractor",
+    "build-gh-pages": "ng build --prod --base-href \"/YOUR_REPOSITORY/\"",
+    "deploy-gh-pages": "angular-cli-ghpages --repo=https://GH_TOKEN@github.com/YOUR_USERNAME/YOUR_REPOSITORY.git --name=YOUR_USERNAME --email=YOUR_EMAIL"
+}</code></pre><p><small><i>package.json file</i></small></p><h2>app.po.ts</h2><p>We need to make one last adjustment in the file called <i>app.po.ts</i> that we can find in the <i>e2e</i> folder. Let’s make it like so:</p><pre><code>import { browser, element, by } from 'protractor';
+
+export class BookreaderPage {
+  navigateTo() {
+    browser.ignoreSynchronization = true;
+    return browser.get(browser.baseUrl);
+  }
+
+  getParagraphText() {
+    return element(by.css('app-root h1')).getText();
+  }
+}</code></pre><p><small><i>app.po.ts file</i></small></p><h2>Here we go!</h2><p>Now, we can push (again) our files and, if everything is alright, the magic will happen! We just have to check <i>Travis CI</i>, <i>Coveralls</i> and <i>Sauce Labs</i>.</p>
+

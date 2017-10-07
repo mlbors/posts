@@ -1,0 +1,257 @@
+<p>Through this article, we are going to take a look at the data structure called <em>Hash Table</em>.</p>
+
+<h2 id="hashtable">Hash Table</h2>
+
+<p>A <em>Hash Table</em> is a data structure that stores data in an associative manner. It is made up of two parts: an array, where the data is stored, and a <em>Hash Function</em> which is a mapping function. Basically, a <em>Hash Function</em> is a function that takes things from one space and maps them to a space for indexing.</p>
+
+<p>A <em>Hash Table</em> is used to implement structures such as <em>dictionary</em>, <em>map</em>, or <em>associative array</em> and it is a data structure in which insertion and search operations are very fast.</p>
+
+<p>The idea behind a <em>Hash Table</em> is that for each element we want to store, we calculate a unique address and we put the value at this index in the array. When we need to find a value, we once again calculate its index and then return the value. In other words, a <em>Hash Table</em> allows us to store and retrieve objects by key.</p>
+
+<p>A <em>Hash Table</em> is an array and initially, this array is empty. When we want to put a value into the <em>Hash Table</em> under a certain key, that key will be used to compute an index in the array. We can see it like so:</p>
+
+<pre><code>hashTable["firstName"] = "John"
+
+    hashTable array:
+    +--------------+
+    | 0:           |
+    +--------------+
+    | 1:           |
+    +--------------+
+    | 2: firstName | ---&gt; John
+    +--------------+
+    | 3:           |
+    +--------------+
+    | 4:           |
+    +--------------+
+</code></pre>
+
+<p>Here, the key is "<em>firstName</em>" and it maps to index <em>2</em>. It means that our <em>Hash Table</em> asked for the index of the key "<em>firstName</em>" and the <em>Hash Function</em> returned <em>2</em>. We can see it like so:</p>
+
+<pre><code>key ---&gt; HASH FUNCTION --&gt; array_index
+</code></pre>
+
+<h2 id="hashfunction">Hash Function</h2>
+
+<p><em>Hashing</em> is a technique that lets us convert a range of key values into a range of indexes of an array. The values returned by a <em>Hash Function</em> are called <em>Hash Values</em>. There are multiple ways for constructing a <em>Hash Function</em> but it is important that the function has some basic requirements:</p>
+
+<ul>
+<li>The <em>Hash Value</em> is fully determined by the data being hashed and it should be easy to compute</li>
+
+<li>The <em>Hash Function</em> uses all the input data</li>
+
+<li>The <em>Hash Function</em> should provide a uniform distribution across the <em>Hash Table</em></li>
+
+<li>The <em>Hash Function</em> generates very different <em>Hash Values</em> for similar strings</li>
+</ul>
+
+<h2 id="solvingcollisions">Solving collisions</h2>
+
+<p>Let's say that our <em>Hash Function</em> will compute the index of a specific string by summing the <em>ASCII</em> values of the characters modulo <em>373</em> (that is a prime number). Our set of string will be <em>{"abcdef", "bcdefa", "cdefab" , "defabc"}</em>. Knowing that the <em>ASCII</em> values of <em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>, <em>e</em>, and <em>f</em> are <em>97</em>, <em>98</em>, <em>99</em>, <em>100</em>, <em>101</em>, and <em>102</em>, our addition will always give us the same result (<em>597</em>) just like the operation <em>597%373</em>.</p>
+
+<p>When different elements get the same <em>Hash Value</em>, it is a called a <em>collision</em>. So, how can we handle such a situation? The two most popular ways to solve this are called <em>Chaining</em> and <em>Open Addressing</em>.</p>
+
+<h3 id="chaining">Chaining</h3>
+
+<p>When we use this method, we just use a <em>Linked List</em> and put all the values with the same <em>Hash Value</em> into it and so the <em>Hash Table</em> becomes an array of <em>Linked Lists</em>.</p>
+
+<h3 id="openaddressing">Open Addressing</h3>
+
+<p>Also called <em>Linear Probing</em>, when we use this method and we want to add a new entry, the <em>Hash Index</em> of the <em>Hashed Value</em> is computed and then the array is examined. If the slot is empty, then the value is inserted. If not, we calculate another <em>Hash Value</em> and check that slot and we continue until a place for the value is found. The probe sequence will be like so:</p>
+
+<pre><code>index = index % hashTableSize
+index = (index + 1) % hashTableSize
+index = (index + 2) % hashTableSize
+index = (index + 3) % hashTableSize
+...
+</code></pre>
+
+<h3 id="quadraticprobing">Quadratic Probing</h3>
+
+<p><em>Quadratic Probing</em> is similar to <em>Linear Probing</em> but the difference is the interval between successive probes. With <em>Quadratic Probing</em>, the sequence would be something like this:</p>
+
+<pre><code>index = index % hashTableSize
+index = (index + 1^2) % hashTableSize
+index = (index + 2^2) % hashTableSize
+index = (index + 3^2) % hashTableSize
+...
+</code></pre>
+
+<h3 id="doublehashing">Double Hashing</h3>
+
+<p><em>Double Hashing</em> works on a similar idea to <em>Linear</em> and <em>Quadratic Probing</em>. The difference is that a second <em>Hash Function</em> is used to determine the location of the next empty slot. The sequence would look like this:</p>
+
+<pre><code>index = (h1(key) + 1 * h2(key)) % hashTableSize;
+index = (h1(key) + 2 * h2(key)) % hashTableSize;
+index = (h1(key) + 3 * h2(key)) % hashTableSize;
+...
+</code></pre>
+
+<h2 id="basicexamples">Basic Examples</h2>
+
+<p>Knowing what we know, it is time to make really simple examples using <em>Java</em>.</p>
+
+<h3 id="linearprobing">Linear Probing</h3>
+
+<p>First, let's define a class for the <em>Entry</em>:</p>
+
+<pre><code>public class HashEntry {
+
+    private int key;
+    private int value;
+
+    HashEntry(int key, int value) {
+            this.key = key;
+            this.value = value;
+    }
+
+    public int getKey() {
+            return key;
+    }
+
+    public int getValue() {
+            return value;
+    }
+}
+</code></pre>
+
+<p>And now, let's create our <em>Hash Table</em>:</p>
+
+<pre><code>public class HashTable {
+
+    private final static int TABLE_SIZE = 64;
+
+    HashEntry[] table;
+
+    HashTable() {
+        table = new HashEntry[TABLE_SIZE];
+        for (int i = 0; i &lt; TABLE_SIZE; i++) {
+            table[i] = null;
+        }
+    }
+
+    public int get(int key) {
+        int hash = (key % TABLE_SIZE);
+
+        while (table[hash] != null &amp;&amp; table[hash].getKey() != key) {
+            hash = (hash + 1) % TABLE_SIZE;
+        }
+
+        if (table[hash] == null) {
+            return -1;
+        } else {
+            return table[hash].getValue();
+        }
+    }
+
+    public void put(int key, int value) {
+        int hash = (key % TABLE_SIZE);
+
+        while (table[hash] != null &amp;&amp; table[hash].getKey() != key) {
+            hash = (hash + 1) % TABLE_SIZE;
+        }
+        table[hash] = new HashEntry(key, value);
+    }
+}
+</code></pre>
+
+<h3 id="chaining-1">Chaining</h3>
+
+<p>First, we define the <em>Nodes</em> of our <em>Linked List</em>.</p>
+
+<pre><code>public class HashNode {
+
+    private int key;
+    private int value;
+    private HashNode next;
+
+    HashNode(int key, int value) {
+        this.key = key;
+        this.value = value;
+        this.next = null;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public int getKey() {
+        return key;
+    }
+
+    public HashNode getNext() {
+        return next;
+    }
+
+    public void setNext(HashNode next) {
+        this.next = next;
+    }
+}
+</code></pre>
+
+<p>Now, let's create our <em>Hash Table</em>:</p>
+
+<pre><code>public class HashTable {
+
+    private final static int TABLE_SIZE = 64;
+
+    HashNode[] table;
+
+    HashTable() {
+        table = new HashNode[TABLE_SIZE];
+        for (int i = 0; i &lt; TABLE_SIZE; i++) {
+            table[i] = null;
+        }
+    }
+
+    public int get(int key) {
+        int hash = (key % TABLE_SIZE);
+
+        if (table[hash] == null) {
+            return -1;
+        } else {
+            HashNode entry = table[hash];
+
+            while (entry != null &amp;&amp; entry.getKey() != key) {
+                entry = entry.getNext();
+            }
+
+            if (entry == null) {
+                return -1;
+            } else {
+                return entry.getValue();
+            }
+        }
+    }
+
+    public void put(int key, int value) {
+        int hash = (key % TABLE_SIZE);
+
+        if (table[hash] == null) {
+            table[hash] = new HashNode(key, value);
+        } else {
+
+            HashNode entry = table[hash];
+
+            while (entry.getNext() != null &amp;&amp; entry.getKey() != key) {
+                entry = entry.getNext();
+            }
+
+            if (entry.getKey() == key) {
+                entry.setValue(value);
+            } else {
+                entry.setNext(new HashNode(key, value));
+            }
+        }
+
+    }
+}
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw what are <em>Hash Tables</em>, how they work and what problem we could have when we use them. It is also good to know that there are many existing well-tested <em>Hash Functions</em> that we can rely on.</p>

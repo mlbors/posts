@@ -1,0 +1,111 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/160147478990/first-steps-with-continuous-integration">First steps with continuous integration</a></h2>
+
+<p>In this post, we are going to overview some tools to use <i>continuous integration</i>.</p><p><i>Continuous integration</i> (CI) is a development practice that requires developers to integrate code into a shared <i>repository</i> several times a day. Each check-in is then verified by an <i>automated build</i>, allowing teams to detect problems early. <i>CI</i> originated from within the <i>extreme programming paradigm</i>, but the principles can be applied to any <i>iterative programming</i> model, such as <i>agile programming</i>.</p><p>There are many tools that we can use and one of the most famous is probably <i>Jenkins</i>, written in <i>Java</i>. But we are not going to talk about <i>Jenkins</i> in this post. Instead, we are going to generate a really small project with some other tools. For that, we need <i>Git, Ruby, PHP, Composer, PHPUnit, PHP-CS-Fixer, GitHub, Travis, StyleCI</i> and <i>Codecov</i>. We may think that is a lot of stuff, but there is no reason to be afraid.</p><h2>Definitions</h2><p>First of all, a few and short definitions!</p><p><b>Git</b></p><p><i>Git</i> is a free and open source distributed version software for tracking changes in computer files and coordinating work on those files among multiple people. It was created by <i>Linus Torvalds</i>.</p><p><b>GitHub</b></p><p><i>GitHub</i> is a <i>web-based Git</i> that got a mascot called <i>Octocat</i>, a cat with five tentacles and a human-like face. It was created by <i>Chris Wanstrath, PJ Hyett</i> and <i>Tom Preston-Werner</i>.</p><p><b>Ruby</b></p><p>A famous programming language. We will need it to install <i>gems</i> (Ruby Libraries).
+
+</p><p><b>PHP</b></p><p>Another famous programming language. We will create our project with it.</p><p><b>Composer</b></p><p>A dependency manager for <i>PHP</i> that was initially developed by <i>Nils Adermann</i> and <i>Jordi Boggiano</i>.</p><p><b>PHPUnit</b></p><p>A framework for <i>unit testing<i> for <i>PHP</i> created by <i>Sebastian Bergmann</i>.</i></i></p><p><i><i></i></i></p><p><b>PHP-CS-Fixer</b></p><p>A tool to automatically fix <i>PHP</i> coding standards issues.</p><p><b>Travis CI</b></p><p>A <i>continuous integration</i> service used to build and test software projects hosted at <i>GitHub</i>.</p><p><b>StyleCI</b></p><p><i>StyleCI</i> makes sure that all code on our <i>PHP</i> project is written to a consistent standard.</p><p><b>Codecov</b></p><p><i>Codecov</i> provides metrics and insights into the results of tests through <i>code coverage</i>.</p><p>For the sake of this article, we are not going to discuss here about <i>test driven development</i> (TDD), how to write good and efficient tests and things like that. These are other subjects. The aim of this post is to see how to install and use all of those tools.</p><h2>Installation</h2><p><b>Composer</b></p><p>Installing <i>Composer</i> is really easy. We just have to go to <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgetcomposer.org%2Fdownload%2F&amp;t=NTUxZjQwYTE0NzA1YWYyNzg1MzUxNWJjMTg1MWY5YzcxZWZiMjQ2MixoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://getcomposer.org/download/</a> and follow the instructions. On <i>Windows</i>, there is an installer.</p><p><b>PHPUnit</b></p><p>Again, we have to go to <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fphpunit.de%2Fmanual%2Fcurrent%2Fen%2Finstallation.html&amp;t=NGUxZTJmMTY2M2JhYzVmNTgwMmRlNzYyOGI2ODg1Y2VhMDlhN2E0MixoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://phpunit.de/manual/current/en/installation.html</a> and follow the instructions. On <i>Windows</i>, globally install <i>PHPUnit</i> is a bit trickier.</p><p><b>Ruby</b></p><p>On a <i>Linux</i> system and on <i>macOS</i>, <i>Ruby</i> is already here. On <i>Windows</i>, we have to download the installer from <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Frubyinstaller.org%2Fdownloads%2F&amp;t=Y2M0MDA4MWExZjdkN2FmYmE3ODAwM2M0MzkzMWUxMGYwNTNjMWM4NixoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://rubyinstaller.org/downloads/.</a></p><p><b>Git</b></p><p>We just need to go here <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgit-scm.com%2Fdownloads&amp;t=YTAxMjJmNzVlMDIxNjhhMGM2ZDZiMzIxNDgzMDIwMzNhNTRhNGYyMyxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://git-scm.com/downloads</a> and follow the instructions.</p><p><b>PHP-CS-Fixer</b></p><p>On a <i>Linux</i> system and on <i>macOS</i>, we can globally install <i>PHP-CS-Fixer</i> by following the instructions written here <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2FFriendsOfPHP%2FPHP-CS-Fixer&amp;t=NjgwOThmZjA5OTMyY2NlYWFlN2ExNjcxM2ZlZjNjY2U1OTMyZTk5ZSxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://github.com/FriendsOfPHP/PHP-CS-Fixer</a>.</p><p><b>GitHub, Travis CI, StyleCI, Codecov</b></p><p>We just have to go on <i>GitHub</i> (<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2F&amp;t=NjdlYzYxYTVlYTI3YTk2MjFhMzY5YmQ2YWQwNDY3MWJjOGQxZWQwNSxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://github.com/</a>) and create an account. We will then have access to <i>Travis CI</i> (<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Ftravis-ci.org%2F&amp;t=YmE4N2M0Njk4MGM0Y2RjOTExNmNiNTQ3ZTIzZWEyZGY0MmM0MmM4YixoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://travis-ci.org/</a>), <i>StyleCI</i> (<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fstyleci.io%2F&amp;t=ZDUyZjBiMzI3OTk1YzEyNmYzMzM3OTk2YmE0ZjMwOGJhNTI1MzVhZCxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://styleci.io/</a>) and <i>Codecov</i> (<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fcodecov.io&amp;t=ZDQ2N2Q1ODU3ZmUwN2ZhNDljZTdmYWQ3ZTE5YmQ1NzI3NDEyNGNiOCxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://codecov.io</a>) with that same account.</p><p><b>Travis gem</b></p><p>The <i>gem</i> can be install by doing the following command in the terminal:</p><pre><code>gem install travis</code></pre><h2>Setting up the project</h2><p>Now that we have all our new tools, we can move to the next step and set up our project.</p><p><b>Composer</b></p><p>The first thing we need to do is to create a <i>composer.json</i> file at the root of our project. We can create it manually or by doing the following command:</p><pre><code>composer init</code></pre><p><small><i>Command</i></small></p><pre><code>{
+    "name": "mlbors/simple-travis-codevoc-styleci",
+    "description": "Simple project using Composer, PHPUnit, Travis, Codecov, PHP-CS-Fixer and StyleCI",
+    "license": "MIT",
+    "require": {
+        "php": "&gt;=5.6",
+        "ext-curl": "*",
+        "friendsofphp/php-cs-fixer": "2.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.7.*",
+        "vlucas/phpdotenv": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "mlbors\\SimpleApp\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "mlbors\\SimpleApp\\Tests\\": "tests/"
+        }
+    },
+    "homepage": "https://github.com/mlbors/simple-travis-codevoc-styleci",
+    "authors": [ 
+        {
+            "name": "mlbors",
+            "email": "matyas.bors@gmail.com",
+            "homepage": "http://www.mlbors.com/"
+
+        }
+    ]
+
+}</code></pre><p><small><i>composer.json file</i></small></p><p>In the above example, in the <i>require</i> section, we say that we need <i>PHP 5.6</i> or higher, <i>Curl</i> and <i>PHP-CS-Fixer</i>. In <i>require-dev</i>, we have <i>PHPUnit</i> and <i>PHPDotEnv</i>. In the <i>autoload</i> and <i>autoload-dev</i> sections, we say that we use the <i>PSR-4</i> standard and how our namespaces will be.</p><p>It is time to do the following commands to install and generate the <i>autoload</i>:</p><pre><code>composer install
+composer dump‑autoload -o</code></pre><p><b>GitHub</b></p><p>First of all, we create two files: <i>.gitignore</i> and <i>.gitattributes</i>.</p><pre><code>/vendor
+/node_modules
+.env
+.php_cs.cache
+composer.lock
+npm-debug.log</code></pre><p><small><i>.gitignore file</i></small></p><pre><code>/.gitattributes export-ignore  
+/.gitignore export-ignore
+/phpunit.xml export-ignore
+/.env export-ignore
+/.env.example export-ignore</code></pre><p><small><i>.gitattributes file</i></small></p><p>Then, we go on <i>GitHub</i> and create a new <i>repository</i>. Then, on our system, at the root of our project, we do the following commands:</p><pre><code>git init
+git add .
+git commit –m "First commit"
+git remote add origin <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2Fuser%2Frepository.git&amp;t=MGM0NWM0MWU2ZjRmNGUwZjgwMDNiMzcxMGZkMWRiOTJjMTk2YWM1YSxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://github.com/user/repository.git</a>
+git push –u origin master</code></pre><p><small>Replace <i>user</i> and <i>repository</i> by your username and your repository</small></p><p>Now we can go on <i>Travis CI</i>, <i>StyleCI</i> and <i>Codecov</i> and link our <i>repository</i> to those services.</p><p><b>StyleCI</b></p><p>Now, at the root of our project, we create the <i>styleci.yml</i> that will tell <i>StyleCI</i> file which rules we use.</p><pre><code>preset: psr1</code></pre><p><small><i>.styleci.yml file</i></small></p><p><b>.env File</b></p><p>The <i>.env</i> file allows us to place some values that we do not want to appear in our code. In our example, we can load them with <i>PHPDotEnv</i>. The <i>.env</i> file will be ignored by <i>Git</i> but we can create a <i>.envexample</i> file with fake values just to tell the world that we need a <i>.env</i> file.</p><pre><code>SIMPLE_KEY="someValue"</code></pre><p><small><i>.env file</i></small></p><p><b>Travis CI</b></p><p>Now we can create the <i>.travis</i> file that will tell <i>Travis CI</i> what to do with our files. We can also include critical values in that file, for example, the ones that are in the <i>.env</i> file, by encrypting them like so:</p><pre><code>travis encrypt SOMEVAR=secretvalue</code></pre><p><small><i>Command</i></small></p><pre><code>language: php
+php:
+- 5.6
+- 7.0
+install:
+- sudo pip install codecov
+before_script:
+- composer self-update
+- composer install --no-interaction
+after_success:
+- bash &lt;(curl -s <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fcodecov.io%2Fbash&amp;t=YThmNGNkNGQ0ZmFmZjRkNjU5Njc0MmM1YmVjNGJlNGIyNDQyOTA2NyxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://codecov.io/bash</a>)
+script: 
+- vendor/bin/phpunit --coverage-clover=coverage.xml
+env:
+- SIMPLE_KEY=someValue
+notifications:
+  email: false</code></pre><p><small><i>.travis file</i></small></p><p>In the above example, we tell <i>Travis CI</i> a few things: we state that we use <i>PHP</i> and our app will have to work on <i>PHP 5.6</i> and <i>PHP 7</i>. We also install the <i>Python</i> <i>codecov</i> package with <i>pip</i> for <i>code coverage</i>. Our dependencies will also be installed with <i>Composer</i> and <i>PHPUnit</i> will be executed. If everything is alright, we send the information to <i>Codecov</i>.</p><p>More information about how to customize the build are available <a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fdocs.travis-ci.com%2Fuser%2Fcustomizing-the-build%2F&amp;t=YTY1OTQ2ZTFjYjYwMDBiNDJhYjY4NjJjZmRmMjQ3YTZlMTlhOGY0NCxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">here</a>!</p><p><b>PHP-CS-Fixer</b></p><p>The <i>.php_cs file</i> tells <i>PHP-CS-Fixer</i> the rules that we use.</p><pre><code>notPath('vendor')
+    -&gt;in(__DIR__)
+    -&gt;name('*.php')
+    -&gt;ignoreDotFiles(true)
+    -&gt;ignoreVCS(true);
+
+$rules = [
+    '@Symfony' =&gt; true
+];
+
+return PhpCsFixer\Config::create()
+    -&gt;setRules($rules)
+    -&gt;setFinder($finder)
+    -&gt;setUsingCache(false);</code></pre><p><small><i>.php_cs file</i></small></p><p><b>PHPUnit</b></p><p>We create a <i>phpunit.xml</i> to tell <i>PHPUnit</i> how to run our <i>unit tests</i>. We also set the <i>processUncoveredFilesFromWhitelist</i> attribute for <i>code coverage</i>.</p><pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"&gt;
+    &lt;testsuites&gt;
+        &lt;testsuite name="SimpleApp Test Suite"&gt;
+            &lt;directory suffix="Test.php"&gt;./tests/&lt;/directory&gt;
+        &lt;/testsuite&gt;
+    &lt;/testsuites&gt;
+    &lt;filter&gt;
+        &lt;whitelist processUncoveredFilesFromWhitelist="true"&gt;
+            &lt;directory suffix=".php"&gt;./app&lt;/directory&gt;
+        &lt;/whitelist&gt;
+    &lt;/filter&gt;
+&lt;/phpunit&gt;</code></pre><p><small><i>.phpunit.xml</i></small></p><p>In the above example, among other things, we tell <i>PHPUnit</i> where our <i>test suite</i> will be and how to compute the <i>code coverage</i>.</p><p><b>README</b></p><p>The <i>README.md</i> file tells the world about our project. We can also include into it the badges that <i>Travis CI, StyleCI</i> and <i>Codecov</i> will generate.</p><pre><code>[![Build Status](<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Ftravis-ci.org%2Fmlbors%2Fsimple-travis-codevoc-styleci.svg%3Fbranch%3Dmaster&amp;t=MDAyYjA3NTRkZjA2MWYxZDAxM2VlOWVlZTA1OTg4ZTg2MTBjNjM0MixoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://travis-ci.org/mlbors/simple-travis-codevoc-styleci.svg?branch=master</a>)](<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Ftravis-ci.org%2Fmlbors%2Fsimple-travis-codevoc-styleci&amp;t=MTA4MjhlMGQ0NGJmMTFhNDQ3OTNhMTdiNmY2NzMyZDBhMzM3ZDMyNCxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://travis-ci.org/mlbors/simple-travis-codevoc-styleci</a>)
+[![StyleCI](<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fstyleci.io%2Frepos%2F75407002%2Fshield%3Fbranch%3Dmaster&amp;t=MjNhNzdhYzQ5Y2MxYjU3NDM2MzdmYjIxNGY5MGQyNGUwZTlkNjhkNyxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://styleci.io/repos/75407002/shield?branch=master</a>)](<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fstyleci.io%2Frepos%2F75407002&amp;t=YTg3YjJlZjFlNmVjY2Y2MDM0OGFhZWM0YTY3MDNiNDllYjI0MTYwZixoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://styleci.io/repos/75407002</a>)
+[![codecov](<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fcodecov.io%2Fgh%2Fmlbors%2Fsimple-travis-codevoc-styleci%2Fbranch%2Fmaster%2Fgraph%2Fbadge.svg&amp;t=NGE1NGJjNTQ0MTQ0ZTFiZjg4MTY0ZWEwZmUzMTIzMjk0NTIxYjM3NyxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://codecov.io/gh/mlbors/simple-travis-codevoc-styleci/branch/master/graph/badge.svg</a>)](<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fcodecov.io%2Fgh%2Fmlbors%2Fsimple-travis-codevoc-styleci&amp;t=YjNmMWJlNDQ3ZjFiY2RlMTdjNWQ3YjgyZDFlZWY4ZDlmOWE1ODBkZCxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://codecov.io/gh/mlbors/simple-travis-codevoc-styleci</a>)
+
+Simple project using Composer, PHPUnit, Travis, Codecov, PHP-CS-Fixer and StyleCI</code></pre><p><small><i>.README.md file</i></small></p><h2>Let’s use all those tools</h2><p><b>PHP-CS-Fixer</b></p><p>To use <i>PHP-CS-Fixer</i>, we can enter the following commands in our terminal:</p><pre><code>$ php php-cs-fixer.phar fix /complete/path/to/dir
+$ php php-cs-fixer.phar fix /complete/path/to/file</code></pre><p>On <i>Windows</i> we can do it like so:</p><pre><code>php path\to\project\vendor\friendsofphp\php-cs-fixer\php-cs-fixer fix path\to\fileordir</code></pre><p><b>PHPUnit</b></p><p>To run our tests, we just have to use</p><pre><code>phpunit</code></pre><p>On <i>Windows</i>, we can do it like so:</p><pre><code>php path\to\project\vendor\phpunit\phpunit\phpunit</code></pre><h2>And we push</h2><p>It is time! Now we can do</p><pre><code>git add .
+git commit –m "This is a commit"
+git push origin mybranch</code></pre><p>If everything is alright, our files will be send to <i>GitHub</i>, then to <i>Travis CI</i> and <i>StyleCI</i>. <i>Travis CI</i> will do what we wrote in our <i>.travis</i> file then send coverage information to <i>Codecov</i>. And voilà!</p><h2>Advantages</h2><p><i>Continuous integration</i> advantages are several:</p><ul><li>Integration bugs are detected early and are easy to track down</li><li>Constant availability of a “current” build for testing, demo, or release purposes</li><li>Frequent code check-in pushes developers to create modular, less complex code</li><li>Enforces discipline of frequent automated testing</li><li>Immediate feedback on system-wide impact of local changes</li></ul><p>And so on. On the other hand, we can state that <i>continuous integration</i> requires a considerable amount of work and time. And 100% <i>code coverage</i> doesn’t mean that every execution path is tested and our software is bug free.</p><p>You can find the complete example on my <i>GitHub</i> (<a href="http://t.umblr.com/redirect?z=https%3A%2F%2Fgithub.com%2Fmlbors%2Fsimple-travis-codevoc-styleci&amp;t=OWM5YzQ2NGIyNjE5MzA3MGFlYWI2OTUyZjI2MDc3NjY0MWRlOTdkYSxoWlIxMlp4YQ%3D%3D&amp;b=t%3APvFStJ09nuU-AEDjlENUmg&amp;p=https%3A%2F%2Fmlbors.tumblr.com%2Fpost%2F160147478990%2Ffirst-steps-with-continuous-integration&amp;m=1">https://github.com/mlbors/simple-travis-codevoc-styleci</a>).</p>
+

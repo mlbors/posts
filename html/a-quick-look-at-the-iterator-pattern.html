@@ -1,0 +1,115 @@
+<p>In this post, we are going to have a quick look at the <em>Iterator Pattern</em>.</p>
+
+<p>The <em>Iterator Pattern</em> is a <em>Behavioral Pattern</em> that presents a way to access the elements of an object without exposing the underlying presentation. In other words, it offers a solution to iterate through a container and access to the elements stored in that last one.</p>
+
+<p>A very common real world example is an old radio set, where a user can start at some channel and then use the "<em>next</em>" button or the "<em>previous</em>" button to go through the different channels.</p>
+
+<p>Let's make a simple example with <em>PHP</em> using the <em>Iterator</em> and the <em>Countable</em> interfaces. Those interfaces are available in the <em>Standard PHP Library</em> (SPL). We are going to base our implementation on our radio set example.</p>
+
+<p>The <em>Iterator interface</em> is defined as so:</p>
+
+<pre><code>Iterator extends Traversable {
+    abstract public mixed current ( void )
+    abstract public scalar key ( void )
+    abstract public void next ( void )
+    abstract public void rewind ( void )
+    abstract public boolean valid ( void )
+}
+</code></pre>
+
+<p>The <em>Countable interface</em> looks like so:</p>
+
+<pre><code>Countable {
+    abstract public int count ( void )
+}
+</code></pre>
+
+<p>Let's start by defining a <em>RadioStation class</em>:</p>
+
+<pre><code>class RadioStation
+{
+    protected $frequency;
+
+    public function __construct(float $frequency)
+    {
+        $this-&gt;frequency = $frequency;
+    }
+
+    public function getFrequency(): float
+    {
+        return $this-&gt;frequency;
+    }
+}
+</code></pre>
+
+<p>Now we can build our <em>Iterator</em> the following way:</p>
+
+<pre><code>use Countable;
+use Iterator;
+
+class StationList implements Countable, Iterator
+{
+
+    protected $stations = [];
+    protected $counter;
+
+    public function addStation(RadioStation $station)
+    {
+        $this-&gt;stations[] = $station;
+    }
+
+    public function removeStation(RadioStation $toRemove)
+    {
+        $toRemoveFrequency = $toRemove-&gt;getFrequency();
+        $this-&gt;stations = array_filter($this-&gt;stations, function (RadioStation $station) use ($toRemoveFrequency) {
+            return $station-&gt;getFrequency() !== $toRemoveFrequency;
+        });
+    }
+
+    public function count(): int
+    {
+        return count($this-&gt;stations);
+    }
+
+    public function current(): RadioStation
+    {
+        return $this-&gt;stations[$this-&gt;counter];
+    }
+
+    public function key()
+    {
+        return $this-&gt;counter;
+    }
+
+    public function next()
+    {
+        $this-&gt;counter++;
+    }
+
+    public function rewind()
+    {
+        $this-&gt;counter = 0;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this-&gt;stations[$this-&gt;counter]);
+    }
+}
+</code></pre>
+
+<p>Notice that we use the <em>array</em>filter_ function with two arguments in the <em>removeStation method</em>. The first argument specifies the array to filter and the second is the <em>callback</em> function, here used as an <em>anonymous function</em> that we rely on to filter the array.</p>
+
+<p>Then it can be used like so:</p>
+
+<pre><code>$stationList = new StationList();
+$stationList-&gt;addStation(new RadioStation(87));
+$stationList-&gt;addStation(new RadioStation(103));
+$stationList-&gt;addStation(new RadioStation(106.5));
+
+foreach($stationList as $station) {
+    echo $station-&gt;getFrequency();
+}
+
+$stationList-&gt;removeStation(new RadioStation(87));
+</code></pre>

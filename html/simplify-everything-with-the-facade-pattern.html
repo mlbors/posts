@@ -1,0 +1,78 @@
+Simplify everything with the Facade Pattern
+
+In this post, we are going to look at the <i>Facade Pattern</i>.
+
+The <i>Facade Pattern</i> is a <i>structural pattern</i> that provides a simplified interface to a complex subsystem. It is like when we turn on our smartphone, we just push one button and we ignore all the operations that have to be done behind.
+
+The goal of the <i>Facade Pattern</i> is to reduce coupling and complexity. However, a <i>Facade</i> doesn't forbid us to access to the subsystem. We can also have multiple <i>Facades</i> for one subsystem. 
+
+A <i>Facade</i> can be useful when we want to provide a simple interface to a complex subsystem, to layer our subsystems or when there are many dependencies between clients and the implementation classes of an abstraction.
+
+Let's make a quick example of the <i>Facade Pattern</i> using <i>PHP</i>. Let's say we have a spaceship and we want it to take off or land on.
+
+First, we create our <i>SpaceShip class</i>.
+
+<pre><code class="php">class SpaceShip {
+
+    public function getPower() {
+        echo "Getting power!";
+    }
+
+    public function blink() {
+        echo "Blinking lights!";
+    }
+
+    public function makeNoise() {
+        echo "Beep beep beep!";
+    }
+
+    public function leaveTheGround() {
+        echo "Leaving the ground!";
+    }
+
+    public function getBackOnTheGround() {
+        echo "Getting back on the ground.";
+    }
+
+    public function turnOffEngine() {
+        echo "Turning engine off.";
+    }
+
+    public function switchOffTheLights() {
+        echo "Switching off the lights!";
+    }
+
+}</code></pre>
+
+And now we can create our <i>Facade</i>:
+
+<pre><code class="php">class SpaceShipFacade
+{
+    protected $spaceShip;
+
+    public function __construct(SpaceShip $spaceShip)
+    {
+        $this->spaceShip = $spaceShip;
+    }
+
+    public function takeOff()
+    {
+        $this->spaceShip->getPower();
+        $this->spaceShip->blink();
+        $this->spaceShip->makeNoise();
+        $this->spaceShip->leaveTheGround();
+    }
+
+    public function landOn()
+    {
+        $this->spaceShip->getBackOnTheGround();
+        $this->spaceShip->turnOffEngine();
+        $this->spaceShip->switchOffTheLights();
+    }
+}</code></pre>
+
+And we can use it like so:
+
+<pre><code class="php">$spaceShip = new SpaceShipFacade(new SpaceShip());
+$spaceShip->takeOff();
+$spaceShip->landOn();</code></pre>

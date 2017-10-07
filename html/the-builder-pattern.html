@@ -1,0 +1,87 @@
+<p>In this post we are going to see what the <em>Builder Pattern</em> is. Let's get into it!</p>
+
+<p>The <em>Builder Pattern</em> is a <em>Creational Pattern</em> that offers a solution to the <em>telescoping constructor anti-pattern</em>. It allows us to create different "<em>flavors</em>" of an object without polluting the <em>constructor</em>. </p>
+
+<p>This pattern is useful when the construction process must allow different representations of an object or when the creation of an object involved a lot of steps.</p>
+
+<p>The main difference from the <em>Factory Pattern</em> is that this last one should be used when the object creation is a one step-process.</p>
+
+<p>Let's make a quick example written with <em>PHP</em> and just for fun, let's say we need to implement the <em>Builder Pattern</em> to manage our hero in our brand-new video game.</p>
+
+<p>First, we define a <em>Builder Interface</em>:</p>
+
+<pre><code>interface BuilderInterface
+{
+    public function addHair();
+    public function addArmor();
+    public function addWeapon();
+    public function build();
+}
+</code></pre>
+
+<p>Then we can implement our interface:</p>
+
+<pre><code>class HeroBuilder implements BuilderInterface
+{
+    public $name;
+
+    public $hair;
+    public $armor;
+    public $weapon;
+
+    public function __construct($name)
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function addHair()
+    {
+        $this-&gt;hair = "Hero Hair";
+    }
+
+    public function addArmor()
+    {
+        $this-&gt;armor = "Hero Armor";
+    }
+
+    public function addWeapon()
+    {
+        $this-&gt;weapon = "Hero Weapon";
+    }
+
+    public function build()
+    {
+        return new Hero($this);
+    }
+}
+</code></pre>
+
+<p>Finally we create a <em>class</em> for our hero:</p>
+
+<pre><code>class Hero
+{
+    protected $name;
+
+    protected $hair;
+    protected $armor;
+    protected $weapon;
+
+    public function __construct($builder)
+    {
+        $this-&gt;name = $builder-&gt;name;
+        $this-&gt;hair = $builder-&gt;hair;
+        $this-&gt;armor = $builder-&gt;armor;
+        $this-&gt;weapon = $builder-&gt;weapon;
+    }
+
+}
+</code></pre>
+
+<p>And we create our hero like so:</p>
+
+<pre><code>$hero = (new HeroBuilder("The Hero"))
+            -&gt;addHair()
+            -&gt;addArmor()
+            -&gt;addWeapon()
+            -&gt;build();
+</code></pre>

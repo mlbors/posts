@@ -1,0 +1,13 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/159183744440/the-bubble-sort">The Bubble sort</a></h2>
+
+<p>Let’s discover rapidly what is <i>Bubble sort</i>!</p><p><i>Bubble sort</i> is a simple sorting algorithm that works by repeatedly stepping through a list to be sorted, comparing each pair of adjacent items and swapping them if the first element is greater than the second element. The pass through the list is repeated until no swaps are needed, which indicates that the list is sorted. The algorithm is named for the way smaller or larger elements “<i>bubble</i>” to the top of the list.</p><p><b>Runtime:</b></p><ul><li>Average: O(N^2)</li><li>Worst: O(N^2)</li></ul><p><b>Memory:</b></p><ul><li>O(1)</li></ul><p>Down below, a simple implementation of <i>Bubble sort</i> made with <i>Python</i>:</p><pre><code>def bubble_sort(array):
+  i = int(len(array) - 1)
+  while i &gt;= 1:
+    for j in range(0, i):
+      if array[j] &gt; array[j + 1]:
+         swap_values(array, j, j + 1)
+    i -= 1
+  return array
+</code></pre>
+

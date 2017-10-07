@@ -1,0 +1,84 @@
+<p>In this post, we are going to see what is the <i>Adapter pattern</i> and how we can use it. Let's get into it!</p>
+
+<p>The <i>Adapter pattern</i> is a <i>Structural pattern</i>. This kind of pattern is related the relationships between entities. The <i>Adapter pattern</i> allows us to make classes work together that otherwise couldn't because of incompatible interfaces. Thus, the classes can work with each other without us having to modify their source code.</p>
+
+<p>A very straightforward example in real life is the power adapter: a three-pin plug can't be connected to a two-prong outlet.</p>
+
+<p>This pattern can be really useful when we want to use an existing class and its interface doesn't match the one we need.</p>
+
+<p>Now let's have a quick example and because it is always more fun, we are going to say that we are building a video game (and for the sake of this example we are going to do it with <i>PHP</i>).</p>
+
+<p>In our brand new game we have a space hunter which is navigating through the entire galaxy killing dangerous aliens with his bare hands. Now for some reasons, that same guy needs to fight with a dragon. The problem is that the dragon interface is different from the one used with aliens. So we can use the <i>Adapter pattern</i> to make it works.</p>
+
+<p>First, we create our <i>SpaceHunter</i> class that expects any implementation of <i>AlienInterface</i> to kill:</p>
+
+<pre><code class="php">class SpaceHunter
+{
+    public function kill(Alien $alien)
+    {
+		$this->killTheAlienWithBareHands();
+    }
+}</code></pre>
+
+<p>Now, let's define our <i>AlienInterface</i> and different types of aliens:</p>
+
+<pre><code class="php">interface Alien
+{
+    public function fireLaser();
+}
+
+class AlienFromJupiter implements Alien
+{
+    public function fireLaser()
+    {
+        $this->doSomething();
+    }
+}
+
+class AlienFromBetelgeuse implements Alien
+{
+    public function fireLaser()
+    {
+		$this->doSomething();
+    }
+}</code></pre>
+
+<p>Then, we can define our <i>DragonInterface</i> and a concrete implementation:</p>
+
+<pre><code class="php">interface Dragon 
+{
+	public function breatheFire();
+}
+
+class GalacticDragon implements Dragon
+{
+	public function breatheFire()
+    {
+		$this->doSomething();
+    }
+}</code></pre>
+
+<p>And now we can create our <i>Adapter</i>:</p>
+
+<pre><code class="php">class DragonAdapter implements Alien
+{
+    protected $dragon;
+
+    public function __construct(Dragon $dragon)
+    {
+        $this->dragon = $dragon;
+    }
+
+    public function fireLaser()
+    {
+        $this->dragon->breatheFire();
+    }
+}</code></pre>
+
+<p>And we can use it like so:</p>
+
+<pre><code class="php">$galacticDragon = new GalacticDragon();
+$dragonAdapter = new DragonAdapter($galacticDragon);
+
+$spaceHunter = new SpaceHunter();
+$spaceHunter->kill($dragonAdapter);</code></pre>

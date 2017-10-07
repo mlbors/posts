@@ -1,0 +1,115 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/161592869025/fun-with-arrow-and-higher-order-functions">Fun with arrow and higher order functions</a></h2>
+
+<p>Through this small article, we are going to overview <i>arrow functions</i> and <i>higher order functions</i> in <i>JavaScript</i>.</p><h2>Arrow functions</h2><p>In <i>JavaScript</i>, <i>arrow functions</i> were introduced by <i>ECMAScript 6</i> and are, in a way, a shorter manner to write functions. They allow us to write functions that are small, inline and single-purpose. They have a concise syntax, implicit returns and share lexical “<i>this</i>” with the parent scope.</p><p><i>Arrow functions</i> allow us to do something like this:</p><pre><code>//*************************************//
+//***** NOT USING ARROW FUNCTIONS *****//
+//*************************************//
+
+var sayHello = function() {
+  console.log('Hello world!');
+}
+
+var splitePhrase = function(phrase) {
+  return phrase.split(' ');
+}
+
+var multiply = function(x, y) {
+  return x * y;
+}
+
+var setObject = function setProperties(id, name) {
+  return {
+    id: id,
+    name: name
+  };
+};
+
+//*********************************//
+//***** USING ARROW FUNCTIONS *****//
+//*********************************//
+
+let sayHello = () =&gt; { console.log('Hello world!'); }
+
+let splitePhrase = phrase =&gt; phrase.split(' ');
+
+let multiply = (x, y) =&gt; x * y;
+
+let setObject = (id, name) =&gt; ({id: id, name: name}); </code></pre><p>The side effect of <i>arrow functions</i> is, because they are anonymous, even if we place them in variables, they will not give us very good stack traces. The other thing is we can not use them as constructors because they don’t have a prototype property or other internal methods.</p><h2>Higher order functions</h2><p>A <i>higher-order function</i> is a function that can take another function as an argument, or that returns a function as a result. The fact that we can place a function into another function allows us to compose small functions into bigger functions. The function passed to the other function is also known as <i>callback</i>. Let’s have some examples:</p><p><b>Filter</b></p><p>The <i>filter</i> function returns an array filled with all elements of a provided array that had passed a specific test.</p><pre><code>const animals = [
+  { name: 'Spike', species: 'dog' },
+  { name: 'Garefield', species: 'cat' },
+  { name: 'Tom', species: 'cat' },
+  { name: 'Droopy', species: 'dog' }
+];
+
+var isCat = (function(animal) {
+  return animal.species === 'cat';
+});
+
+var cats = animals.filter(isCat);
+
+console.log(cats);
+
+/**
+ * Will output
+ * Array(2)
+ * 0 : "Garefield"
+ * 1 : "Tom"
+ */</code></pre><p><b>Map</b></p><p>We can use <i>map</i> if we want to create an array with the values of another array after each of them went through a specific function.</p><pre><code>const persons = [
+  { name: 'John', browser: 'Chrome' },
+  { name: 'Jane', browser: 'Firefox' },
+  { name: 'Sam', browser: 'Chrome' },
+  { name: 'Paul', browser: 'Edge' }
+];
+
+var names = persons.map(function(person) {
+  return person.name;
+});
+
+console.log(names);
+
+/**
+ * Will output
+ * Array(4)
+ * 0 : "John"
+ * 1 : "Jane"
+ * 2 : "Sam"
+ * 3 : "Paul"
+ */</code></pre><p><b>Reduce</b></p><p>The <i>reduce</i> function reduces an array to a single value. It executes a provided function for each value of the array, from left to right.</p><pre><code>var orders = [
+  { amount: 210 },
+  { amount: 35 },
+  { amount: 142 },
+  { amount: 47 }
+];
+
+var totalAmount = orders.reduce(function(sum, order) {
+  return sum + order.amount
+}, 0);
+
+console.log(totalAmount);
+
+/**
+ * Will output
+ * 43
+ */</code></pre><h2>Let’s have fun</h2><p>Now, let’s try to put all this information together. For some reasons, let’s say we are working on a brand new video game where some Italian plumbers have to rescue a princess from a dangerous dragon monster that breathes fire (any resemblance to fictional famous characters is purely coincidental).</p><p>Down bellow, we have an array with some events concerning the big monster:</p><pre><code>const bigMonsterEvilDragonEvents = [
+  { type: 'attack', value: 12, target: 'italian-plumber-1' },
+  { type: 'attack', value: 12, target: 'italian-plumber-2' },
+  { type: 'fire', value: 40 },
+  { type: 'jump', target: 'bridge' },
+  { type: 'attack', value: 23, target: 'italian-plumber-1' },
+  { type: 'jump', target: 'tower' },
+  { type: 'laugh', value: 95 },
+  { type: 'attack', value: 6, target: 'italian-plumber-2' },
+  { type: 'attack', value: 15, target: 'italian-plumber-1' }
+];</code></pre><p>If we want to know how much damage the big monster made on the Italian Plumber 1 at the end of all of these events, using what we previously saw, we can simply do it like this:</p><pre><code>const totalDamageOnItalianPlumber1 = bigMonsterEvilDragonEvents
+.filter(e =&gt; e.type === 'attack')
+.filter(e =&gt; e.target === 'italian-plumber-1')
+.map(e =&gt; e.value)
+.reduce((prev, x) =&gt; (prev || 0) + x);
+
+console.log(totalDamageOnItalianPlumber1);
+
+/**
+ * Will output
+ * 50
+ */</code></pre><p>That’s it! That is how we can use <i>arrow functions</i> and <i>higher order functions</i> to easily have access to some results that would require more lines of code without these last functions.</p>
+

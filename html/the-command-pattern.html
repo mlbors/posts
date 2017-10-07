@@ -1,0 +1,83 @@
+
+<h2><a href="https://mlbors.tumblr.com/post/161164215695/the-command-pattern">The Command pattern</a></h2>
+
+<p>In this post we are going to go through the <i>Command pattern</i>.</p><p>The <i>Command pattern</i> is a <i>Behavioral pattern</i> that allows us to encapsulate actions in objects. The main idea behind this pattern is to decouple client from receiver. The encapsulated information lets us trigger an event or an action at a later time and includes the method name, the object that owns method and values for the method parameters.</p><p>A classic example would be us (i.e. Client) switching on (i.e. Command) the television (i.e. Receiver) using a remote control (Invoker).</p><p>The Command pattern can be used when we want to parameterize objects by an action to perform, specify, queue and execute requests at different times or support undo (non exhaustive list).</p><p>Let’s make an example with a television and a remote control:</p><p>First, we create an implementation for the <i>Receiver</i> (television):</p><pre><code>class Television
+{
+    public function turnOn()
+    {
+        echo "TV is on!";
+    }
+
+    public function turnOff()
+    {
+        echo "TV is off!";
+    }
+}</code></pre><p>The we define a <i>Command interface:</i></p><pre><code>interface CommandInterface
+{
+    public function execute();
+    public function undo();
+    public function redo();
+}
+</code></pre><p>Now we can write down a set of commands:</p><pre><code>class TurnOnCommand implements CommandInterface
+{
+    protected $television;
+
+    public function __construct(Television $television)
+    {
+        $this-&gt;television = $television;
+    }
+
+    public function execute()
+    {
+        $this-&gt;television-&gt;turnOn();
+    }
+
+    public function undo()
+    {
+        $this-&gt;television-&gt;turnOff();
+    }
+
+    public function redo()
+    {
+        $this-&gt;execute();
+    }
+}
+
+class TurnOffCommand implements CommandInterface
+{
+    protected $television;
+
+    public function __construct(Television $television)
+    {
+        $this-&gt;television = $television;
+    }
+
+    public function execute()
+    {
+        $this-&gt;television-&gt;turnOff();
+    }
+
+    public function undo()
+    {
+        $this-&gt;television-&gt;turnOn();
+    }
+
+    public function redo()
+    {
+        $this-&gt;execute();
+    }
+}</code></pre><p>Finally we can create our <i>Invoker</i> (remote control):</p><pre><code>class RemoteControl
+{
+    public function submit(CommandInterface $command)
+    {
+        $command-&gt;execute();
+    }
+}</code></pre><p>We can use it like so:</p><pre><code>$television = new Television();
+
+$turnOn = new TurnOnCommand($television);
+$turnOff = new TurnOffCommand($television);
+
+$remote = new RemoteControl();
+$remote-&gt;submit($turnOn);
+$remote-&gt;submit($turnOff);</code></pre>
+

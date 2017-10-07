@@ -1,0 +1,73 @@
+<p><em>Sage</em> is a <em>WordPress starter theme</em> developed by <em>Roots</em>. Let's see how we can quickly set it up with <em>Docker</em>.</p>
+
+<p>To achieve our goal, we are going to use the <em>PHP Docker Boilerplate</em> from <em>WebDevOps</em>. We can clone the repository by simply use:</p>
+
+<pre><code>git clone https://github.com/webdevops/php-docker-boilerplate.git wordpress-project
+cd wordpress-project
+cp docker-compose.development.yml docker-compose.yml
+</code></pre>
+
+<p><small><em>Setting up the environment</em></small></p>
+
+<p>If we want to use <em>phpMyAdmin</em>, we can remove comments at the following lines at the end of the <em>docker-compose.yml</em> file:</p>
+
+<pre><code>phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql
+    environment:
+      - PMA_HOSTS=mysql
+      - VIRTUAL_HOST=pma.boilerplate.docker
+      - VIRTUAL_PORT=80
+    volumes:
+      - /sessions
+    ports:
+      - "8001:80"
+</code></pre>
+
+<p><small><em>docker-compose.yml file</em></small></p>
+
+<p>Now, we can simply do the following command:</p>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<p><small><em>Running our containers</em></small></p>
+
+<p>For the database, we can use the following information:</p>
+
+<pre><code>DB_NAME: database
+DB_USER: dev
+DB_PASSWORD: dev
+DB_HOST: mysql:3306</code></pre>
+
+<p><small><em>Database information</em></small></p>
+
+<p>Now, in our directory <em>wp-content/themes</em>, we can do the following thing:</p>
+
+<pre><code>composer create-project roots/sage sage dev-master
+cd sage
+yarn
+yarn run build
+</code></pre>
+
+<p><small><em>Theme installation</em></small></p>
+
+<p>We just have to do one last thing: in the <em>resources/assets/config.json</em> file, we have to change the following lines:</p>
+
+<pre><code>...
+"publicPath": "/wp-content/themes/sage",
+"devUrl": "http://localhost:8000",
+...
+</code></pre>
+
+<p><small><em>resources/assets/config.json file</em></small></p>
+
+<p>Now, if the theme is activated in <em>wp-admin</em>, we just have to run the following command:</p>
+
+<pre><code>yarn run start
+</code></pre>
+
+<p><small><em>Starting Browsersync session</em></small></p>
+
+<p>Now, our assets will be compiled when file changes are made and our site will be visible at <em>localhost:3000</em>.</p>

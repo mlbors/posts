@@ -1,0 +1,244 @@
+<p>Through this article, we are going to overview what <em>Dependency Injection</em> is and how it works.</p>
+<p><em>Dependency Injection</em>, also called <em>DI</em>, is a <em>design pattern</em> in which one or more dependencies (<em>services</em>) are injected into a dependent object (<em>client</em>). This pattern allows us to implement a loosely coupled architecture by separating the creation of a client’s dependencies from its own behavior.</p>
+<p>We can apply this pattern when we want to remove knowledge of concrete implementations from objects, but also when we want to get a better testable code in isolation using mock objects.</p>
+<p>The <em>DI</em> pattern is commonly used to implement the <em>Inversion of Controle Principle</em>, which in a few words, separates the <em>what-to-do</em> part of the <em>when-to-do</em> part. In other words, it is about letting somebody else handles the flow of control. It is based on the <em>Hollywood Principle</em>: “Don’t call us, we’ll call you”.</p>
+
+<h2>Basic examples</h2>
+<p>The <em>DI</em> pattern can be implemented in several ways. Let’s take a look at some examples written in <em>PHP</em>.</p>
+
+<h3>Constructor Injection</h3>
+<p>Here, we will inject dependencies using a <em>constructor</em>. We can imagine a really simple example like so:</p>
+
+<pre><code class="php">interface ITire()
+{
+    public function spin();
+}
+
+interface IEngine()
+{
+    public function run();
+}
+
+class TireImpl1 implements ITire
+{
+    public function spin()
+    {
+        echo 'Tire 1 is spinning!';
+    }
+}
+
+class TireImpl2 implements ITire
+{
+    public function spin()
+    {
+        echo 'Tire 2 is spinning!';
+    }
+}
+
+class EngineImpl1 implements IEngine
+{
+    public function run()
+    {
+        echo 'Engine 1 is running!';
+    }
+}
+
+class EngineImpl2 implements IEngine
+{
+    public function run()
+    {
+        echo 'Engine 2 is running!';
+    }
+}
+
+class Car()
+{
+
+    private $engine;
+    private $tire;
+    
+    public function __construct(IEngine $engine, ITire $tire)
+    {
+        $this-&gt;engine = $engine;
+        $this-&gt;tire = $tire;
+    }
+    
+    public function run()
+    {
+        $this-&gt;engine-&gt;run();
+        $this-&gt;tire-&gt;spin();
+        echo 'Car is running'.
+    }
+
+}
+
+$car = new Car(new EngineImpl1(), new TireImpl1());
+</code></pre>
+
+<p>In the above example, we see that our <em>Car</em> object is not tightly coupled with its dependencies which are not hard-coded and each class can be used independently. By using interfaces, we can pass any object to the <em>Car’s constructor</em> if this object implements the right interface. Even if the <em>Car</em> class needs an <em>Engine</em> and a <em>Tire</em>, it is not its role to create them. The less <em>Car</em> knows about how work its dependencies, the better it is. We can also see that our <em>Car</em> class can be easily tested because its dependencies can be mocked.</p>
+<p><em>Constructor injection</em> is the most common method used for <em>Dependency Injection</em>. The advantages are that the dependencies can’t be changed during the object lifetime and the required dependencies are present when the object gets instantiated.</p>
+
+<h3>Setter Injection</h3>
+<p>Another common way to use <em>Dependency Injection</em> is the <em>Setter Injection</em>. To use this method, we can modify our previous example like so:</p>
+
+<pre><code class="php">class Car()
+{
+
+    private $engine;
+    private $tire;
+    
+    public function __construct()
+    {
+
+    }
+    
+    public function setEngine(IEngine $engine)
+    {
+        $this-&gt;engine = engine;
+    }
+    
+    public function setTire(ITire $tire)
+    {
+        $this-&gt;tire = tire;
+    }
+    
+    public function run()
+    {
+        $this-&gt;engine-&gt;run();
+        $this-&gt;tire-&gt;spin();
+        echo 'Car is running'.
+    }
+
+}
+</code></pre>
+
+<p>The <em>Setter Injection</em> allows us to have optional dependencies with default values, to add new dependencies very easily and to call the <em>setters</em> multiple times if needed.</p>
+
+<h3>Container</h3>
+
+<p>A <em>Dependency Injection Container</em> is an object that handles the instantiation of other objects.</p>
+<p>The creation of <em>DIC</em> is another subject that we will not see in this article. By the way, there are many popular <em>DIC</em> like <em>Pimple</em>, <em>Dice</em> or <em>PHP-DI</em>. The <em>Zend Framework</em> and <em>Symfony</em> also provide their own container.</p>
+<p>One way to build a container could consist to create a file, like a <em>JSON</em> file, where we would list our different dependencies and their arguments. Then we could create a <em>Container</em> class where will use a <em>Repository</em> object to store instantiated services and a <em>Factory</em> object to create the services that have not been instantiated.</p>
+
+<h2>DI and Autoloading</h2>
+<p><em>DI</em> could make us think to <em>Autoloading</em> but they should not be confused. <em>Autoloading</em> ensures that our classes are defined when we reference them. <em>Dependency Injection</em> gives us flexibility over what instance of an object we use. <em>Autoloading</em> knows how to load the classes, where each class is defined and includes the correct file. A <em>DIC</em> knows how to build objects of various types. It doesn’t know about class loading.</p>
+
+<h2>DI and Strategy</h2>
+<p><em>DI</em> could also make us think about the <em>Strategy Pattern</em>. These patterns work the same way, but <em>Strategy</em> is used for short-lived dependencies. With <em>DI</em>, it is most unusual that the dependencies of objects change during their lifetime, while this is not uncommon with <em>Strategy</em>. With <em>Strategy</em>, classes are designed so that they can be configured with an algorithm at runtime. With <em>DI</em>, classes get an algorithm injected at runtime.</p>
+
+<h2>Using DI with Java</h2>
+<p>If we want to use <em>DI</em> with <em>Java</em>, we can make it without any additional framework. By the way, <em>Spring</em> and <em>Google Guice</em> are two very popular frameworks.</p>
+<p>However, we can use <em>annotations</em> to define injection points using <em>CDI</em>, available in <em>Java EE</em>, <em>Google Guice</em>, or <em>Spring</em> like so:</p>
+
+<pre><code class="java">public interface EngineService {
+    void getService();
+}
+
+public class Impl1EngineService implements EngineService {
+
+    @Override
+    public void getService() {
+        System.out.println(&quot;Impl1EngineService&quot;);
+    }
+    
+}
+
+// Injection through fields
+public class Car {
+
+    @Inject
+    @Named(&quot;Impl1EngineService&quot;)
+    private EngineService Impl1EngineService;
+
+}
+
+// Injection through constructor
+public class Car {
+
+    private EngineService Impl1EngineService;
+    
+    @Inject
+    public Car(@Named(&quot;Impl1EngineService&quot;) EngineService Impl1EngineService) {
+        this.Impl1EngineService = Impl1EngineService;
+    }
+
+}
+
+// Injection through setter method
+public class Car {
+
+    private EngineService Impl1EngineService;
+    
+    @Inject
+    public void setImpl1EngineService(@Named(&quot;Impl1EngineService&quot;) EngineService Impl1EngineService) {
+        this.Impl1EngineService = Impl1EngineService;
+    }
+
+}
+</code></pre>
+
+<h2>A word about Angular</h2>
+
+<p>In <em>Angular</em>, <em>DI</em> is widely used and we can take a moment to dig a little into it.</p>
+<p><em>Angular</em> uses its own <em>Dependency Injection</em> framework that basically uses three things:</p>
+
+<ul>
+<li><em>The Injector</em>, that exposes APIs</li>
+<li><em>The Provider</em>, that tells the injector how to create an instance of a dependency</li>
+<li><em>The Dependency</em>, the type of which an object should be created</li>
+</ul>
+
+<p><em>Angular</em> has a <em>Hierarchical Dependency Injection</em> system. There is a tree of injectors that parallel an application’s component tree. An application may have multiple injectors. That means we can configure providers at different levels:</p>
+
+<ul>
+<li>For the whole application when <em>bootstrapping</em> it. All <em>sub injectors</em> will see the <em>provider</em> and share the instance associated with. It will always be the same instance.</li>
+<li>For a specific <em>component</em> and its <em>sub components</em>. Other <em>components</em> won’t see the <em>provider</em>.</li>
+<li>For <em>services</em>. They use one of the <em>injectors</em> from the element that calls the <em>service</em> chain.</li>
+</ul>
+
+<p>When using <em>DI</em> with <em>Angular</em>, we will mainly see the following decorators:</p>
+
+<ul>
+<li><em>@Injectable</em>, that marks a class as available to Injector for creation</li>
+<li><em>@Inject</em>, which specifies a dependency</li>
+</ul>
+
+<p>Knowing what we know about <em>DI</em>, we can quickly build something like this:</p>
+<pre><code class="typescript">import { Injectable } from '@angular/core'; 
+
+@Injectable() 
+   export class engineService {  
+   
+   getEngine(): string { 
+      return &quot;Engine 1&quot;; 
+   } 
+   
+}
+
+import { Component } from '@angular/core';  
+import { engineService } from './engine.service';  
+
+@Component({ 
+   selector: 'app', 
+   template: '&lt;div&gt;{{value}}&lt;/div&gt;', 
+   providers: [engineService]  
+}) 
+
+export class AppComponent { 
+
+   value: string = &quot;&quot;; 
+   
+   constructor(private _engineService: engineService) { } 
+   
+   // Our, without TypeScript
+   // constructor(@Inject(engineService) private engineService) { }
+   
+   ngOnInit(): void { 
+      this.value = this._engineService.getEngine(); 
+   }  
+   
+}
+</code></pre>
+
+<h2>Conclusion</h2>
+<p>Through this article, we briefly saw what <em>Dependency Injection</em> is and how it could be quickly implemented. We also saw that many frameworks or libraries exist to help us use <em>DI</em> efficiently.</p>
