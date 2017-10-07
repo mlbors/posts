@@ -1,3 +1,5 @@
+# The Adapter Pattern #
+
 In this post, we are going to see what is the _Adapter pattern_ and how we can use it. Let's get into it!
 
 The _Adapter pattern_ is a _Structural pattern_. This kind of pattern is related the relationships between entities.

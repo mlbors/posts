@@ -1,3 +1,5 @@
+# Changing behavior with the State Pattern
+
 In this article, we are going to take a look at the _State Pattern_. Let's get into it!
 
 ## Introduction ##

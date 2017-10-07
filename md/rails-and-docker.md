@@ -1,4 +1,4 @@
-## [Rails and Docker](https://mlbors.tumblr.com/post/160836332260/rails-and-docker)
+# Rails and Docker #
 
 In this post, we are going to set up a _Ruby on Rails_ project using _Docker_.
 

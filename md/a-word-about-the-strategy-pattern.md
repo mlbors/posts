@@ -1,4 +1,4 @@
-## [A word about the Strategy pattern](https://mlbors.tumblr.com/post/159189453135/a-word-about-the-strategy-pattern)
+# A word about the Strategy pattern
 
 _The Strategy pattern_ is a behavioural design pattern. Let’s talk a bit about it!
 

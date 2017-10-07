@@ -1,4 +1,4 @@
-## [Fun with arrow and higher order functions](https://mlbors.tumblr.com/post/161592869025/fun-with-arrow-and-higher-order-functions)
+# Fun with arrow and higher order functions
 
 Through this small article, we are going to overview _arrow functions_ and _higher order functions_ in _JavaScript_.
 

@@ -1,4 +1,4 @@
-https://www.pexels.com/photo/abstract-art-blur-bulb-287748/
+# First Node.js app on Heroku #
 
 In this article we are going to see how to build a really simple _Node.js_ app and how to deploy it on _Heroku_.
 

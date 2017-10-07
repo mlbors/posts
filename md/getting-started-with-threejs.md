@@ -1,4 +1,4 @@
-## [Getting started with three.js](https://mlbors.tumblr.com/post/160767437630/getting-started-with-threejs)
+# Getting started with three.js
 
 In this small post, we are going to see how to simply use _WebGL_ with _three.js_.
 

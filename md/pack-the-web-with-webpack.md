@@ -1,4 +1,4 @@
-Pack the Web with webpack
+# Pack the Web with webpack #
 
 The number of available tools for Web development can sometimes make our life difficult because choosing the right one to use can be a tough task. Fortunately, _webpack_ seems to want to make our life easier and allows us to quickly set up a nice workflow. Let's see how it works.
 

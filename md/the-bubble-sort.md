@@ -1,4 +1,4 @@
-## [The Bubble sort](https://mlbors.tumblr.com/post/159183744440/the-bubble-sort)
+# The Bubble sort
 
 Let’s discover rapidly what is _Bubble sort_!
 

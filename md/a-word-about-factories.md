@@ -1,4 +1,4 @@
-## [A word about Factories](https://mlbors.tumblr.com/post/160872455020/a-word-about-factories)
+# A word about Factories #
 
 Through this article, we are going to overview the _Factory_ pattern that belongs to _Creational design patterns_.
 

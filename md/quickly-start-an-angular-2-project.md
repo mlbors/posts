@@ -1,4 +1,4 @@
-## [Quickly start an Angular 2 project](https://mlbors.tumblr.com/post/159151833430/quickly-start-an-angular-2-project)
+# Quickly start an Angular 2 project #
 
 In this small post, I will tell you about how you can initialize a new Angular 2 project.
 

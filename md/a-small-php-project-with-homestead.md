@@ -1,4 +1,4 @@
-## [A small PHP project with Homestead](https://mlbors.tumblr.com/post/160652071165/a-small-php-project-with-homestead)
+# A small PHP project with Homestead #
 
 In this post, we are going to initialize a simple _PHP_ project with _Laravel Homestead_.
 

@@ -1,3 +1,5 @@
+# Using Queues #
+
 Through this small article, we are going to see what _Queues_ are. Let's get into it!
 
 A _Queue_ is a _data structure_ that is really similar to a real-world queue. A _Queue_ is open at both ends and one end is used to insert data while the other is used to remove data.

@@ -1,4 +1,4 @@
-Simplify everything with the Facade Pattern
+# Simplify everything with the Facade Pattern #
 
 In this post, we are going to look at the _Facade Pattern_.
 

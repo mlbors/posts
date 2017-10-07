@@ -1,4 +1,4 @@
-## [Use CSS preprocessors with Angular CLI](https://mlbors.tumblr.com/post/159498646630/use-css-preprocessors-with-angular-cli)
+# Use CSS preprocessors with Angular CLI
 
 _Angular CLI_ supports all major CSS preprocessors. Here is how you can use them easily.
 

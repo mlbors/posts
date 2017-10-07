@@ -1,4 +1,4 @@
-## [Discovering Firebase](https://mlbors.tumblr.com/post/159302658655/discovering-firebase)
+# Discovering Firebase #
 
 Firebase is a mobile and web application platform that includes a real-time database. Let’s start using it with JS in a really simple manner.
 

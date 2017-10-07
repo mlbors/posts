@@ -1,4 +1,4 @@
-## [Angular 2, Travis CI, Coveralls and Open Sauce](https://mlbors.tumblr.com/post/160471409055/angular-2-travis-ci-coveralls-and-open-sauce)
+# Angular 2, Travis CI, Coveralls and Open Sauce
 
 In this post, we are going to see how we can make an _Angular 2_ app work with _Travis CI_, _Coveralls_ and _Open Sauce_.
 

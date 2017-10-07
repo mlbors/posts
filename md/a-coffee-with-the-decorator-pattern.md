@@ -1,4 +1,4 @@
-## [A coffee with the Decorator pattern](https://mlbors.tumblr.com/post/159862673400/a-coffee-with-the-decorator-pattern)
+# A coffee with the Decorator pattern #
 
 The _Decorator pattern_ is structural pattern that adds new functionality to class instances. Let’s have a coffee with it!
 

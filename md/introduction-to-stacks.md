@@ -1,3 +1,5 @@
+# Introduction to Stacks #
+
 Through this small post, we are going to see what _Stacks_ are.
 
 A _Stack_ is a _data structure_ that behaves like a real-world stack, for example a deck of cards. And like in real-world, we can only add a new element to the _top_ of the _Stack_ or remove the element from the _top_ of the _Stack_.

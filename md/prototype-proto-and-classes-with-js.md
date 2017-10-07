@@ -1,4 +1,4 @@
-## [prototype, __proto__ and classes with JS](https://mlbors.tumblr.com/post/159638107370/prototype-proto-and-classes-with-js)
+# prototype, __proto__ and classes with JS #
 
 Those aforementioned three words are relative to _JavaScript_ and could sound very weird. Let’s try to understand them!
 

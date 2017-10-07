@@ -1,3 +1,5 @@
+# The Builder Pattern #
+
 In this post we are going to see what the _Builder Pattern_ is. Let's get into it!
 
 The _Builder Pattern_ is a _Creational Pattern_ that offers a solution to the _telescoping constructor anti-pattern_. It allows us to create different "_flavors_" of an object without polluting the _constructor_. 

@@ -1,4 +1,4 @@
-## [What is Big O notation?](https://mlbors.tumblr.com/post/159161311925/what-is-big-o-notation)
+# What is Big O notation?
 
 This post describes the real basics of Big O notation and doesn’t cover the entire subject. It is just a simple and brief introduction.
 

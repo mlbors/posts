@@ -1,4 +1,4 @@
-## [The Command pattern](https://mlbors.tumblr.com/post/161164215695/the-command-pattern)
+# The Command pattern
 
 In this post we are going to go through the _Command pattern_.
 

@@ -1,4 +1,4 @@
-## [A small introduction to Linked Lists](https://mlbors.tumblr.com/post/159898682575/a-small-introduction-to-linked-lists)
+# A small introduction to Linked Lists #
 
 A _linked list_ is a linear collection of data elements, which are connected together via _links_. Let’s have a quick look at it!
 

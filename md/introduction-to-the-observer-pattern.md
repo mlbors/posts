@@ -1,4 +1,4 @@
-## [Introduction to the Observer pattern](https://mlbors.tumblr.com/post/159600546460/introduction-to-the-observer-pattern)
+# Introduction to the Observer pattern
 
 The _Observer pattern_ provides a way to notify objects when another object has changed. Let’s dive into it!
 

@@ -1,4 +1,4 @@
-## [First steps with continuous integration](https://mlbors.tumblr.com/post/160147478990/first-steps-with-continuous-integration)
+# First steps with continuous integration
 
 In this post, we are going to overview some tools to use _continuous integration_.
 

@@ -1,4 +1,4 @@
-https://www.pexels.com/photo/vintage-music-antique-radio-9295/
+# A quick look at the Iterator Pattern #
 
 In this post, we are going to have a quick look at the _Iterator Pattern_.
 

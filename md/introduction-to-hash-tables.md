@@ -1,3 +1,5 @@
+# Introduction to Hash Tables #
+
 Through this article, we are going to take a look at the data structure called _Hash Table_.
 
 ## Hash Table

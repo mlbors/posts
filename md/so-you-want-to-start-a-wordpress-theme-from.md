@@ -1,4 +1,4 @@
-## [So, you want to start a Wordpress theme from scratch?](https://mlbors.tumblr.com/post/159150565830/so-you-want-to-start-a-wordpress-theme-from)
+# So, you want to start a Wordpress theme from scratch? #
 
 If you are looking for a starter kit to build a Wordpress theme from scratch, maybe _Sage_ can help you!
 

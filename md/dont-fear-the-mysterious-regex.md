@@ -1,4 +1,4 @@
-Don't fear the mysterious regex
+# Don't fear the mysterious regex #
 
 _Regular expressions_, or _regex_, are something powerful because they allow us to define a search pattern, but they can also be really frightening. Let's try to understand them a little more.
 

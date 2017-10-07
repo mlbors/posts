@@ -1,4 +1,4 @@
-## [A word about the insertion sort](https://mlbors.tumblr.com/post/159603253345/a-word-about-the-insertion-sort)
+# A word about the insertion sort
 
 _Insertion sort_ is a simple sorting algorithm that builds the final sorted array or list one item at a time.
 

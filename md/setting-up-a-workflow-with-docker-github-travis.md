@@ -1,4 +1,4 @@
-## [Setting up a workflow with Docker, GitHub, Travis and AWS](https://mlbors.tumblr.com/post/161459770660/setting-up-a-workflow-with-docker-github-travis)
+# Setting up a workflow with Docker, GitHub, Travis and AWS
 
 In this post, we are going to set up a workflow to test and deploy automatically a _PHP_ app on _Amazon Web Services Elastic Beanstalk_.
 

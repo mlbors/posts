@@ -1,4 +1,4 @@
-## [Docker and Laravel](https://mlbors.tumblr.com/post/160836281840/docker-and-laravel)
+# Docker and Laravel #
 
 In this post, we are going to set up a _Laravel_ project using _Docker_ and _Laradock_.
 

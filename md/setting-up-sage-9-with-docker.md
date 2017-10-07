@@ -1,3 +1,5 @@
+# Setting up Sage 9 with Docker #
+
 _Sage_ is a _WordPress starter theme_ developed by _Roots_. Let's see how we can quickly set it up with _Docker_.
 
 To achieve our goal, we are going to use the _PHP Docker Boilerplate_ from _WebDevOps_. We can clone the repository by simply use:
