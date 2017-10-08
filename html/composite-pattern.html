@@ -1,0 +1,208 @@
+
+<h1>The Composite Pattern</h1>
+
+<p>Through this article we are going to see what the <em>Composite Pattern</em> is. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>Composite Pattern</em> is a <em>Structural Pattern</em> that allows us to treat a group of objects the same way as a single instance of the object.</p>
+
+<p>The formal definition of the <em>Composite Pattern</em> says something like so (<em>Wikipedia</em>):</p>
+
+<p>"<em>In software engineering, the composite pattern is a partitioning design pattern. The composite pattern describes that a group of objects is to be treated in the same way as a single instance of an object. The intent of a composite is to "compose" objects into tree structures to represent part-whole hierarchies. Implementing the composite pattern lets clients treat individual objects and compositions uniformly.</em>"</p>
+
+<p>This definition may seem to be a little hard to understand when we read it for the first time. So, another way to define this pattern using plain words can lead us to say that the <em>Composite Pattern</em> lets clients treat the individual objects in a uniform manner.</p>
+
+<p>It stays a little dark. A real-world example would be a company composed of employees from various types, and they all have a salary, some responsibilities and may or may not report to someone or have some subordinates. We can also see it as a program that can print some graphics and each of them can be made of just one line or be a composition of several graphics. We can also represent it as a program that manipulates a file system which is a tree structure that contains folders and files. Folders can contain one or more file or folder objects. Files and folders have many operations and attributes in common, that is why it is more convenient to treat them both uniformly.</p>
+
+<h2 id="definitions">Definitions</h2>
+
+<p><em>The Composite Pattern</em> is made of the following objects:</p>
+
+<h3 id="component">Component</h3>
+
+<p><em>The Component</em> is the abstraction for all <em>Components</em>, including <em>Composite</em> ones. It declares the interface for objects in the composition. It can be an interface or an abstract class with some methods common to all the objects. It also declares an interface for accessing and managing its child <em>Components</em>.</p>
+
+<h3 id="leaf">Leaf</h3>
+
+<p>A <em>Leaf</em> has no children. So, it represents Leaf objects in the composition and implements all <em>Component</em> methods. </p>
+
+<h3 id="composite">Composite</h3>
+
+<p>It represents <em>Components</em> that have children and it implements methods to manipulate children and all <em>Component</em> methods, generally by delegating them to its children. It also provides additional methods for adding, removing and getting <em>Components</em>. </p>
+
+<h3 id="client">Client</h3>
+
+<p>The <em>Client</em> manipulates objects in the hierarchy through the <em>Component</em> interface.</p>
+
+<h2 id="thepattern">The Pattern</h2>
+
+<p>The aim of this pattern is to compose objects into tree structures to represent part-whole hierarchies. This pattern is also useful when we want the client to be able to ignore the difference between compositions of objects and individual objects.</p>
+
+<p>The <em>Composite Pattern</em> creates a class that contains a group of its own objects and this class provides ways to modify its group of same objects.</p>
+
+<p>With this pattern, the <em>Client</em> uses the <em>Component class interface</em> to interact with objects in the composition structure. If the object is a <em>Leaf</em>, then the request is handled directly and if it is a <em>Composite</em>, then the request is forwarded to the child <em>Components</em>.</p>
+
+<p>It is interesting to note that <em>Composite</em> and <em>Decorator</em> have similar structure diagrams. Nevertheless, <em>Decorator</em> let us add responsibilities to objects without subclassing while <em>Composite</em> focuses on representation. By the way, <em>Composite</em> can use <em>Decorator</em> to override the properties of the composition can be traversed with <em>Iterator</em>.</p>
+
+<h2 id="examples">Examples</h2>
+
+<p>We are going to make a couple of examples to illustrate this pattern.</p>
+
+<h3 id="formsystem">Form system</h3>
+
+<p>Let's say that we want to create a system that allows us to generate a web form, add many inputs as we want to it and then render it. We are going to use <em>PHP</em> to make our example.</p>
+
+<p>First, we create an interface for rendering, the <em>Component</em>:</p>
+
+<pre><code>interface RenderableInterface
+{
+    public function render(): string;
+}
+</code></pre>
+
+<p>Now, let's create some elements for our form, the <em>Leafs</em>:</p>
+
+<pre><code>class InputElement implements RenderableInterface
+{
+
+    public function render(): string
+    {
+        return '&lt;input type="text" /&gt;';
+    }
+
+}
+
+class TextElement implements RenderableInterface
+{
+
+    private $text;
+
+    public function __construct(string $text)
+    {
+        $this-&gt;text = $text;
+    }
+
+    public function render(): string
+    {
+        return $this-&gt;text;
+    }
+
+}
+</code></pre>
+
+<p>We can now create the form itself, the <em>Composite</em>:</p>
+
+<pre><code>class Form implements RenderableInterface
+{
+
+    private $elements;
+
+    public function render(): string
+    {
+        $form = '&lt;form&gt;';
+        foreach ($this-&gt;elements as $element) {
+            $form .= $element-&gt;render();
+        }
+        $form .= '&lt;/form&gt;';
+        return $form;
+    }
+
+    public function addElement(RenderableInterface $element)
+    {
+        $this-&gt;elements[] = $element;
+    }
+
+}
+</code></pre>
+
+<p>We can use our system like so:</p>
+
+<pre><code>$form = Form();
+$form-&gt;addElement(TextElement('First Name:'));
+$form-&gt;addElement(InputElement());
+$form-&gt;addElement(TextElement('Last Name:'));
+$form-&gt;addElement(InputElement());
+$form-&gt;render();
+</code></pre>
+
+<h3 id="drawingprogram">Drawing program</h3>
+
+<p>Let's try to make a simple implementation of our drawing program. Here, we are going to use <em>Java</em>.</p>
+
+<p>First, we create an interface for the shapes, the <em>Component</em>:</p>
+
+<pre><code>public interface Shape {
+    public void draw();
+}
+</code></pre>
+
+<p>Now, let's create a <em>Leaf</em> element:</p>
+
+<pre><code>public class Line implements Shape {
+
+    public Line(int x1, int y1, int x2, int y2) {
+        // Do something or not
+    }
+
+    public void draw() {
+        System.out.println("Line at " + x1 + " " + y1 + " " + x2 + " " + y2);
+    }
+
+}
+</code></pre>
+
+<p>And now we create a complex shape, a <em>Composite</em>:</p>
+
+<pre><code>public class Rectangle implements Shape {
+
+    Shape[] edges = {new Line(-1,-1,1,-1), new Line(-1,1,1,1), new Line(-1,-1,-1,1), new Line(1,-1,1,1)};
+
+    public void draw() {
+
+        for (Shape s : edges) {
+            s.draw();
+
+        }
+
+    }
+
+}
+</code></pre>
+
+<p>The <em>Client</em> could be something like so:</p>
+
+<pre><code>public class editor {
+
+    public static void main(String[] args) {
+
+        List shapes = new ArrayList();
+
+        Shape line = new Line(0,0,1,1);
+        Shape rectangle = new Rectangle();
+
+        shapes.add(line);
+        shapes.add(rectangle);
+
+        render(shapes);
+
+    }
+
+    private static void render(List shapes) {
+
+        for (Shape s : shapes){
+            s.draw();
+        }
+
+    }
+
+}
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this post, we saw what the <em>Composite Pattern</em> is and how it works. We saw that it relies on four elements: <em>Component</em>, <em>Leaf</em>, <em>Composite</em> and <em>Client</em>. This pattern lets clients treat individual objects in a uniform manner.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
