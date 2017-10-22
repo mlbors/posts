@@ -1,0 +1,148 @@
+<h1>When Javascript Promises</h1>
+
+<p>Through this article, we are going to see what <em>Promises</em> are in <em>JavaScript</em> and how we can use them.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Promises</em> are now widely used in <em>JavaScript</em>, but they can stay a little confused. <em>Promises</em> were introduced by <em>ECMAScript 6</em>. They intend to provide a way to deal with the completion of asynchronous tasks. They are an alternative to <em>callbacks</em> for delivering the results of an asynchronous computation.</p>
+
+<p>Just for a simple refresh, a <em>callback</em> function, also known as a <em>higher-order function</em>, is a function that is passed to another function as a parameter. The function is called inside this other function.</p>
+
+<p>One of the biggest problems of <em>callbacks</em> is the chaining of different asynchronous activities, because we end up with a growing stack of <em>callback functions</em> (callback hell). <em>Promises</em> aim to provide a solution to this problem and an alternative for executing, composing and managing asynchronous operations.</p>
+
+<h2 id="howitworks">How it works</h2>
+
+<p>A <em>Promise</em> is an object that can be returned synchronously from an asynchronous operation and it can have one of the following states:</p>
+
+<ul>
+<li>Pending: we don't know the outcome because the operation that will produce the result hasn't completed yet.</li>
+
+<li>Fulfilled: the operation has completed and we have a value</li>
+
+<li>Rejected: the operation failed</li>
+</ul>
+
+<p>A <em>Promise</em> is <em>settled</em> if it’s not <em>pending</em>.</p>
+
+<h2 id="resolvereject">Resolve, Reject</h2>
+
+<p>The <em>Promise constructor</em> takes one argument: a <em>callback function</em> with two parameters, <em>resolve</em> and <em>reject</em>. It is our responsibility to call <em>resolve</em> and <em>reject</em>, and eventually to pass values to them.</p>
+
+<p>Let's make a very basic example with what we know:</p>
+
+<pre><code>const p =&gt; time = new Promise((resolve, reject) =&gt; {
+    if (time &lt; 1) {
+        reject('Failure');
+        return;
+    }
+
+    setTimeout(resolve('Success'), time);
+});
+</code></pre>
+
+<p>In this example, we just create a <em>Promise</em> that will return '<em>Success</em>' after a given time or will fail if the given time is smaller than 1. Here, we placed a <em>return</em> after the <em>reject</em> to terminate the control flow and to prevent the execution of extra code, but it is not strictly needed.</p>
+
+<h2 id="thencatch">Then / Catch</h2>
+
+<p>How can we use the <em>Promise</em> that we created? We can do it with the <em>then method</em>. This method takes two arguments, <em>resolved</em> and <em>rejected</em>. This last one is optional and is called when the <em>Promise</em> is rejected. We could do it like so:</p>
+
+<pre><code>p(500).then((resolved) =&gt; {
+    console.log(resolved);
+}, (rejected) =&gt; {
+    console.log(rejected);
+});
+</code></pre>
+
+<p>We can also use the <em>catch method</em> to handle errors.</p>
+
+<pre><code>p(500).then((resolved) =&gt; {
+    console.log(resolved);
+}).catch((error) =&gt; {
+    console.log(error);
+});
+</code></pre>
+
+<p>In case of error, we can also use <em>throw</em>. We can use it any time we are inside a <em>Promise callback</em>, but if we are in any other asynchronous <em>callback</em>, we have to use <em>reject</em> because otherwise <em>catch</em> won't be triggered and we will be left with an unresolved <em>Promise</em> and an uncaught exception.</p>
+
+<pre><code>// Uncaught exception
+
+const p = new Promise((resolve) =&gt; {
+    setTimeout(() =&gt; {
+        throw 'Error';
+    }, 500);
+});
+
+p.then((res) =&gt; {
+
+}).catch((error) =&gt; {
+    console.log(error); // won't happen
+});
+
+// Caught exception
+
+const p = new Promise((resolve) =&gt; {
+    setTimeout(() =&gt; {
+        resolve('Ok');
+    }, 500);
+});
+
+p.then((res) =&gt; {
+    throw 'error';
+}).catch((error) =&gt; {
+    console.log(error);
+});
+</code></pre>
+
+<h2 id="chaining">Chaining</h2>
+
+<p>The <em>then method</em> returns a <em>Promise</em> which allows for method chaining.</p>
+
+<pre><code>p(500).then((val) =&gt; {
+    console.log(val);
+    return val;
+}).then((val) =&gt; {
+    val = val + ' ' + 'foo';
+    console.log(val);
+}).catch((error) =&gt; {
+    console.log(error);
+});
+</code></pre>
+
+<h2 id="promiseall">Promise.all()</h2>
+
+<p>The <em>Promise.all</em> method returns a single <em>Promise</em> that resolves when all of the <em>Promises</em> passed in the argument have resolved. So, this method takes an array of <em>Promises</em> and fires one <em>callback</em> once they are all resolved. It can be used to aggregate the results of multiple <em>Promises</em>.</p>
+
+<pre><code>const p = time =&gt; new Promise((resolve, reject) =&gt; {
+    if (time &lt; 1) {
+        reject('Failure');
+        return;
+    }
+
+    setTimeout(resolve('Success'), time);
+});
+
+const p2 = new Promise((resolve, reject) =&gt; {    
+    setTimeout(resolve('Another promise'), 1000);
+});
+
+p(500).then((val) =&gt; {
+    console.log(val);
+    return val;
+}).then((val) =&gt; {
+    val = val + ' ' + 'foo';
+    console.log(val);
+    return Promise.all([p2, val]);
+}).then(([p2, val]) =&gt; {
+    console.log(val + ' ' + p2);
+}).catch((error) =&gt; {
+    console.log(error);
+});
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article, we saw what <em>Promises</em> are and how we can use them. We saw that <em>Promises</em> are an alternative to <em>callbacks</em> for delivering the results of an asynchronous computation.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
