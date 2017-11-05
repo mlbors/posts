@@ -1,0 +1,108 @@
+<h1>Restoring with the Memento Pattern</h1>
+
+<p>In this article we are going to take a look at the <em>Memento Pattern</em> and how we can use it. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>Memento Pattern</em> is a <em>Behavioural Pattern</em> that offers a way to restore an object back to its previous state, like an "<em>undo</em>" or a "<em>rollback</em>" operation. Its formal definition is the following one:</p>
+
+<p>"<em>Without violating encapsulation, capture and externalize an object's internal state so that the object can be restored to this state later.</em>"</p>
+
+<p>One of the most famous examples that illustrates the <em>Memento Pattern</em> is a good old calculator where the last calculation is saved in memory so that we can get back to it and eventually restore it.</p>
+
+<h2 id="thepattern">The Pattern</h2>
+
+<p>The <em>Memento Pattern</em> contains a snapshot of the state of an object in a way that it can be restored later without revealing its implementation. It is useful when we want to provide some sort of "<em>undo</em>" functionality or when using a direct interface to obtain the state would expose implementation details and break the object's encapsulation.</p>
+
+<p>The <em>Command Pattern</em> can use <em>Memento</em> to maintain the state required for an "<em>undo</em>" operation.</p>
+
+<h2 id="structure">Structure</h2>
+
+<p>The <em>Memento Pattern</em> needs three things:</p>
+
+<h3 id="memento">Memento</h3>
+
+<p>It contains a concrete snapshot of the state of any object. The state can include any number of state variables. The <em>Memento</em> object is like a black box that no one can or should change. </p>
+
+<h3 id="originator">Originator</h3>
+
+<p>It contains the actual state of an external object and knows how to save itself. So it can create a <em>Memento</em> containing a snapshot of its current internal state and it can use the <em>Memento</em> to restore its internal state. However, it doesn't know the history of changes.</p>
+
+<h3 id="caretaker">Caretaker</h3>
+
+<p>It is responsible for keeping the <em>Memento</em> and it must not operate on it. It knows why and when the <em>Originator</em> needs to save and restore itself.</p>
+
+<h2 id="example">Example</h2>
+
+<p>Knowing what we know, let's make a quick example of this pattern. We are going to use <em>PHP</em> for this and we are going to say that we are building a basic text editor.</p>
+
+<p>First, we create the <em>Memento</em>:</p>
+
+<pre><code>class Memento
+{
+
+    protected $content;
+
+    public function __construct(string $content)
+    {
+        $this-&gt;content = $content;
+    }
+
+    public function getContent()
+    {
+        return $this-&gt;content;
+    }
+
+}
+</code></pre>
+
+<p>Then we can define our <em>Originator</em>. Here it is going to be our editor.</p>
+
+<pre><code>class Editor
+
+{
+    protected $content = '';
+
+    public function type(string $words)
+    {
+        $this-&gt;content = $this-&gt;content . ' ' . $words;
+    }
+
+    public function getContent()
+    {
+        return $this-&gt;content;
+    }
+
+    public function save()
+    {
+        return new Memento($this-&gt;content);
+    }
+
+    public function restore(Memento $memento)
+    {
+        $this-&gt;content = $memento-&gt;getContent();
+    }
+
+}
+</code></pre>
+
+<p>Our <em>Client</em>, or the <em>Caretaker</em>, can be like so:</p>
+
+<pre><code>$editor = new Editor();
+$editor-&gt;type('A sentence.');
+$editor-&gt;type('Another sentence');
+
+$saved = $editor-&gt;save();
+
+$editor-&gt;type('And another one');
+
+$editor-&gt;restore($saved);
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this short post we saw how works the <em>Memento Pattern</em>. We saw this is a <em>Behavioural Pattern</em> and it needs three things: a <em>Memento</em>, an <em>Originator</em> and a <em>Caretaker</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
