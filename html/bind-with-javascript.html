@@ -1,0 +1,86 @@
+<h1 id="bindwithjavascript">Bind with JavaScript</h1>
+
+<p>In this article we are going to see how the <em>bind()</em> method works in <em>JavaScript</em> and how we can use it.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>bind()</em> method was introduced by <em>ECMAScript 5</em>. It creates a new function that, when called, has its <em>this</em> keyword set to the provided value. It allows us to set which specific object will be bound to <em>this</em> when a function or method is invoked. In other words, we pass our desired context into the <em>bind()</em> function. When the callback function is executed, it uses the context we passed.</p>
+
+<p>In simple and short terms, it solves the famous problem where we lose <em>this</em> and, to avoid that, we place <em>this</em> into a variable to reuse it later. It allows us to set which object is treated as <em>this</em> within a function call.</p>
+
+<p>Unfortunately, some old browsers don't support <em>bind()</em>. So, maybe we will have to keep using the "cache method" or use the method that a framework provides. Nevertheless, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">MDN also suggests a solution with polyfill</a>.</p>
+
+<h2 id="asimpleexample">A simple example</h2>
+
+<p>Knowing what we know, let's make a simple example.</p>
+
+<p>The following thing doesn't work:</p>
+
+<pre><code>let character = {
+    name: 'Mario',
+    getName: function() {
+        return this.name;
+    }
+};
+
+let saySomething = function(sentence) {
+    console.log("It's me, " + this.getName());
+    console.log(sentence)
+}
+
+saySomething('Here we go!');
+</code></pre>
+
+<p>We can solve our problem by using the <em>bind()</em> method like so:</p>
+
+<pre><code>let character = {
+    name: 'Mario',
+    getName: function() {
+        return this.name;
+    }
+};
+
+let saySomething = function(sentence) {
+    console.log("It's me, " + this.getName());
+    console.log(sentence)
+}
+
+let logCharacter = saySomething.bind(character);
+logCharacter('Here we go!');
+</code></pre>
+
+<p>Here, we use the <em>bind()</em> method by passing <em>character</em> as an argument. So, <em>character</em> is used as our context (<em>this</em>) with the copy of <em>saySomething</em> and so it recognizes the properties and methods of <em>character</em>.</p>
+
+<h2 id="asynchronous">Asynchronous</h2>
+
+<p>Let's imagine the following code:</p>
+
+<pre><code>let character = {
+    name: 'Mario',
+    hello: function() {
+        console.log(`It's me, ${this.name}!`);
+    }
+};
+
+setTimeout(character.hello, 500);
+</code></pre>
+
+<p>We can see that it doesn't work because we have lost the context. We can solve the problem by using <em>bind()</em>.</p>
+
+<pre><code>let character = {
+    name: 'Mario',
+    hello: function() {
+        console.log(`It's me, ${this.name}!`);
+    }
+};
+
+setTimeout(character.hello.bind(character), 500);
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this small article, we saw how <em>bind()</em> works in <em>JavaScript</em>. We saw that it creates a copy of a function that uses the context that we passed in argument.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
