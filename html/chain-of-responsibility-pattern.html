@@ -1,0 +1,140 @@
+<h1 id="chainofresponsibilitypattern">Chain of Responsibility Pattern</h1>
+
+<p>Through this article we are going to take a look at the <em>Chain of Responsibility Pattern</em>. Let's get into!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>Chain of Responsibility Pattern</em> is <em>Behavioural Pattern</em> that is defined like so:</p>
+
+<p>"<em>Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request. Chain the receiving objects and pass the request along the chain until an object handles it.</em>"</p>
+
+<p>A real world example of this pattern would be a king that gives orders to his army. The closest element to react would be the commander, then the officer and then the soldier and those three elements would form a <em>Chain of Responsibility</em>.</p>
+
+<h2 id="thepattern">The Pattern</h2>
+
+<p>In plain words, this pattern helps to build a chain of objects and allows an object to send a request without knowing what object will receive and handle it. The request enters from one end and keeps going from object to object until it finds the suitable handler.</p>
+
+<p>In the <em>Chain of Responsibility Pattern</em>, each receiver contains a reference to another receiver. If one object cannot handle the request, then it passes the same request to the next receiver and so on.</p>
+
+<p><em>Chain of Responsibility</em> can use <em>Command</em> to represent requests as objects and it is also often used with <em>Composite</em>.</p>
+
+<h2 id="structure">Structure</h2>
+
+<p>This pattern needs the following things:</p>
+
+<h3 id="handler">Handler</h3>
+
+<p>It defines an interface for handling requests. It can also implement the successor link.</p>
+
+<h3 id="requesthandler">Request Handler</h3>
+
+<p>It handles the requests it is responsible for. If it can handle the request it does so, otherwise it forwards the request to its successor.</p>
+
+<h3 id="client">Client</h3>
+
+<p>It sends commands to the first object in the chain that may handle the command.</p>
+
+<h2 id="example">Example</h2>
+
+<p>Let's make a simple example to illustrate how we can use this pattern. We are going to us <em>PHP</em> for this and we are going to say we are building some kind of service.</p>
+
+<p>First, we define an interface (<em>Handler</em>):</p>
+
+<pre><code>interface Handler
+{
+    public function handleRequest($request); 
+    public function setSuccessor($nextService);        
+}
+</code></pre>
+
+<p>Then we can have two concrete implementations (<em>Request Handlers</em>):</p>
+
+<pre><code>class JsonService implements Handler
+{
+
+    private $successor;
+
+    public function setSuccessor($nextService)
+    {
+        $this-&gt;successor = $nextService;
+    }
+
+    public function handleRequest($request)
+    {
+        if ($request-&gt;getService() == "JSON")
+        {
+            echo ("I am parsing JSON!");
+        }
+        else if ($this-&gt;successor != NULL)
+        {
+            $this-&gt;successor-&gt;handleRequest($request);
+        }
+    }
+
+}
+
+class XMLService implements Handler
+{
+
+    private $successor;
+
+    public function setSuccessor($nextService)
+    {
+        $this-&gt;successor = $nextService;
+    }
+
+    public function handleRequest($request)
+    {
+        if ($request-&gt;getService() == "XML")
+        {
+            echo ("I am parsing XML");
+        }
+        else if ($this-&gt;successor != NULL)
+        {
+            $this-&gt;successor-&gt;handleRequest($request);
+        }
+    }
+
+}
+</code></pre>
+
+<p>We can now define some kind of request:</p>
+
+<pre><code>class Request
+{
+
+    private $value;
+
+    public function __construct($service)
+    {
+        $this-&gt;value = $service;
+    }
+
+    public function getService()
+    {
+        return $this-&gt;value;
+
+    }
+
+}
+</code></pre>
+
+<p>And our <em>Client</em> could be like so:</p>
+
+<pre><code>$json = new JsonService();
+$xml = new XMLService();
+
+$json-&gt;setSuccessor($xml);
+
+$request = new Request("XML");
+
+$json-&gt;handleRequest($request);
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw how works the <em>Chain of Responsibility Pattern</em>. We saw that it is a <em>Behavioural Pattern</em> that allows us to build a chain of objects to handle a call in sequential order. To apply this pattern, we need a <em>Handler</em>, a <em>Request Handler</em> and a <em>Client</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
