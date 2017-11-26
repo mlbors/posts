@@ -1,0 +1,244 @@
+<h1 id="javascriptclosures">JavaScript Closures</h1>
+
+<p><em>Closures</em> are really common in <em>JavaScript</em>, but their definition can seem to be a little dark. Let's take a look at them!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>MDN web docs</em> defines <em>closures</em> like so:</p>
+
+<p>"<em>A closure is the combination of a function and the lexical environment within which that function was declared.</em>"</p>
+
+<p>What does that really mean? We can view <em>closures</em> as objects that contain a function and a reference to the environment in which the function was created. They allow to implement such things as <em>callbacks</em> or <em>event handlers</em>. They give us access to an outer function's scope from an inner function.</p>
+
+<p>Basically, we can use a <em>closure</em> by defining a function inside another function. We then have to expose it by returning it or passing it to another function. </p>
+
+<p>In <em>JavaScript</em>, <em>closures</em> are used to enable data privacy because the enclosed variables are only in scope within the parent function.</p>
+
+<h2 id="afewdefinitions">A few definitions</h2>
+
+<p>First, let's take a look at some definitions.</p>
+
+<h3 id="scope">Scope</h3>
+
+<p>In <em>JavaScript</em>, a scope refers to the "<em>place</em>" where variables and functions are accessible and in what context it is being executed. When something is accessible from anywhere in our code, it is in the global scope. Local scope refers to something that is only accessible in a certain part of our code.</p>
+
+<p>When we create a function, it has access to variables created inside and outside the function. Variables created inside a function are locally defined and can only be accessed inside this function.</p>
+
+<h3 id="firstclassfunctions">First-Class Functions</h3>
+
+<p>Basically, functions are considered as <em>First-Class Citizens</em> when they are "<em>being able to do what everyone else can do</em>". So, they can be assigned to a variable, passed as an argument or returned from a function.</p>
+
+<h3 id="innerfunctions">Inner Functions</h3>
+
+<p>Also called <em>Nested Functions</em>, they are defined inside of another function (outer function). Every time this outer function is called, an instance of the inner function is created.</p>
+
+<h2 id="basicexample">Basic example</h2>
+
+<p>Knowing what we know, let's make a simple example using a <em>closure</em>.</p>
+
+<pre><code>function say() {
+    let x = 'Hello World!';  
+    function hello() {  
+        console.log(x);    
+    }
+    return hello;
+}
+
+let sayHello = say();
+sayHello();
+</code></pre>
+
+<p>Here, our function <em>say()</em> returns the inner function <em>hello()</em> from the outer function before being executed. The <em>hello()</em> function is only available within the body of the <em>say()</em> function and has no local variables. Nevertheless, because inner functions have access to the variables of outer functions, <em>hello()</em> can access the variable <em>x</em> declared in the parent function.</p>
+
+<p>Once <em>say()</em> has finished executing, we might expect that the <em>x</em> variable would no longer be accessible, but it is not the case. <em>sayHello()</em> is a reference to the instance of the function <em>hello()</em> that is created when <em>say()</em> function is run and so a reference is kept to the lexical environment of <em>hello()</em> where the variable <em>x</em> exists. This is why this last variable remains available when <em>sayHello()</em> is invoked.</p>
+
+<h2 id="afactoryoffunctions">A factory of functions</h2>
+
+<p>Let's imagine the following code:</p>
+
+<pre><code>function sentenceFactory(x) {
+    return function(y) {
+        return String(x) + String(y);
+    };
+}
+
+let sentence1 = sentenceFactory('Hello ');
+let sentence2 = sentenceFactory('Hey ');
+
+console.log(sentence1('John'));
+console.log(sentence2('Paul'));
+</code></pre>
+
+<p>Here, we create some kind of factory, <em>sentenceFactory(x)</em>, that takes a single argument and returns a new function that also takes one argument. Our functions <em>sentence1</em> and <em>sentence2</em> are closures and they share the same function body definition, but they store different lexical environments.</p>
+
+<h2 id="controllingsideeffects">Controlling side effects</h2>
+
+<p><em>Closures</em> can be helpful to control side effects, such as <em>Ajax request</em> or <em>timeout</em>.</p>
+
+<pre><code>function sayHello(name) {
+    setTimeout(function() {
+        console.log('Hello ' + name);
+    }, 1000);
+}
+</code></pre>
+
+<p>The previous code would print out our message immediately after one second. Maybe we don't want that and print our message later. We can do that with a <em>closure</em>:</p>
+
+<pre><code>function sayHello(name) {
+    return function() {
+        setTimeout(function() {
+            console.log('Hello ' + name);
+        }, 1000);
+    }
+}
+
+const sayHelloLater = sayHello('Ringo');
+sayHelloLater();
+</code></pre>
+
+<h2 id="emulatingprivatemethods">Emulating private methods</h2>
+
+<p><em>JavaScript</em> does not support private data and does not provide a native way of doing this. However, we can emulate private methods using <em>closures</em>. Private methods are useful for restricting access to code and provide a way of managing our global namespace.</p>
+
+<pre><code>function Person(name) {
+
+    let _name = name;
+
+    function takeInstrument() {
+        return 'guitar';
+    }
+
+    return {
+        sayHello: function() {
+            console.log('Hello ' + _name);
+        },
+        getName: function() {
+            console.log(_name);
+        },
+        play: function() {
+            console.log(_name + ' is playing the ' + takeInstrument());
+        }
+    }
+
+}
+
+const person1 = Person('George');
+person1.sayHello();
+person1.getName();
+person1.play();
+</code></pre>
+
+<p>In this example, <em>name</em> and <em>takeInstrument()</em> are private because they cannot be accessed directly from outside the <em>Person(name)</em> function. They are accessed by three public functions that are returned.</p>
+
+<h2 id="loopproblem">Loop problem</h2>
+
+<p>It can be very tempting to create <em>closures</em> in a loop. Let's first imagine the following example:</p>
+
+<pre><code>function generateLinks() {
+
+    var info = [
+        {'name': 'John', 'instrument': 'Guitar'},
+        {'name': 'Paul', 'instrument': 'Bass'},
+        {'name': 'George', 'instrument': 'Guitar'},
+        {'name': 'Ringo', 'instrument': 'Drum'}
+    ];
+
+    for (var i = 0, link; i &lt; info.length; i++) {
+
+        var item = info[i];
+
+        var link = document.createElement("a");
+        link.innerHTML = item.name;
+        link.onclick = function() {
+            alert(item.instrument);
+        };
+
+        document.body.appendChild(link);
+    }
+
+}
+
+window.onload = generateLinks;
+</code></pre>
+
+<p>This code doesn't work as expected: our alert always shows the same message. But why? Four <em>closures</em> have been created by the loop, but each one shares the same single lexical environment. The <em>item.instrument</em> value is determined when the <em>onclick callbacks</em> are fired. It means that the loop continues until the end and so the <em>item</em> variable is left pointing to the last entry when <em>generateLinks()</em> exits.</p>
+
+<p>We could fix it like so:</p>
+
+<pre><code>function createAlert(info) {
+    return function() {
+        alert(info);
+    };
+}
+
+function generateLinks() {
+
+    var info = [
+        {'name': 'John', 'instrument': 'Guitar'},
+        {'name': 'Paul', 'instrument': 'Bass'},
+        {'name': 'George', 'instrument': 'Guitar'},
+        {'name': 'Ringo', 'instrument': 'Drum'}
+    ];
+
+    for (var i = 0, link; i &lt; info.length; i++) {
+
+        var item = info[i];
+
+        var link = document.createElement("a");
+        link.innerHTML = item.name;
+        link.onclick = createAlert(item.instrument);
+
+        document.body.appendChild(link);
+    }
+
+}
+
+window.onload = generateLinks;
+</code></pre>
+
+<p>We could also fix our code by using <em>let</em> instead of <em>var</em>.</p>
+
+<h2 id="inotherprogramminglanguages">In other programming languages</h2>
+
+<p>Closures are not available just in <em>JavaScript</em>. We can use them in other programming languages.</p>
+
+<p>With <em>PHP</em>:</p>
+
+<pre><code>function adder($n) {
+    return function($v) use($n) {
+        return $v + $n;
+    };
+}
+
+$adder10 = adder(10);
+$adder10(1);
+</code></pre>
+
+<p>With <em>Python</em>:</p>
+
+<pre><code>def adder(nombre):
+    return lambda v: v + n
+
+adder10 = adder(10)
+adder10(1)
+</code></pre>
+
+<p>With <em>Swift</em>:</p>
+
+<pre><code>func adder(_ n: Int) -&gt; (Int) -&gt; Int {
+    return { n + $0 }
+}
+
+let adder10 = adder(10)
+print(adder10(5))
+</code></pre>
+
+<p>And so on!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we took a look at <em>closures</em> in <em>JavaScript</em> and saw how they work. We saw that a <em>closure</em> is formed when an outer function exposes an inner function and it contains a function and a reference to the environment in which it was created. <em>Closures</em> can be used to deal with <em>callback</em> functions and to emulate private data.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
