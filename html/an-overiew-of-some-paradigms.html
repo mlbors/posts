@@ -1,0 +1,93 @@
+<h1 id="anoverviewofsomeparadigms">An overview of some Paradigms</h1>
+
+<p>In this article, we are going to have an overview of some programming paradigms to get a little more familiar with them.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Here we are not going to look at each programming paradigm that exists, because it would be too complex. We are going to have an overview of some popular and common paradigms. Our aim is to define them with simple terms and try to understand them better.</p>
+
+<h2 id="whatisaparadigm">What is a paradigm?</h2>
+
+<p>A paradigm is like a set of concepts or thought patterns that includes theories, research methods or postulates. It is a system of assumptions that serves as a model. It is a way to see the reality.</p>
+
+<h2 id="whatistherelationshipwithprogramming">What is the relationship with programming?</h2>
+
+<p>In programming, paradigms are a way to classify programming languages based on their features. Each programming language follows one or more paradigms. Most of the major language paradigms were invented between the late 1960s and the late 1970s.</p>
+
+<p>Some paradigms are concerned with implications for the execution model of the language, which specifies "<em>how work takes place</em>". So, they are concerned with such things as allowing side effects, in other words, when a function modifies the state of something else outside its own scope, or whether the sequence of operations is defined by the execution model. Other paradigms are concerned with the way that code is organized or with the style of syntax and grammar.</p>
+
+<h2 id="imperative">Imperative</h2>
+
+<p>Also known as <em>Procedural Programming</em>, <em>Imperative Programming</em> uses statements that change the state of a program. In a way, it is like following a recipe. The <em>Imperative Programming</em> is concerned with defining a linear procedure or sequence of programming statements. It consists of commands for the computer to perform. It could be summarized with the sentence "<em>first do this, next do that</em>".</p>
+
+<p>The <em>Imperative Programming</em> approach is to treat any solution like a series of steps to be performed. So, it uses procedures, functions, subroutines or methods to split the program in small tasks and that makes possible to reuse the code as many times as we want in the program.</p>
+
+<p>The first <em>Imperative Languages</em> were the machine languages and the hardware implementation of nearly all computers is <em>Imperative</em> because it is designed to execute machine code.</p>
+
+<p>Representative programming languages that use this paradigm would be <em>FORTRAN</em>, <em>COBOL</em> or <em>BASIC</em>.</p>
+
+<h2 id="declarative">Declarative</h2>
+
+<p>In a few words, <em>Declarative Programming</em> describes what it does, but not how it does it. So, we program by specifying the result we want, but not how to get it. It means that the control flow is implicit. It means no loops and no assignments.</p>
+
+<p>Representative languages would be <em>HTML</em>, <em>CSS</em> or <em>SQL</em>.</p>
+
+<h2 id="structured">Structured</h2>
+
+<p>The <em>Structured Programming</em> paradigm removes <em>global variables</em>, <em>GOTO</em> and introduces <em>local variables</em>. It means that we create blocks that contain instructions that don't depend on any other. Here, the control flow is defined by nested loops, conditionals and subroutines. It also has in main traits things like structograms and indentation.</p>
+
+<p>Representative programming languages that use this paradigm would be <em>C</em> or <em>Pascal</em>.</p>
+
+<h2 id="functional">Functional</h2>
+
+<p><em>Functional Programming</em> treats computations as the evaluation of mathematical functions and avoids changing-state and mutable data. So, it sees all subprograms as functions that have arguments and return a single solution based on the input. It means that every time a function is called with the argument <em>x</em> it will produce the same result <em>f(x)</em>.</p>
+
+<p>This paradigm allows to pass functions to functions and to return functions from functions. Here, the control flow is expressed by combining function calls, rather than by assigning values to variables.</p>
+
+<p>Representative programming languages would be <em>Haskell</em>, <em>Erlang</em>, <em>Scala</em>, <em>Scheme</em> or <em>Lisp</em>.</p>
+
+<h2 id="logic">Logic</h2>
+
+<p>The <em>Logic Programming</em> paradigm expresses a set of sentences in a logical form. It means that logical assertions about a specific situation are made, then it is checked if it still true or not. It can be viewed as controlled deduction. We focus on facts stored in memory, called the knowledge base.</p>
+
+<p>It is a form a <em>Declarative Programming</em> and the process flow is reversed because it asserts result first.</p>
+
+<p>One representative language would be <em>Prolog</em>.</p>
+
+<h2 id="objectoriented">Object-Oriented</h2>
+
+<p>In <em>Object-Oriented Programming</em>, or <em>OOP</em>, data is represented as objects. These objects are instances of classes that have attributes, representing data fields, and functions called <em>methods</em>. Objects are separate entities and have their own state which is modified built in methods. In <em>Object-Oriented Programming</em>, programs are based on the sending of messages to objects, that respond by performing operations. This concept also provides <em>data encapsulation</em> and <em>information hiding</em> to protect internal properties of an object.</p>
+
+<p>One representative language would be <em>Smalltalk</em>. However, many programming languages are multi-paradigm and support some elements of <em>OOP</em> and combine them with an <em>Imperative</em> style, like <em>Java</em>, <em>C++</em>, <em>PHP</em> or <em>Python</em>.</p>
+
+<h2 id="eventdriven">Event-Driven</h2>
+
+<p>Here the control flow is determined by events, such as user actions. It means there are <em>event emitters</em> and <em>listeners</em>. It is dominant in graphical user interfaces. Nevertheless, a lot of software relies on user events for functionality, so we could argue that <em>Event-Driven Programming</em> is present for nearly all kinds of projects.</p>
+
+<p>Representative languages would be <em>JavaScript</em>, <em>ActionScript</em> or <em>Visual Basic</em>.</p>
+
+<h2 id="parallelprogramming">Parallel Programming</h2>
+
+<p>When we talk about <em>Parallel Programming</em>, we mean that we use parallel hardware to execute computation more quickly. It is mainly concerned with speeding-up computation time. So, multiple actions are executed at the same time.</p>
+
+<p><em>Parallel Programming</em> could be achieved with <em>C++</em> and <em>OpenMP</em>, for example.</p>
+
+<h2 id="concurrentprogramming">Concurrent Programming</h2>
+
+<p>In <em>Concurrent Programming</em> several computations are executed concurrently. So, it means that only one statement is executed at any point in time, but we have no guarantee which task will be executed in the next step. One task doesn't have to wait that another one ends before starting.</p>
+
+<p><em>Concurrent Programming</em> could be achieved with <em>Scala</em>, <em>Go</em>, or <em>Elixir</em>.</p>
+
+<h2 id="multiparadigms">Multi paradigms</h2>
+
+<p>Many programming languages combine multiple paradigms to get the advantages of each. This gives us more freedom and flexibility, but it could also increase the complexity of the programs themselves.</p>
+
+<p><em>C++</em> and <em>Java</em> fit into that category.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw what a paradigm is and how it is related to programming. We also had a brief overview of some major programming paradigms by looking at their main concept and how they apply it. We also saw that some programming languages are multi paradigms to give more freedom and to write programs that suit the nature of a specific problem. Many more paradigms exist and some depend on some major paradigms we saw.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
