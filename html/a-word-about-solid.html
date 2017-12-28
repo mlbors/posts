@@ -1,0 +1,125 @@
+<h1 id="awordaboutsolid">A word about SOLID</h1>
+
+<p>Through this article, we are going to take a look at the principles hidden behind the <em>SOLID</em> acronym.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In computer programming, <em>SOLID</em> is an acronym for five design principles. They applied to object-oriented programming, but, in a way, can be extended to programming in general. These principles were introduced by <em>Robert C. Martin</em>, also known as <em>Uncle Bob</em>, in the early 2000s.</p>
+
+<p>These principles are not laws, but they can help us write better code. Applying those principles allows us to have a low coupling, high cohesion and strong encapsulation. Our code will be easy to maintain, to reuse or to extend. In other words, we can achieve scalability and avoid our code to breaks after every single change.</p>
+
+<h2 id="principles">Principles</h2>
+
+<p>As we said, <em>SOLID</em> is an acronym and every letter stands for the following principles:</p>
+
+<ul>
+<li><strong>S</strong> – Single-responsibility principle</li>
+
+<li><strong>O</strong> – Open-closed principle</li>
+
+<li><strong>L</strong> – Liskov substitution principle</li>
+
+<li><strong>I</strong> – Interface segregation principle</li>
+
+<li><strong>D</strong> – Dependency Inversion Principle</li>
+</ul>
+
+<p>Let's have an overview of these different principles.</p>
+
+<h2 id="singleresponsibilityprinciple">Single-responsibility principle</h2>
+
+<blockquote>
+  <p>"<em>There should never be more than one reason for a class to change</em>"</p>
+</blockquote>
+
+<p>The <em>Single Responsibility Principle</em> (<em>SRP</em>) asserts that a class or module should do one thing only. This principle states that an object should only have one responsibility, in other words, a reason to change, and it should be completely encapsulated by the class. In other words, we have to avoid our class to be a <em>Swiss Army Knife</em>!</p>
+
+<p>We have to ask ourselves if the logic we are implementing should live in the class we are writing. It is a good practice to split big classes in smaller ones and to avoid "<em>god classes</em>".</p>
+
+<h2 id="openclosedprinciple">Open-closed principle</h2>
+
+<blockquote>
+  <p>"<em>Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification</em>"</p>
+</blockquote>
+
+<p>This principle states that any class should be written in a way that it can be used as it is. It can be extended if needed, but it can never be modified.</p>
+
+<p>"<em>Open to extension</em>" means that we should create our classes so that new functionality can be added while new requirements are generated. "<em>Closed for modification</em>" means that once we have developed a class we should never modify it, except to correct bugs.</p>
+
+<p>If we apply this principle, we will get a loose coupling and it will improve readability. It will also reduce the risk of breaking existing functionality.</p>
+
+<h2 id="liskovsubstitutionprinciple">Liskov substitution principle</h2>
+
+<blockquote>
+  <p>"<em>Objects in a program should be replaceable with instances of their subtypes without altering the correctness of that program</em>"</p>
+</blockquote>
+
+<p>The main idea here is that objects should be replaceable by instances of their subtypes without affecting the functioning of the system.</p>
+
+<p>This principle applies to inheritance hierarchies and it states that classes should be designed in a way that the client dependencies can be substituted with subclasses without the client knowing about that change. All subclasses must operate the same manner as their base classes. The specific functionality of a subclass may be different, but must conform to the expected behaviour of its base class.</p>
+
+<p>So, the parameters in subclasses must either be the same types as those in the base class or must be less restrictive. (contravariance) In the same way, the subclasses return types must be the same as the base class return types (covariance).</p>
+
+<p>To apply this principle, we also need to take care of the preconditions and the postconditions. A precondition of a class is a rule that must be in place before an action can be taken while a postcondition describes the state of objects after a process is completed. The principle says that the preconditions must not be strengthened by a subclass and the postconditions cannot be weakened.</p>
+
+<p>Here, it also says that the conditions of a process that is true before that same process begins and remains true afterwards (invariants) must be preserved. This principle also has a rule called history constraint saying that, in a subclass, new or modified members should not modify the state of an object in a way that would not be permitted by the base class.</p>
+
+<p>There is another constraint saying that no new exceptions should be thrown by methods of the subtype, except where those exceptions are themselves subtypes of exceptions thrown by the methods of the supertype.</p>
+
+<h2 id="interfacesegregationprinciple">Interface segregation principle</h2>
+
+<blockquote>
+  <p>"<em>Classes that implement interfaces should not be forced to implement methods they do not use</em>"</p>
+</blockquote>
+
+<p>In other words, "many client-specific interfaces are better than one general-purpose interface". We don't want to force clients to depend on things they don't actually need. This gives us low coupling and high cohesion.</p>
+
+<h2 id="dependencyinversionprinciple">Dependency Inversion Principle</h2>
+
+<blockquote>
+  <p>"<em>One should depend upon abstractions, not concretions</em>"</p>
+</blockquote>
+
+<p>This principle states that high-level modules should not depend upon low-level modules. By depending on higher-level abstractions, we can easily change one instance with another instance in order to change the behavior.</p>
+
+<h2 id="stupid">STUPID</h2>
+
+<p>The <em>SOLID</em> acronym could be opposed to the <em>STUPID</em> acronym that describes what we should not do:</p>
+
+<ul>
+<li><strong>S</strong> - Singleton: singleton is often considered as an anti-pattern, programs using global state are very difficult to test and hide their dependencies</li>
+
+<li><strong>T</strong> - Tight Coupling: tightly coupled modules are hard to reuse or to test</li>
+
+<li><strong>U</strong> - Untestability: testing should be easy</li>
+
+<li><strong>P</strong> - Premature Optimization: it is sometimes better to keep things simple than to have an unreadable code that brings only costs and no benefits</li>
+
+<li><strong>I</strong> - Indescriptive Naming: don't forget that programming languages are for humans</li>
+
+<li><strong>D</strong> - Duplication: write code only once, keep it stupidly simple (KISS), and don't repeat yourself (DRY)</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we briefly saw what <em>SOLID</em> stands for and what principles are hidden behind this acronym. So, again, it can be summarized like so:</p>
+
+<ul>
+<li><strong>S</strong> – Single-responsibility principle</li>
+
+<li><strong>O</strong> – Open-closed principle</li>
+
+<li><strong>L</strong> – Liskov substitution principle</li>
+
+<li><strong>I</strong> – Interface segregation principle</li>
+
+<li><strong>D</strong> – Dependency Inversion Principle</li>
+</ul>
+
+<p>Following those principles will help us write better code, but we have to remember that they are principles and not absolute laws.</p>
+
+<p>Now, some can argue that the <em>SOLID</em> acronym just stands for marketing purposes and we don't understand <em>OOP</em> better thanks to those principles. Indeed, this acronym can sell well, but keeping those principles in mind, even if they seem pretty obvious or too basic, can't hurt.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
