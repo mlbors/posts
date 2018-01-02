@@ -1,0 +1,548 @@
+<h1 id="firststepswithxamarin">First steps with Xamarin</h1>
+
+<p>Through this article, we are going to take a look at <em>Xamarin</em> to try to understand how it works. To achieve this, we are going to make a very simple application. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Nowadays, we have several tools to build simple or complex applications. Nevertheless, most of the time, there is one problem that we have to solve: our application has to run on different platforms and devices. One solution is to program the application as many times that we have platforms.</p>
+
+<p>Another way is to use a solution that lets us build-cross platform applications. <em>Xamarin</em> lets us go this way.</p>
+
+<h2 id="whatisxamarin">What is Xamarin?</h2>
+
+<p><em>Xamarin</em> is a cross-platform development tool. We can use <em>C#</em> to create <em>iOS</em> and <em>Android</em> apps. <em>Xamarin</em> applications use native UIs on every platform. It is a cross-platform implementation of the <em>Microsoft .NET Framework</em>. It is part of this last one and available through <em>Visual Studio</em>.</p>
+
+<p>Here we are going to use <em>Xamarin.Forms</em>. <em>Xamarin.Forms</em> is a framework that allows us to create cross-platform user interfaces that can be shared across <em>Android</em>, <em>iOS</em>, <em>Windows</em> and <em>Windows Phone</em>. The user interfaces are rendered using the native controls of the target platform, allowing <em>Xamarin.Forms</em> applications to retain the appropriate look and feel for each platform.</p>
+
+<p>Applications written using <em>Xamarin.Forms</em> are able to use any of the <em>API's</em> of the underlying platform. It is also possible to create applications that will have parts of their user interface created with <em>Xamarin.Forms</em> while other parts use the native UI toolkit.</p>
+
+<h2 id="gettingourtools">Getting our tools</h2>
+
+<p>The first thing we need to do is to download <a href="https://www.visualstudio.com/">Visual Studio</a> and to install it.</p>
+
+<h2 id="startingourproject">Starting our project</h2>
+
+<p>First, we need to create a new project. We are going to choose "<em>Multiplatform</em>", "<em>App</em>". Then, we are going to select "<em>Xamarin.Forms</em>" and then "<em>Blank Forms App</em>". Let's call this application "<em>SampleApp</em>".</p>
+
+<p>In the next step, we are going to select "<em>iOS</em>" and "<em>Android</em>" as targets and we are going to use "<em>Portable Class Library</em>".</p>
+
+<h2 id="lookingattheappfile">Looking at the App file</h2>
+
+<p><em>Xamarin.Forms</em> applications have a single class named "<em>App</em>" that is responsible for instantiating the first <em>Page</em> that will be displayed.</p>
+
+<pre><code>using Xamarin.Forms;
+
+namespace SampleApp
+{
+    public partial class App : Application
+    {
+        public App()
+        {
+            InitializeComponent();
+            MainPage = new SampleAppPage();
+        }
+
+        protected override void OnStart()
+        {
+            // Handle when your app starts
+        }
+
+        protected override void OnSleep()
+        {
+            // Handle when your app sleeps
+        }
+
+        protected override void OnResume()
+        {
+            // Handle when your app resumes
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>App.xaml.cs</em> file</small></p>
+
+<h2 id="creatingourmaincontentpage">Creating our main Content Page</h2>
+
+<p>A <em>Page</em> represents an <em>Activity</em> in <em>Android</em>, a <em>View Controller</em> in <em>iOS</em> or a <em>Page in the Windows Universal</em> Platform (<em>UWP</em>). <em>Xamarin.Forms Pages</em> represent cross-platform mobile application screens.</p>
+
+<p>Let's define our <em>XAML</em> by opening the file named <em>SampleAppPage.xaml</em> and editing it:</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:SampleApp" 
+    x:Class="SampleApp.SampleAppPage"&gt;
+
+    &lt;ContentPage.Content&gt;
+        &lt;ScrollView Padding="15"&gt;
+            &lt;StackLayout VerticalOptions="Center" HorizontalOptions="Center"&gt;
+                &lt;Label Text="This is a cross platform app!" VerticalOptions="Center" HorizontalOptions="Center"/&gt;
+            &lt;/StackLayout&gt;
+        &lt;/ScrollView&gt;
+    &lt;/ContentPage.Content&gt;
+
+&lt;/ContentPage&gt;
+</code></pre>
+
+<p><small><em>SampleAppPage.xaml</em> file</small></p>
+
+<p>There are two techniques to create user interfaces in <em>Xamarin.Forms</em>. The first one is to create UIs with <em>C#</em>. The second one is to use <em>Extensible Application Markup Language</em> (<em>XAML</em>).</p>
+
+<p><em>XAML</em> is a declarative markup language that is used to describe user interfaces. <em>XAML</em> will play well with <em>MVVM</em> (<em>Model-View-ViewModel</em>). <em>XAML</em> defines the <em>View</em> that is linked to <em>View Model</em> code through <em>XAML</em>-based data bindings.</p>
+
+<p>In our previous <em>XAML</em> code we are using several elements, like a <em>StackLayout</em> to arrange or unique <em>Label</em> on the screen.</p>
+
+<p>Now, let's assure that our <em>C#</em> code looks like this:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+
+using Xamarin.Forms;
+
+namespace SampleApp
+{
+    public partial class SampleAppPage : ContentPage
+    {
+        public SampleAppPage()
+        {
+            InitializeComponent();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>SampleAppPage.xaml.cs</em> file</small></p>
+
+<h2 id="ourfirstbuild">Our first build</h2>
+
+<p>Now, if we click and the little "play button" in <em>Visual Studio</em> and wait for a couple of seconds, our application will be displayed in an <em>iOS</em> or in an <em>Android</em> simulator, depending on what we chose in the options list next to the run button.</p>
+
+<h2 id="acloserlookatxaml">A closer look at XAML</h2>
+
+<p>As we said, <em>XAML</em> is a declarative markup language created by <em>Microsoft</em> extensively used in <em>.NET Framework _and it is part of _Xamarin.Forms</em>. <em>XAML</em> is basically <em>XML</em>, but has some unique syntax features like property elements, attached properties and markup extensions.</p>
+
+<p>In a <em>Xamarin.Forms</em> application, a <em>XAML</em> file is always associated with a C# code file that provides code support for the markup.</p>
+
+<p>In the first lines of our <em>XAML</em> file, we set some namespaces. Then, the "<em>x:Class</em>" attribute specifies a fully qualified <em>.NET</em> class name meaning this <em>XAML</em> file defines a new class named <em>SampleAppPage</em> in the <em>SampleApp</em> namespace that derives from <em>ContentPage</em>.</p>
+
+<p>Within the <em>XAML</em> file, classes and properties are referenced with <em>XML</em> elements and attributes.</p>
+
+<p>We also have a <em>ContentPage.Content</em> tag. It is called property element tag.</p>
+
+<p><em>XAML</em> also has markup extensions such as StaticResource, that returns an object from a resource dictionary, or "<em>x:Static</em>" that access a public static field, a public static property, a public constant field or an enumeration member.</p>
+
+<h2 id="databinding">Data binding</h2>
+
+<p>Basically, data bindings allow properties of two objects to be linked so that a change in one causes a change in the other.</p>
+
+<p>Data binding is used to simplify how a <em>Xamarin.Forms</em> application displays and interacts with its data. It establishes a connection between the user interface and the underlying application. It defines a relationship between two objects: a source object that will provide data and a target object that will use the data from the source object.</p>
+
+<p>The benefit of data binding is that we no longer have to worry about synchronizing data between our views and data source.</p>
+
+<p>The "<em>Binding Context</em>" property of the target object must be set to the source object and the "<em>SetBinding</em>" must be called on the target object method to bind a property of that object to a property of the source object.</p>
+
+<p>Most of the time, bindings are used connect the visuals of an application with an underlying data model, usually in a realization of the <em>MVVM</em> (<em>Model-View-ViewModel</em>).</p>
+
+<p>We can define data bindings in <em>XAML</em> also. Sometimes it is set from the code-behind file, sometimes using a "<em>StaticResource</em>" or "<em>x:Static</em>" markup extension, and sometimes as the content of "<em>BindingContext</em>" property-element tags. For example, we can do something like this:</p>
+
+<pre><code>&lt;Slider x:Name="slider"
+    Maximum="360"
+    VerticalOptions="CenterAndExpand" /&gt;
+
+&lt;Label BindingContext="{x:Reference slider}"
+    Text="{Binding Value, StringFormat='The angle is {0:F0} degrees'}" /&gt;
+</code></pre>
+
+<p><small>Data bings example</small></p>
+
+<p>A single view can have data bindings on several of its properties. However, each view can have only one "<em>Binding Context</em>", so multiple data bindings on that view must all reference properties of the same object.</p>
+
+<p>The solution to this problem involves the "<em>Mode</em>" property that can have the following values:</p>
+
+<ul>
+<li>Default</li>
+
+<li>OneWay — values are transferred from the source to the target</li>
+
+<li>OneWayToSource — values are transferred from the target to the source</li>
+
+<li>TwoWay — values are transferred both ways between source and target</li>
+</ul>
+
+<p>It is also easy to achieve data bindings with a <em>ListView</em>:</p>
+
+<pre><code>&lt;ListView ItemSource="{Binding ListOfItems}" ...&gt;
+    &lt;ListView.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;ViewCell&gt;
+                &lt;ViewCell.View&gt;
+                    &lt;Label Text="{Binding Name}" /&gt;
+                &lt;/ViewCell.View&gt;
+            &lt;/ViewCell&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/ListView.ItemTemplate&gt;
+&lt;/ListView&gt;
+</code></pre>
+
+<p><small>ListView example</small></p>
+
+<h2 id="awordaboutmvvm">A word about MVVM</h2>
+
+<p>We previously talked about the <em>MVVM Pattern</em>. Let's refresh our mind!</p>
+
+<p>The <em>MVVM Pattern</em> was developed by <em>Microsoft</em>. It is similar to <em>MVC Pattern</em> (<em>Model-View-Controller</em>) and it is a way to separate our user interface from our logic. In a few words, this pattern is composed of the following elements:</p>
+
+<h3 id="view">View</h3>
+
+<p>The <em>View</em> holds the user interface code. It defines the structure, layout, and appearance of what the user will see on the screen.</p>
+
+<h3 id="model">Model</h3>
+
+<p>The <em>Model</em> contains the logic to perform business functions. It includes a data model along with business and validation logic.</p>
+
+<h3 id="viewmodel_">View Model_</h3>
+
+<p>The <em>View Model</em> is used to communicate between the <em>View</em> and the <em>Model</em>. It exposes public properties and commands. It is responsible for handling the <em>View</em> logic. It will interact with the <em>Model</em> by invoking methods of this last one. It provides data from the <em>Model</em> that the <em>View</em> can easily use. It will retrieve data from the <em>Model</em> and then makes the data available to the <em>View</em>.</p>
+
+<h3 id="binder">Binder</h3>
+
+<p>Binding mechanism is not a part of the pattern itself. It is an underlying technology but it is required for applying the <em>MVVM</em> pattern. Basically, the <em>Binder</em> interprets bindings defined in the UI, observes the <em>View Model</em> for changes and updates the <em>View</em> and it observes the <em>View</em> for changes updates the <em>View Model</em>. Here, the <em>Binder</em> is <em>XAML</em>.</p>
+
+<h3 id="thepattern">The pattern</h3>
+
+<p>The <em>MVVM</em> pattern was invented with <em>XAML</em> in mind. The View and the <em>View Model</em> are often connected through data bindings defined in the <em>XAML</em> file. The "<em>Binding Context</em>" for the <em>View</em> is usually an instance of the "<em>ViewModel</em>".</p>
+
+<p><em>View Models</em> generally implement the "<em>INotifyPropertyChanged</em>" interface. It means that the class fires an event called "<em>PropertyChanged</em>" whenever one of its properties changes. The data binding mechanism in <em>Xamarin.Forms</em> attaches a handler to this "<em>PropertyChanged</em>" event so it can be notified when a property changes and keep the target updated with the new value.</p>
+
+<p>Sometimes the <em>View</em> needs to contain buttons that trigger various actions in the <em>View Model</em> but that last one must not contain "clicked handlers" for the buttons because that would tie the <em>View Model</em> to a particular user-interface paradigm.</p>
+
+<p>To allow <em>View Models</em> to be more independent of particular user interface objects but still allow methods to be called within the <em>View Model</em>, a "Command Interface" exists. This "<em>Command Interface</em>" is supported by the following elements:</p>
+
+<ul>
+<li>Button</li>
+
+<li>MenuItem</li>
+
+<li>ToolbarItem</li>
+
+<li>SearchBar</li>
+
+<li>TextCell</li>
+
+<li>ImageCell</li>
+
+<li>ListView</li>
+
+<li>TapGestureRecognizer</li>
+</ul>
+
+<p>The "<em>ICommand</em>" interface defines two methods and one event:</p>
+
+<ul>
+<li>void Execute(object arg)</li>
+
+<li>bool CanExecute(object arg)</li>
+
+<li>event EventHandler CanExecuteChanged</li>
+</ul>
+
+<h2 id="addingmorepages">Adding more pages</h2>
+
+<p>Knowing what we know, let's continue to build our application. First, let's add more pages.</p>
+
+<p>To achieve this, we now have to edit our "<em>App file</em>" like so:</p>
+
+<pre><code>using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
+namespace SampleApp
+{
+    public partial class App : Application
+    {
+        public App()
+        {
+            InitializeComponent();
+            MainPage = new NavigationPage(new SampleAppPage());
+        }
+
+        protected override void OnStart()
+        {
+            // Handle when your app starts
+        }
+
+        protected override void OnSleep()
+        {
+            // Handle when your app sleeps
+        }
+
+        protected override void OnResume()
+        {
+            // Handle when your app resumes
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>App.xaml.cs</em> file</small></p>
+
+<p>First, let's take a closer look at that little guy at the top of the file:</p>
+
+<pre><code>[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
+</code></pre>
+
+<p>Here, we are making a little bit of optimization, choosing <em>XAML</em> to be compiled, rather than to be interpreted.</p>
+
+<p>Now, let's add another "<em>Forms ContentPage Xaml</em>" to our solution and call it "<em>SecondPage</em>". We are not going to touch the code-behind but only edit the <em>XAML</em> file like so:</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    x:Class="SampleApp.SecondPage"&gt;
+
+    &lt;ContentPage.Content&gt;
+        &lt;ScrollView Padding="15"&gt;
+            &lt;StackLayout VerticalOptions="Center" HorizontalOptions="Center"&gt;
+                &lt;Label Text="I am another page" VerticalOptions="Center" HorizontalOptions="Center"/&gt;
+            &lt;/StackLayout&gt;
+        &lt;/ScrollView&gt;
+    &lt;/ContentPage.Content&gt;
+
+&lt;/ContentPage&gt;
+</code></pre>
+
+<p><small><em>SecondPage.xaml</em> file</small></p>
+
+<p>We now have to edit our <em>SampleAppPage.xaml</em> like so:</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:SampleApp" 
+    x:Class="SampleApp.SampleAppPage"&gt;
+
+    &lt;ContentPage.Content&gt;
+        &lt;ScrollView Padding="15"&gt;
+            &lt;StackLayout VerticalOptions="Center" HorizontalOptions="Center"&gt;
+                &lt;Label Text="This is a cross platform app!" VerticalOptions="Center" HorizontalOptions="Center"/&gt;
+                &lt;Button Text="Second page" HorizontalOptions="Center" VerticalOptions="Center" Clicked="OnCallSecondPage" /&gt;
+            &lt;/StackLayout&gt;
+        &lt;/ScrollView&gt;
+    &lt;/ContentPage.Content&gt;
+
+&lt;/ContentPage&gt;
+</code></pre>
+
+<p><small><em>SampleAppPage.xaml</em> file edited</small></p>
+
+<p>And in our code-behind, we are going to add the following things:</p>
+
+<pre><code>...
+async void OnCallSecondPage(object sender, EventArgs e)
+{
+    await Navigation.PushAsync(new SecondPage());  
+}
+...
+</code></pre>
+
+<p><small><em>SampleAppPage.xaml.cs</em> file edited</small></p>
+
+<p>We can now run our application and check if we have a second page.</p>
+
+<h2 id="interactionsanddata">Interactions and data</h2>
+
+<p>We are now going to improve a little more our application. We are going to add a simple functionality that loads an image from a <em>REST API</em> and display it on the screen.</p>
+
+<p>First of all, we need to install two packages: "<em>System.Net.Http</em>" and "<em>Newtonsoft.Json</em>". When it is done, we create a simple class called "<em>WebImage</em>" with the following code:</p>
+
+<pre><code>using System;
+namespace SampleApp
+{
+    public class WebImage
+    {
+        public string File { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>WebImage.cs</em> file</small></p>
+
+<p>Then, we can edit our <em>SampleAppPage.xaml</em> like so:</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:SampleApp" 
+    x:Class="SampleApp.SampleAppPage"
+    Title="Sample App"&gt;
+
+    &lt;ContentPage.BindingContext&gt;
+        &lt;local:ViewModel/&gt;
+    &lt;/ContentPage.BindingContext&gt;
+
+    &lt;ContentPage.Content&gt;
+        &lt;ScrollView Padding="15"&gt;
+            &lt;StackLayout VerticalOptions="Center" HorizontalOptions="Center"&gt;
+                &lt;Label Text="This is a cross platform app!" VerticalOptions="Center" HorizontalOptions="Center"/&gt;
+                &lt;Image x:Name="mainImage" Source="{Binding ImgUrl}" /&gt;
+                &lt;Button Text="Refresh" HorizontalOptions="Center" VerticalOptions="Center" Command="{Binding RefreshCommand}" /&gt;
+                &lt;ActivityIndicator IsRunning="{Binding IsBusy}" /&gt;
+                &lt;Button Text="Second page" HorizontalOptions="Center" VerticalOptions="Center" Clicked="OnCallSecondPage" /&gt;
+            &lt;/StackLayout&gt;
+        &lt;/ScrollView&gt;
+    &lt;/ContentPage.Content&gt;
+
+&lt;/ContentPage&gt;
+</code></pre>
+
+<p><small><em>SampleAppPage.xaml</em> file edited</small></p>
+
+<p>Our code-behind will be like so:</p>
+
+<pre><code>using System;
+
+using Xamarin.Forms;
+
+namespace SampleApp
+{
+    public partial class SampleAppPage : ContentPage
+    {
+        public SampleAppPage()
+        {
+            InitializeComponent();
+        }
+
+        async void OnCallSecondPage(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new SecondPage());  
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>SampleAppPage.xaml.cs</em> file edited</small></p>
+
+<p>Finally, we create a file called <em>ModelView</em> and fill it with the following code:</p>
+
+<pre><code>using System;
+using System.ComponentModel;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Windows.Input;
+
+using Xamarin.Forms;
+
+using Newtonsoft.Json;
+
+namespace SampleApp
+{
+    public class ViewModel:INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        string imgUrl;
+        bool busy = false;
+
+        // Constructor
+        public ViewModel()
+        {
+            // Defining Refresh Command
+            RefreshCommand = new Command(async () =&gt; await DownloadAsync());
+            // Loading data when page is loaded
+            Task.Run(async () =&gt; await DownloadAsync());  
+        }
+
+        // Public properties
+        public bool IsBusy
+        {
+            get { return busy; }
+            set
+            {
+                if (busy == value)
+                {
+                    return; 
+                }
+
+                busy = value;
+                OnPropertyChanged("IsBusy");
+            }
+        }
+
+        public string ImgUrl
+        {
+            get { return imgUrl; }
+            set
+            {
+                if (imgUrl == value)
+                {
+                    return;
+                }
+
+                imgUrl = value;
+                OnPropertyChanged("ImgUrl");
+            }
+        }
+
+        // ICommand implementations
+        public ICommand RefreshCommand { protected set; get; }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            var changed = PropertyChanged;
+            if (changed != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        async Task DownloadAsync()
+        {
+            IsBusy = true;
+            var data = await Task.Run(() =&gt; Download());
+            ImgUrl = data.File;
+            IsBusy = false;
+        }
+
+        async Task&lt;WebImage&gt; Download()
+        {
+            HttpClient client = new HttpClient();
+            var response = await client.GetStringAsync("http://random.cat/meow");
+            var data = JsonConvert.DeserializeObject&lt;WebImage&gt;(response);
+            return data;
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>ModelView.cs</em> file</small></p>
+
+<p>Now, if we run our application, we can see an image appear on the screen when the first page is loaded. With the "<em>Refresh</em>" button, we can get another image.</p>
+
+<h2 id="xamarinvsreactnativevsionic">Xamarin VS React Native VS Ionic</h2>
+
+<p>Comparing those technologies would take a whole article. But let's have a brief overview:</p>
+
+<p><em>React Native</em> and <em>Ionic</em> are two other famous solutions that help us build cross platform applications. The first difference is they both use <em>JavaScript</em> while, obviously, <em>Xamarin</em> uses <em>C#</em>. </p>
+
+<p><em>React Native</em> supports <em>Android</em> and <em>iOS</em>, whereas <em>Xamarin</em> also does <em>Windows Mobile</em>, <em>Android Wear</em>, <em>iOS Watch</em>, <em>Android TV</em>, <em>macOS</em> and <em>Windows Universal App</em> as well.</p>
+
+<p>Some common controls in <em>React Native</em> may need to be coded separately for each platform.</p>
+
+<p><em>React Native</em> is a little low in performance when it comes to the development on <em>iOS</em> platform.</p>
+
+<p><em>React Native</em> works more like <em>Xamarin</em> while <em>Ionic</em> doesn’t use native widgets at all.</p>
+
+<p>A complete comparison can be found <a href="https://cruxlab.com/blog/reactnative-vs-xamarin/">here</a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we got a little more familiar with <em>Xamarin</em> by building a really simple application. Of course, we haven't covered everything and there are many things to explore. But we are now able to go deeper and to use this tool. By the way, <a href="https://github.com/xamarin/xamarin-forms-samples">the following repository</a> is full of great examples!</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
