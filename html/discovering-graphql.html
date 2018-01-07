@@ -1,0 +1,535 @@
+<h1 id="discoveringgraphql">Discovering GraphQL</h1>
+
+<p>Through this article, we are going to see what <em>GraphQL</em> is and how we can use it. It is going to be a really simple introduction to get our hands on this tool.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>REST</em> has become the standard for exposing data from a server and designing web <em>APIs</em>. It undeniably offers good advantages and functionalities.</p>
+
+<p>Unfortunately, client applications rarely stay simple. Each one has specific requirements and thus needs different data from our system. To satisfy that need, we will add endpoints or add nested objects and probably deliver irrelevant data. Working and maintaining multiple endpoints could be difficult and as a platform grows, the number of endpoints will increase. Clients will need to ask for data from different endpoints increasing the number of <em>HTTP requests</em>. They will get too much or not enough information. They won't have exactly what they asked for.</p>
+
+<p><em>GraphQL</em> offers a solution to these problems.</p>
+
+<h2 id="whatisgraphql">What is GraphQL?</h2>
+
+<p><em>GraphQL</em> is a <em>query language</em> and a server-side runtime for executing queries. GraphQL isn't tied to any specific database or storage engine. It was created by <em>Facebook</em>. It gives clients the power to ask for exactly what they need, nothing more, nothing less.</p>
+
+<p>While typical <em>REST APIs</em> require loading from multiple <em>URLs</em>, <em>GraphQL APIs</em> get all the data we need in a single request.</p>
+
+<p><em>GraphQL APIs</em> are organized in terms of types and fields, not endpoints. <em>GraphQL</em> uses types to ensure applications only ask for what is possible and provide clear and helpful errors.</p>
+
+<p>The <em>GraphQL</em> layer takes place between the client and one or more data sources. It receives the requests of the client and fetches the necessary data according to the instructions received.</p>
+
+<p>Many different programming languages support <em>GraphQL</em>. Here, we are going to use <em>JavaScript</em> with <em>Node.js</em>.</p>
+
+<h2 id="basicterminology">Basic terminology</h2>
+
+<p>Before getting our hands dirty, let's have an overview of the different terms related to the components of <em>GraphQL</em>.</p>
+
+<h3 id="query">Query</h3>
+
+<p>A <em>Query</em> is a read-only operation made against a <em>GraphQL Server</em>. They are similar to <em>GET</em> requests and they allow to ask the server for the data that a client needs.</p>
+
+<p>We write a <em>GraphQL Query</em> as we would declare a <em>JSON object</em>. <em>GraphQL Queries</em> support nested fields. In return, clients will have a <em>JSON</em> result.</p>
+
+<h3 id="mutation">Mutation</h3>
+
+<p>A <em>Mutation</em> is a read-write operation requested to a <em>GraphQL Server</em>. In <em>REST APIs</em>, they would correspond to <em>POST</em>, <em>DELETE</em> and <em>PUT</em>.</p>
+
+<h3 id="resolver">Resolver</h3>
+
+<p>A <em>Resolver</em> is a link between an operation and the code responsible for handling it. It provides a way to interact with databases through different operations. It tells <em>GraphQL</em> how and where to fetch the data corresponding to a given field.</p>
+
+<h3 id="type">Type</h3>
+
+<p>A <em>Type</em> defines the shape of response data that can be returned from the <em>GraphQL Server</em>.</p>
+
+<h3 id="scalar">Scalar</h3>
+
+<p>A <em>Scalar</em> is a primitive <em>Type</em>, such as a <em>String</em>, <em>Int</em>, <em>Boolean</em> or <em>Float</em>.</p>
+
+<h3 id="field">Field</h3>
+
+<p>A <em>Field</em> is a unit of data we can retrieve from an object.</p>
+
+<h3 id="argument">Argument</h3>
+
+<p>An <em>Argument</em> is a set of key-value pairs attached to a specific field. <em>Arguments</em> can be of many different types.</p>
+
+<h3 id="input">Input</h3>
+
+<p><em>Input Types</em> look exactly the same as regular object types. They define the shape of input data that is sent to a <em>GraphQL Server</em>.</p>
+
+<h3 id="schema">Schema</h3>
+
+<p>A <em>Schema</em> manages queries and mutations, defining what is allowed to be executed in the <em>GraphQL Server</em>. It defines what each <em>Query</em> or <em>Mutation</em> takes as input, and what each query or mutation returns as output. It describes the complete set of possible data that a client can access.</p>
+
+<h3 id="interface">Interface</h3>
+
+<p>An <em>Interface</em> is an abstract type that includes a certain set of <em>Fields</em> that a <em>Type</em> must include to implement the <em>Interface</em>. It stores the names of the <em>Fields</em> and their <em>Arguments</em>, so <em>GraphQL</em> objects can inherit from it.</p>
+
+<h3 id="implementation">Implementation</h3>
+
+<p>A <em>GraphQL Schema</em> may use the term implements to define how an object inherits from an <em>Interface</em>.</p>
+
+<h3 id="connection">Connection</h3>
+
+<p>A <em>Connection</em> allows to query related objects as part of the same call.</p>
+
+<h3 id="node">Node</h3>
+
+<p><em>Node</em> is a generic term for an object.</p>
+
+<h3 id="edge">Edge</h3>
+
+<p>An <em>Edge</em> represents connections between nodes. Every <em>Edge Field</em> has a <em>Node Field</em> and a <em>Cursor Field</em>. <em>Cursors</em> are used for pagination.</p>
+
+<h2 id="asimpleexample">A simple example</h2>
+
+<p>Now we saw some theoretical notions, let's try to put them into practice by making a very straightforward example. As we said earlier, we are going to use <em>JavaScript</em>, <em>Node.js</em> and <em>Express.js</em> to reach our goal.</p>
+
+<p>We are going to make a really simple <em>API</em> that returns us the name of a band and its albums when we pass the band's id to the main query. We are going to use <em>MusicGraph API</em> for this.</p>
+
+<p>In the end, we are going to be able to make a request like so:</p>
+
+<pre><code>{
+  artist(id: "string) {
+      name,
+      albums {
+      title,
+      format,
+      year
+      }
+  }
+}
+</code></pre>
+
+<p>Let's create a <em>package.json</em> file like so:</p>
+
+<pre><code>{
+  "name": "simple-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+      "start": "node ./index.js",
+      "watch": "nodemon --exec npm start"
+  },
+  "nodemonConfig": {
+      "ignore": [
+      "test/*",
+      "docs/*"
+      ],
+      "delay": "2500"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+      "dotenv": "^4.0.0",
+      "express": "^4.16.2",
+      "express-graphql": "^0.6.11",
+      "graphql": "^0.12.3",
+      "node-fetch": "^1.7.3"
+  },
+  "devDependencies": {
+      "nodemon": "^1.14.7"
+  }
+}
+</code></pre>
+
+<p><small><em>package.json file</em></small></p>
+
+<p>As we can see, in our dependencies, we have <em>Express.js</em>, as we said, but also <em>Express GraphQL</em> and <em>GraphQL.js</em>. <em>Express GraphQL</em> will help us to create a <em>GraphQL HTTP Server</em> with <em>Express</em> while <em>GraphQL.js</em> is a reference implementation of <em>GraphQL</em> for <em>JavaScript</em>.</p>
+
+<p>We also have some dependencies like <em>Dotenv</em> that lets us load environment variables from a <em>.env file</em>, <em>node-fetch</em> that brings <em>window.fetch</em> to <em>Node.js</em> and <em>nodemon</em> that watches for any changes in our application.</p>
+
+<p>Our <em>index.js</em> file is going to be filled with the following code:</p>
+
+<pre><code>const express = require('express')
+const graphqlHTTP = require('express-graphql')
+const app = express()
+
+const schema = require('./schema')
+
+app.use('/graphql', graphqlHTTP({
+schema,
+graphiql: true
+}))
+
+app.listen(4000)
+console.log('Now listening to port 4000...')
+</code></pre>
+
+<p><small><em>index.js file</em></small></p>
+
+<p>As we can notice here, we create our server and mount <em>Express GraphQL</em> as a route handler. We also set the <em>graphiql</em> option to true. It means that <em>GraphiQL</em>, which is an <em>in-browser IDE</em> for exploring <em>GraphQL</em>, will be presented to us when the <em>GraphQL</em> endpoint is loaded in a browser.</p>
+
+<p>There is also a mention of a file called <em>schema.js</em>, which, obviously, represents our <em>Schema</em>. Let's take a look at it!</p>
+
+<pre><code>const fetch = require('node-fetch')
+
+require('dotenv').config()
+
+const {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLInt,
+  GraphQLString,
+  GraphQLList
+} = require('graphql')
+
+// Defining the Album field
+const AlbumType = new GraphQLObjectType({
+  name: 'Album',
+  description: 'Album type',
+
+  // Defining Fields
+  fields: () =&gt; ({
+    title: {
+      type: GraphQLString,
+      resolve: json =&gt; json.title
+    },
+    format: {
+      type: GraphQLString,
+      resolve: json =&gt; json.product_form
+    },
+    year: {
+      type: GraphQLInt,
+      resolve: json =&gt; json.release_year
+    }
+  })
+})
+
+// Defining the Artist field
+const ArtistType = new GraphQLObjectType({
+  name: 'Artist',
+  description: 'Artist type',
+
+  // Defining the Fields
+  fields: () =&gt; ({
+    name: {
+      type: GraphQLString,
+
+      // Name Field resolver
+      resolve: json =&gt; json.data.name
+    },
+    albums: {
+
+      // Defining a GraphQLList filled with object AlbumType
+      type: new GraphQLList(AlbumType),
+
+      // Albums Field resolver
+
+      resolve: (parent, args) =&gt; fetch(
+          `http://api.musicgraph.com/api/v2/artist/${parent.data.id}/albums?api_key=${process.env.API_KEY}&amp;limit=100`
+        )
+        .then(data =&gt; data.json())
+        .then(json =&gt; json.data.filter(d =&gt; d.product_form === "album"))
+    }
+  })
+})
+
+// Defining our Schema
+
+module.exports = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'RootQuery',
+    description: 'The main query',
+
+    // Defining the Fields
+    fields: () =&gt; ({
+      artist: {
+        type: ArtistType,
+        args: {
+          id: { type: GraphQLString }
+        },
+
+        // Resolver - fetching data from MusicGraph API then returning a JSON object
+        resolve: (root, args) =&gt; fetch(
+          `http://api.musicgraph.com/api/v2/artist/${args.id}?api_key=${process.env.API_KEY}`
+        )
+        .then(res =&gt; res.json())
+      }
+    })
+  })
+})
+</code></pre>
+
+<p><small><em>schema.js file</em></small></p>
+
+<p>With the first lines we include a few things that we need from <em>GraphQL</em>.</p>
+
+<p>Then, we define the <em>Album Field</em> and the <em>Artist Field</em>. Finally, we define our <em>Schema</em> before we export it.</p>
+
+<p>Let's go to <em>localhost:4000/graphql</em> and try the following query:</p>
+
+<pre><code>{
+  artist(id: "82047b8d-738e-4225-8ad9-76fe6f2a486c") {
+    name
+  }
+}
+</code></pre>
+
+<p>The result should be the following one:</p>
+
+<pre><code>{
+  "data": {
+    "artist": {
+      "name": "Depeche Mode"
+    }
+  }
+}
+</code></pre>
+
+<p>Now, the next query:</p>
+
+<pre><code>{
+  artist(id: "82047b8d-738e-4225-8ad9-76fe6f2a486c") {
+    name,
+    albums {
+      title,
+      format,
+      year
+    }
+  }
+}
+</code></pre>
+
+<p>And the result should be:</p>
+
+<pre><code>{
+  "data": {
+    "artist": {
+      "name": "Depeche Mode",
+      "albums": [
+        {
+          "title": "Depeche Mode -  Singles Box 5",
+          "format": "album",
+          "year": 2016
+        },
+        {
+          "title": "Songs of Faith and Devotion: Live",
+          "format": "album",
+          "year": 2015
+        },
+        {
+          "title": "Live in Berlin Soundtrack",
+          "format": "album",
+          "year": 2014
+        },
+        {
+          "title": "Songs of Faith and Devotion (Remastered)",
+          "format": "album",
+          "year": 2013
+        }
+        ...
+      ]
+    }
+  }
+}
+</code></pre>
+
+<h2 id="alittlemore">A little more</h2>
+
+<h3 id="mutation-1">Mutation</h3>
+
+<p>Of course, in our example, we didn't play with a <em>Mutation</em> because it is not really appropriate. However, a <em>Mutation</em> could be set up this way:</p>
+
+<pre><code>export default new GraphQLSchema({
+  query: QueryType,
+  mutation: MutationType
+})
+
+const MutationType = new GraphQLObjectType({
+  name: 'Item Mutations',
+  description: 'A simple mutation',
+  fields: () =&gt; ({
+    ...itemMutations
+  })
+})
+
+const itemMutations = {
+  addItem: {
+    type: ItemType,
+    args: {
+      input: {
+        type: new GraphQLNonNull(ItemInputType),
+      }
+    }
+  },
+  resolve: (root, {input}) =&gt; {
+    const newItem = await new Promise((resolve) =&gt; {
+      setTimeout(() =&gt;
+        resolve(Object.assign(input, {
+          id: random.uuid(),
+        })), 100);
+    })
+    return newItem
+  }
+}
+
+const ItemInputType = new GraphQLInputObjectType({
+  name: 'ItemInputType',
+  fields: () =&gt; ({
+    name: {
+      type: GraphQLString,
+    },
+  }),
+}) 
+</code></pre>
+
+<p>And it could be used like so:</p>
+
+<pre><code>mutation {
+  addItem(input: {
+    name: "Foo"
+  }) {
+    id,
+    name
+  }
+}
+</code></pre>
+
+<h3 id="subscriptions">Subscriptions</h3>
+
+<p><em>Subscriptions</em> are a way for the server to push data itself to interested clients when an event happens. This is how <em>GraphQL</em> deals with real-time communication.</p>
+
+<p>To achieve this, we need <em>GraphQL subscriptions</em> to implement subscriptions in <em>GraphQL</em> and <em>subscriptions-transport-ws</em> that works with a <em>WebSocket connection</em>, which will remain open between the server and subscribed clients.</p>
+
+<p>First, we need to create a <em>PubSub instance</em> like so:</p>
+
+<pre><code>import { PubSub } from 'graphql-subscriptions'
+const pubsub = new PubSub()
+</code></pre>
+
+<p>Then we could do the following thing:</p>
+
+<pre><code>const ITEM_ADDED_TOPIC = 'newItem';
+
+export default new GraphQLSchema({
+  query: QueryType,
+  mutation: MutationType,
+  subscription: SubscriptionType
+})
+
+const MutationType = new GraphQLObjectType({
+  name: 'Item Mutations',
+  description: 'A simple mutation',
+  fields: () =&gt; ({
+    ...itemMutations
+  })
+})
+
+const itemMutations = {
+  addItem: {
+    type: ItemType,
+    args: {
+      input: {
+        type: new GraphQLNonNull(ItemInputType),
+      }
+    }
+  },
+  resolve: (root, {input}) =&gt; {
+    const newItem = await new Promise((resolve) =&gt; {
+      setTimeout(() =&gt;
+        resolve(Object.assign(input, {
+          id: random.uuid(),
+      })), 100)
+    })
+    pubsub.publish(ITEM_ADDED_TOPIC, { itemAdded: newItem })
+    return newItem
+  }
+}
+
+const SubscriptionType = {
+  itemAdded: { 
+    subscribe: () =&gt; pubsub.asyncIterator(ITEM_ADDED_TOPIC)
+  }
+}
+</code></pre>
+
+<p>We now have to set up the server like so:</p>
+
+<pre><code>import { execute, subscribe } from 'graphql'
+import { createServer } from 'http'
+import { SubscriptionServer } from 'subscriptions-transport-ws'
+
+const server = express()
+
+const ws = createServer(server)
+ws.listen(PORT, () =&gt; {
+  console.log(`GraphQL Server is now running on http://localhost:${PORT}`)
+
+  new SubscriptionServer({
+    execute,
+    subscribe,
+    schema
+  }, {
+    server: ws,
+    path: '/subscriptions',
+  })
+})
+
+server.use('/graphiql', graphiqlExpress({
+  endpointURL: '/graphql',
+  subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`
+}))
+</code></pre>
+
+<h3 id="caching">Caching</h3>
+
+<p>Caching could be achieve with <em>Dataloader</em>. It will avoid unnecessary multiple requests.</p>
+
+<p>Using <em>Dataloader</em> could be achieved like so:</p>
+
+<pre><code>...
+const DataLoader = require('dataloader')
+...
+
+const fetchArtist = id =&gt; fetch(`http://api.musicgraph.com/api/v2/artist/${args.id}?api_key=${process.env.API_KEY}`)
+                          .then(res =&gt; res.json())
+
+app.use('/graphql', graphqlHTTP(req =&gt; {
+
+  const artistLoader = new DataLoader(keys =&gt; Promise.all(keys.map(fetchArtist)))
+
+  return {
+    schema,
+    context: {
+      artistLoader
+    }
+    graphiql: true
+  }
+
+}))
+</code></pre>
+
+<p>And then...</p>
+
+<pre><code>module.exports = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'RootQuery',
+    description: 'The main query',
+
+    // Defining the Fields
+    fields: () =&gt; ({
+      artist: {
+        type: ArtistType,
+        args: {
+          id: { type: GraphQLString }
+        },
+
+        resolve: (root, args, context) =&gt; context.artistLoader.load(args.id)
+      }
+    })
+  })
+})
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this small article, we took a look at <em>GraphQL</em> and we got our hands on some theoretical and practical notions. We saw that <em>GraphQL</em> is a <em>query language</em> and how to quickly set up simple <em>GraphQL Server</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
