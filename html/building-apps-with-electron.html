@@ -1,0 +1,292 @@
+<h1 id="buildingappswithelectron">Building Apps with Electron</h1>
+
+<p>Here, we are going to build a cross-platform desktop application using <em>Electron</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Nowadays, there are plenty of solutions to create desktop apps that we can use. What about building a cross-platform application using <em>JavaScript</em>, <em>HTML</em> and <em>CSS</em>? Let's take a look at this solution.</p>
+
+<h2 id="whatiselectron">What is Electron?</h2>
+
+<p>In a few words, <em>Electron</em> is a framework for cross-platform desktop applications using <em>Chromium</em> and <em>Node.js</em>. It allows us to create desktop applications with <em>HTML</em>, <em>JS</em> and <em>Node.js</em>, then package it into an executable file and distribute it across <em>Windows</em>, <em>macOS</em> and <em>Linux</em>.</p>
+
+<p><em>Electron</em> is an open source project maintained by <em>GitHub</em> and a community of contributors. Initially developed for <em>GitHub's Atom editor</em>, it has been used to create applications by companies like <em>Microsoft</em>, <em>Facebook</em>, <em>Slack</em> or <em>Docker</em>.</p>
+
+<p><em>Electron</em> also has built-in features like so:</p>
+
+<ul>
+<li>Automatic updates</li>
+
+<li>Native menus and notifications</li>
+
+<li>App crash reporting</li>
+
+<li>Debugging and profiling</li>
+
+<li><em>Windows</em> installer</li>
+</ul>
+
+<h2 id="anatomyofanelectronapplication">Anatomy of an Electron application</h2>
+
+<p>Before building our application, let's take a little look at what is behind the scenes.</p>
+
+<h3 id="mainprocess">Main Process</h3>
+
+<p>We previously mentioned <em>Node.js</em> and as we are going to see later, there is a <em>package.json</em> file at the root of our application.</p>
+
+<p>This file contains various information about our project, dependencies, but also, like most of every time when we create a <em>Node.js</em> application, a <em>script section</em> that tells <em>Electron</em> which file to run when the app starts. Traditionally, this file is called <em>main.js</em>.</p>
+
+<p>The process that runs the main script is called <em>Main Process</em>. It controls the life of the application and creates <em>Render Processes</em>.</p>
+
+<h3 id="renderprocess">Render Process</h3>
+
+<p><em>Electron</em> uses <em>Chromium</em> for displaying web pages, so, the multi-process architecture of this last one is also used. Each web page in <em>Electron</em> runs in its own process, which is called the <em>Renderer Process</em>. It means that there can be many <em>Render Processes</em> and each is independent. If one crashes, it won't affect the others.</p>
+
+<p>While on normal browsers web pages usually run in a sandboxed environment and are not allowed to access native resources, <em>Electron</em> allows to use <em>Node.js</em> APIs to perform lower level operating system interactions.</p>
+
+<h3 id="alittlefurther">A little further</h3>
+
+<p><em>Electron</em> creates web pages by creating <em>BrowserWindow</em> instances and each one runs the web page in its own <em>Renderer Process</em>. When a <em>BrowserWindow</em> instance is destroyed, the corresponding <em>Renderer Process</em> is also terminated. This means that the <em>Main Process</em> manages all web pages and their corresponding <em>Renderer Processes</em> and each one is isolated and only cares about the web page running in it.</p>
+
+<p>The <em>Main Process</em> can access the native <em>GUI</em> through a series of modules. So, if we want to perform <em>GUI</em> operations in a web page, the <em>Renderer Process</em> of the web page must communicate with the <em>Main Process</em> to request that the <em>Main Process</em> perform those operations, because calling native <em>GUI</em> related APIs is not allowed. Managing native <em>GUI</em> resources in web pages is very dangerous and it is easy to leak resources.</p>
+
+<p>An <em>Interprocess Communication System</em> or <em>IPC</em>, can be used to pass messages between the <em>Main Process</em> and the <em>Render Processes</em>.</p>
+
+<h2 id="asimpleexample">A simple example</h2>
+
+<p>Now we saw how <em>Electron</em> works in theory, let's build a really simple app! Here, we are going to make a really simple application using the <em>IGDB API</em> to display some information about video games.</p>
+
+<h3 id="settingupourtools">Setting up our tools</h3>
+
+<p>To reach our goal, we are going to use the <em>electron-quick-start</em> repository to create our basic requirements.</p>
+
+<pre><code>git clone https://github.com/electron/electron-quick-start.git simple-app
+</code></pre>
+
+<p><small><em>Cloning the repository</em></small></p>
+
+<p>Let's head to our brand-new directory and install what we need:</p>
+
+<pre><code>cd simple-app
+npm install
+</code></pre>
+
+<p><small><em>Installing dependencies</em></small></p>
+
+<p>If we want, we can change some information in the <em>package.json</em> file. Next, let's try our app with the following command:</p>
+
+<pre><code>npm start
+</code></pre>
+
+<p><small><em>Starting the application</em></small></p>
+
+<p>If everything is alright, a window saying "<em>Hello World!</em>" will open.</p>
+
+<h3 id="acloserlookatthemainjs">A closer look at the main.js</h3>
+
+<p>Before going any further, let's take a closer look at the <em>main.js</em> file!</p>
+
+<pre><code>const electron = require('electron')
+// Module to control application life.
+const app = electron.app
+// Module to create native browser window.
+const BrowserWindow = electron.BrowserWindow
+
+const path = require('path')
+const url = require('url')
+
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+let mainWindow
+
+function createWindow () {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({width: 800, height: 600})
+
+  // and load the index.html of the app.
+  mainWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }))
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null
+  })
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', createWindow)
+
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+  // On OS X it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('activate', function () {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow()
+  }
+})
+
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and require them here.
+</code></pre>
+
+<p><small><em>main.js file</em></small></p>
+
+<p>Here we can see that a few things are imported first. Then, we have the <em>createWindow</em> function that is responsible the <em>BrowserWindow</em> instantiation. This function is used as a callback function with the ready event. We can also see that, in this function, we load a file named <em>index.html</em>.</p>
+
+<p>We can also notice the <em>render.js</em> file. We are going to rename it <em>index.js</em> for convenience.</p>
+
+<h3 id="coding">Coding</h3>
+
+<p>Let's add some new <em>Node modules</em>:</p>
+
+<pre><code>npm install --save dotenv igdb-api-node 
+</code></pre>
+
+<p>Now, let's edit our <em>index.html</em> file like so:</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"&gt;
+    &lt;title&gt;List of Super Mario Games&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div class="container-fluid"&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="col-md-12"&gt;
+            &lt;h1&gt;It's-a me, Mario!&lt;/h1&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class="row"&gt;
+          &lt;div class="col-md-12"&gt;
+              &lt;ul id="list" class="list-group"&gt;
+              &lt;/ul&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+      require('./index.js')
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><small>index.html file</small></p>
+
+<p>And now our <em>index.js</em> file:</p>
+
+<pre><code>const igdb = require('igdb-api-node').default
+
+require('dotenv').config()
+
+// A really simple output function
+const displayItem = (item) =&gt; `
+  &lt;li class="list-group-item"&gt;
+    &lt;img src="${typeof item.cover !== 'undefined' ? 'https://' + item.cover.url : ''}" /&gt;
+    &lt;h2&gt;${item.name}&lt;/h2&gt;
+    &lt;p&gt;${typeof item.summary !== 'undefined' ? item.summary : 'No summary'}&lt;/p&gt;
+  &lt;/li&gt;`
+
+// Setting up the IGDB API
+const client = igdb(process.env.API_KEY)
+
+// A simple request
+client.games(
+  {
+    offset: 0,
+    order: 'release_dates.date:asc',
+    limit: 20,
+    search: 'mario'
+  },
+  [
+    'name',
+    'cover',
+    'summary'
+  ])
+.then(response =&gt; {
+  const data = response.body
+
+  if (data.length &gt; 0) {
+    const html = data.map(displayItem).join('')
+    document.getElementById("list").innerHTML = html
+  }
+
+})
+.catch(error =&gt; {
+  throw error
+})
+</code></pre>
+
+<p><small><em>index.js file</em></small></p>
+
+<p>If we run our application, a list of <em>Super Mario</em> games should appear on the screen.</p>
+
+<h2 id="packingtheapplication">Packing the application</h2>
+
+<p>Now let's pack our application. We need <em>Electron Packager</em> for this.</p>
+
+<pre><code>npm install electron-packager -g
+</code></pre>
+
+<p><small><em>Installing Electron Package globally</em></small></p>
+
+<p>We can now pack our application like so:</p>
+
+<pre><code>electron-packager /path/to/application SimpleApp --platform=darwin --arch=x64 --out=/output/path
+</code></pre>
+
+<p><small><em>Packing our application</em></small></p>
+
+<p>Here, we just set a few parameters:</p>
+
+<ul>
+<li>The project folder</li>
+
+<li>The name of the application</li>
+
+<li>The targeted platforms, here <em>macOS</em></li>
+
+<li>The architecture</li>
+
+<li>The output path</li>
+</ul>
+
+<h2 id="embeddingadatabase">Embedding a database</h2>
+
+<p>Embedding a database directly in our application is a question that we could ask ourselves. Unfortunately, packing something like <em>MongoDB</em> in our application is really straightforward. It is easier to have a <em>MongoDB Server</em> running somewhere and to establish a connection between this last one and our application.</p>
+
+<p>Nevertheless, we have many alternatives like <em>PouchDB</em>, <em>NeDB</em> or <em>TingoDB</em>. We could also use <em>filesystem</em> or <em>LocalStorage</em>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we saw what <em>Electron</em> is, how it works and what it allows. We also saw how easy it is to build a simple cross-platform desktop application using <em>JavaScript</em>.</p>
+
+<p>Of course, our application is not really useful nor somehow exciting. But now, we are ready to do greater things, like building a more sophisticated app our embedding something like <em>Angular</em> or <em>React</em> in our project.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
