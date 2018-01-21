@@ -1,0 +1,131 @@
+<h1 id="meetingwiththecompilercie">A meeting with the Compiler &amp; Cie</h1>
+
+<p>Through this article we are going to have an overview of how compilation works to try to understand better how programming languages work. It is going to be a brief summary, more like an introduction. Let's get into it!</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>We sometimes gladly forget that programming languages are firstly understandable by humans and not directly by computers. The instructions we write cannot directly be executed by our machine and they have to be translated to <em>machine code</em>, or <em>binary</em>. Basically, we speak a certain language and we want to tell our computer to do something specific, but that last one speaks a different language.</p>
+
+<p>Having an idea of how compilation works can be something very helpful when we write code or when we try to debug something.</p>
+
+<p>Again, as we said in earlier, this article is not a complete course and some concepts that are going to be mentioned here are going to be simplified though they would fill a whole book if they were viewed in deep.</p>
+
+<h2 id="alookatthecpu">A look at the  CPU</h2>
+
+<p>In a few words, the <em>CPU</em>, or <em>Central Processing Unit</em> or processor, is the brain of the computer. It controls all parts of the computer and performs various calculations or operations with data. </p>
+
+<p>A processor is designed to perform instructions one after another. Each instruction that has to be executed is stored in some memory. That memory is like a grid of cells and each of them has a unique address.</p>
+
+<p>Instructions are numbers, but they can represent anything. An instruction is assigned has its own unique numeric code. So, the <em>CPU</em> retrieves values from the memory and decides what to do. Once the processor has completed the action determined by the given code, it requests the following one and repeats the whole process. This sequence of numerical codes that form a program is named <em>machine code</em>. Every instruction begins with a number that specifies its nature which is called <em>opcode</em> (operation code).</p>
+
+<p>The operations that the instructions perform are very simple and so we can tell the processor to do some work by writing a sequence of numeric codes. It would nevertheless be a hard task and that is why the <em>assembly language</em> was created. This last one assigns opcodes a name that describes what it does.</p>
+
+<p>After we have written a sequence of instructions using these symbols, we can use a tool named <em>Assembler</em> that will convert these symbols to the appropriate numeric codes that can be executed by the processor.</p>
+
+<p>The processor will also load operands values from the memory after it has loaded the <em>opcode</em>. Theses operand will also be stored in the <em>Assembler</em>.</p>
+
+<p>Every processor has a certain architecture that describes which simple operations can be performed and which <em>opcode</em> each instruction has. In the end, it means that every processor has its own <em>assembly language</em>. So, one program created for one architecture probably won't work on another one it also means that an <em>Assembler</em> written for a specific architecture won't work on another one. That is where we need high-level programming languages and <em>Compilers</em>.</p>
+
+<p>The programming language, through specific statements, lets us write down instructions and the <em>Compiler</em> will handle them. In a few words, when we call it, the <em>Compiler</em> will analyse our code, do some operations with it, decide which value will be stored in which memory address and finally generate a code the processor can understand. It means that we don't have to care about the architecture of the <em>CPU</em> because the <em>Compiler</em> will generate the appropriate instructions, if, of course, it exists for the given architecture.</p>
+
+<p>We have to remind ourselves that a <em>CPU</em> has no concept of user interface, graphics, text, operating systems, processes or threads. We can even say that a <em>CPU</em> has no concept of numbers, or even no concept of <em>binary</em>. A <em>CPU</em> acts on electrical charge. When we look at ones and zeros, identifying them at "1" or "0", the computer sees them as voltage levels. A "1" is usually a voltage near the system's power supply voltage, while a "0" is a voltage near ground. A <em>CPU</em> is an electrical device that sends out and receives voltages.</p>
+
+<p>It is also common to use <em>hexadecimal</em> to describe locations in memory. <em>Hexadecimal</em> is a way of presenting numbers in a human readable format, but a <em>CPU</em> knows nothing about it.</p>
+
+<h2 id="compilercomponents">Compiler Components</h2>
+
+<p>Let's now take a closer look at the <em>Compiler</em> itself. In a few words, the <em>Compiler</em> turns a high-level source code into a low-level object code in machine language, which can be understood by the processor. This process is called compilation.</p>
+
+<p>Regardless of the exact number of phases in the compilation process, a <em>Compiler</em> can be divided in three parts: <em>Front End</em>, <em>Middle End</em> and <em>Back End</em>.</p>
+
+<p>Basically, the <em>Front End</em> verifies syntax and semantics according to a specific source language. It transforms the input program into an <em>Intermediate Representation</em> (<em>IR</em>). The <em>Middle End</em> performs optimizations. Finally, the <em>Back End</em> performs more analysis, transformations and optimizations that are specific to the target <em>CPU</em> architecture. </p>
+
+<h3 id="frontend">Front End</h3>
+
+<p>The <em>Front End</em> analyses the source code to build an <em>Intermediate Representation</em>. The main phases of the <em>Front End</em> include the following ones:</p>
+
+<h3 id="linereconstruction">Line reconstruction</h3>
+
+<p>It converts the input character sequence to a canonical form, or standard form, ready for the <em>Parser</em>.</p>
+
+<h3 id="preprocessing">Preprocessing</h3>
+
+<p>The <em>Preprocessing</em> phase occurs before <em>Syntactic</em> or <em>Semantic Analysis</em>. It has to be done for programming languages like <em>C</em> where lines beginning with "<em>#</em>" are taken as directives.</p>
+
+<h3 id="lexicalanalysis">Lexical Analysis</h3>
+
+<p>Also shortened as <em>Lexer</em>, it turns source code into a stream of <em>tokens</em>. A <em>token</em> is a pair consisting of a <em>token</em> name and an optional <em>token</em> value. The <em>tokens</em> are the "words" of the programming language and common <em>token</em> categories may include identifiers, keywords, separators, operators, literals or comments. A <em>token</em> is essentially a representation of each item in the code at a simple level.</p>
+
+<h3 id="syntaxanalysis">Syntax Analysis</h3>
+
+<p>Also known as <em>Parsing</em>, this phase parses the <em>token</em> sequence to identify the syntactic structure of the program. So the <em>tokens</em> are turned into an abstract syntax tree, which is a representation of the source code and its meaning.</p>
+
+<h3 id="semanticanalyzer">Semantic Analyzer</h3>
+
+<p>It adds semantic information to the <em>Parse Tree</em> and builds the symbol table. It also checks if the sentences make sense. Checks performed are type checking, object binding or definite assignment.</p>
+
+<h2 id="middleend">Middle End</h2>
+
+<p>The <em>Middle End</em> performs optimizations on the <em>Intermediate Representation</em> in order to improve the performance and the quality of the produced <em>machine code</em>. Those optimizations are independent of the <em>CPU</em> architecture that is targeted.</p>
+
+<h3 id="analysis">Analysis</h3>
+
+<p>It gathers information from the <em>Intermediate Representation</em>. This is required for the following step.</p>
+
+<h3 id="optimization">Optimization</h3>
+
+<p>The <em>Intermediate Representation</em> is transformed into functionally equivalent but faster or smaller forms.</p>
+
+<h2 id="backend">Back End</h2>
+
+<p>The <em>Back End</em> is in charge of specific optimizations and for code generation for the <em>CPU</em> architecture that is targeted.</p>
+
+<h3 id="machinedependentoptimizations">Machine dependent optimizations</h3>
+
+<p>Here are made optimizations that depend on the details of the <em>CPU</em> architecture that the compiler targets.</p>
+
+<h3 id="codegeneration">Code Generation</h3>
+
+<p>The <em>Intermediate Representation</em> is transformed into machine language.</p>
+
+<h3 id="linker">Linker</h3>
+
+<p>The <em>Linker</em> takes the object files generated by the <em>Compiler</em> and combines them into one executable program. The Linker will arrange the pieces of object code so that functions in some pieces can successfully call functions in other pieces.</p>
+
+<h2 id="aheadoftimeandjustintime">Ahead-of-Time and Just-in-Time</h2>
+
+<p>The terms <em>Ahead-of-Time</em> (<em>AOT</em>) and <em>Just-in-Time</em> (<em>JIT</em>) refer to when compilation takes place. A <em>JIT Compiler</em> compiles the program as it is running while an <em>AOT Compiler</em> compiles the program before it is run.</p>
+
+<p><em>AOT Compilers</em> can perform complex and advanced code optimizations. It provides a global overview of the code.</p>
+
+<p><em>JIT</em> compiles the code when it is needed, but not before runtime. When a program is executed, the compiled object code is invoked instead of interpreting the entire <em>bytecode</em>. A <em>JIT Compiler</em> converts the <em>bytecode</em> to a platform specific executable code that can be executed immediately.</p>
+
+<h2 id="interpreter">Interpreter</h2>
+
+<p>Until now, we've only talked about compiled languages. Some languages are qualified as interpreted because the source code is left as it is, or it is compiled into some "universal" assembly code, and when then program needs to be run, an <em>Interpreter</em>, that can read the code, will translate it on the fly for the targeted architecture.</p>
+
+<p>The main advantage of this approach is that it improves portability, safety and flexibility. The main downside is that the speed is reduced because more operations before an instruction can be made.</p>
+
+<p>In <em>Java</em>, for example, the source code is transformed into an assembly code that is called <em>bytecode</em> that will be run by the <em>Java Virtual Machine</em> (<em>JVM</em>). Another example is <em>PHP</em> where, most of the time, the source code is interpreted by the <em>Zend Engine</em>.</p>
+
+<p>An <em>Interpreter</em> may be a program that either:</p>
+
+<ul>
+<li>Executes the source code directly</li>
+
+<li>Translates source code into some efficient <em>Intermediate Representation</em> and immediately executes it</li>
+
+<li>Explicitly executes stored precompiled code made by a <em>Compiler</em> which is part of the <em>Interpreter</em> System</li>
+</ul>
+
+<p>An <em>Interpreter</em> executes a program and may or may not have something like a "<em>JITter</em>".</p>
+
+<p>An <em>Interpreter</em> and <em>Compiler</em> can be combined into a single language execution engine. We can combine an <em>AOT Compiler</em> with an <em>Interpreter</em>. It can be useful when we have a very high-level language: this language will be first compiled into a language that is easier to parse and easier to interpret. A <em>JIT Compiler</em> can also be combined with an <em>Interpreter</em>. Here, we don't have multiple stages like the previous case, but two actors working side-by-side on the same language. So, while the <em>JIT Compiler</em> is busy compiling the code, the <em>Interpreter</em> can already start running the code. Once the <em>JIT Compiler</em> has finished its work, we can switch execution over to the compiled code.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we took a little look at the Compilation process. Again, this was only a brief overview. Nevertheless, we saw how the <em>CPU</em> works with our code and what needs to be done to it before the <em>CPU</em> handle it. We also looked at the main components of the <em>Compiler</em> to get an idea of what each one does. We also talked about the fact that the compilation can happen at different times, <em>Ahead-of-Time</em> (<em>AOT</em>) or <em>Just-in-Time</em> (<em>JIT</em>).</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
