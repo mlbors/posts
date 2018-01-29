@@ -1,0 +1,757 @@
+<h1 id="gettingstartedwithsymfony4">Getting Started With Symfony 4</h1>
+
+<p>Through this article, we are going to take a look at the <em>Symfony 4</em> framework made by <em>SensioLabs</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>To create a web application, we have many tools at our disposal. Choosing is sometimes a hard task. However, some tools are some kind of reference, as <em>Symfony</em> is. Here, we are going to have an overview of this framework. To achieve this, we are going to use the fourth version.</p>
+
+<h2 id="whatissymfony">What is Symfony?</h2>
+
+<p><em>Symfony</em> is the leading <em>PHP</em> framework available to everyone under an <em>Open Source</em> license. It is built on top of a set of decoupled and reusable components named <em>Symfony Components</em>. <em>Symfony</em> use generic components to allow us to focus on other tasks.</p>
+
+<h2 id="anoverviewofsomeelements">An overview of some elements</h2>
+
+<p>Before we dive into the code, let's have an overview of some elements used by <em>Symfony</em> to understand better what we are going to do.</p>
+
+<h3 id="symfonycomponents">Symfony Components</h3>
+
+<p><em>Symfony Components</em> are a set of decoupled and reusable <em>PHP libraries</em>. Those components can even be used without <em>Symfony</em>.</p>
+
+<h3 id="symfonyflex">Symfony Flex</h3>
+
+<p><em>Symfony Flex</em> is a way to install and manage <em>Symfony</em> applications. It automates the most common tasks of <em>Symfony</em> applications.</p>
+
+<p>It is a <em>Composer</em> plugin that modifies the behavior of the <em>require</em>, <em>update</em>, and <em>remove</em> commands. For example, when we execute the require command, the application will make a request to the <em>Symfony Flex</em> server before trying to install the package with <em>Composer</em>. If there is no information about that package that we want to install, the <em>Flex</em> server returns nothing and the package installation follows the usual procedure based on <em>Composer</em>. If there is information, <em>Flex</em> returns it in a file called a "<em>recipe</em>" and the application uses it to decide which package to install and which automated tasks to run after the installation.</p>
+
+<p><em>Flex</em> keeps tracks of the recipes it installed in a <em>symfony.lock</em> file, which must be committed to our code repository.</p>
+
+<p><em>Recipes</em> are defined in a <em>manifest.json</em> file and the instructions defined in this file are also used by <em>Flex</em> when uninstalling dependencies to undo all changes.</p>
+
+<h3 id="securitychecker">Security Checker</h3>
+
+<p><em>Security Checker</em> is a command-line tool that checks if our application uses dependencies with known security vulnerabilities.</p>
+
+<h3 id="doctrine">Doctrine</h3>
+
+<p><em>Symfony</em> doesn't provide a component to work with databases. However, it provides an integration of the <em>Doctrine library</em>. <em>Doctrine</em> is an <em>object-relational mapper</em> (<em>ORM</em>). It sits on top of a powerful database abstraction layer (<em>DBAL</em>).</p>
+
+<p>In a few words, <em>Doctrine</em> allows us to <em>insert</em>, <em>update</em>, <em>select</em> or <em>delete</em> an object in a relational database. It also allows us to generate or update tables via classes.</p>
+
+<h3 id="twig">Twig</h3>
+
+<p><em>Twig</em> is a template engine for <em>PHP</em> and can be used without <em>Symfony</em>, although it is also made by <em>SensioLabs</em>.</p>
+
+<h2 id="afewterms">A few terms</h2>
+
+<p>Through our example, we are also going to use a few terms. Let's define them before.</p>
+
+<h3 id="controller">Controller</h3>
+
+<p>A <em>Controller</em> is a <em>PHP</em> function we create. It reads information from a <em>Request Object</em>. It then creates and returns a <em>Response Object</em>. That response could be anything, like <em>HTML</em>, <em>JSON</em>, <em>XML</em> or a file.</p>
+
+<h3 id="route">Route</h3>
+
+<p>A <em>Route</em> is a map from a <em>URL</em> path to a <em>Controller</em>. It offers us clean <em>URLs</em> and flexibility.</p>
+
+<h3 id="requestsandresponses">Requests and Responses</h3>
+
+<p><em>Symfony</em> provides an approach through two classes to interact with the <em>HTTP request</em> and <em>response</em>. The <em>Request class</em> is a representation of the <em>HTTP request message</em>, while the <em>Response class</em>, obviously, is a representation of an <em>HTTP response</em> message.</p>
+
+<p>A way to handle what comes between the <em>Request</em> and the <em>Response</em> is to use a <em>Front Controller</em>. This file will handle every request coming into our application. It means it will always be executed and it will manage the routing of different <em>URLs</em> to different parts of our application. </p>
+
+<p>In <em>Symfony</em>, incoming requests are interpreted by the <em>Routing</em> component and passed to <em>PHP</em> functions that return <em>Response Objects</em>. It means that the <em>Front Controller</em> will pass the <em>Request</em> to <em>Symfony</em>. This last one will create a <em>Response Object</em> and turns it to text headers and content that will finally be sent back.</p>
+
+<h2 id="projectstructure">Project structure</h2>
+
+<p>When we will start our project, our project directory will contain the following folders:</p>
+
+<ul>
+<li>conifg - holds config files</li>
+
+<li>src - where we place our PHP code</li>
+
+<li>bin - contains executable files</li>
+
+<li>var - where automatically-created files are stored (cache, log)</li>
+
+<li>vendor - contains third-party libraries</li>
+
+<li>public - contains publicly accessible files</li>
+</ul>
+
+<h2 id="asimpleexample">A simple example</h2>
+
+<p>Now we know more about <em>Symfony</em>, it is time to do something with it.</p>
+
+<h3 id="settingupourproject">Setting up our project</h3>
+
+<p>Let's first start by creating our project. We can do as <em>Symfony</em>'s documention suggets or with, for example, use <em>PHP Docker Boilerplate</em> if we want to use <em>Docker</em>. However, we have to be sure that we have at least <em>PHP 7.1</em> and our configuration allows <em>URL rewriting</em>. If we are a <em>macOS</em> user, we can encounter some trouble with our <em>PHP</em> version. An explanation of how update our <em>PHP</em> version can be found <a href="https://php-osx.liip.ch/">here</a>. We also have to be sure that we have the latest version of <em>Composer</em>.</p>
+
+<p>Following <em>Symfony</em>'s documention, it is something like so:</p>
+
+<pre><code>composer create-project symfony/skeleton simple-app
+</code></pre>
+
+<p><small><em>Setting up our project</em></small></p>
+
+<p>This creates a new directory named <em>simple-app</em>, downloads some dependencies into it and generates the basic directories and files we need to get started.</p>
+
+<p>Now, let's move into our directory to install and run our server:</p>
+
+<pre><code>cd simple-app
+composer require server --dev
+php bin/console server:run
+</code></pre>
+
+<p><small><em>Installing and running our server</em></small></p>
+
+<p>Now, if we use <em>PHP Docker Boilerplate</em>, it would be like so:</p>
+
+<pre><code>git clone https://github.com/webdevops/php-docker-boilerplate.git simple-app
+cd simple-app
+cp docker-compose.development.yml docker-compose.yml
+composer create-project symfony/skeleton app
+composer require server --dev
+docker-compose up -d
+</code></pre>
+
+<p><small><em>Installing Symfony using PHP Docker Boilerplate</em></small></p>
+
+<p>Webserver will be available at port <em>8000</em>.</p>
+
+<p>We also have to change some values in <em>etc/environment*.yml</em>:</p>
+
+<pre><code>DOCUMENT_ROOT=/app/public/
+DOCUMENT_INDEX=index.php
+</code></pre>
+
+<p><small><em>etc/environment*.yml file</em></small></p>
+
+<p>To run the <em>Symfony CLI</em>, we can do it like so:</p>
+
+<pre><code>docker-compose run --rm app php bin/console server:start
+# OR
+docker-compose run --rm app bash
+php bin/console server:start
+</code></pre>
+
+<p><small><em>Running Symfony CLI using PHP Docker Boilerplate</em></small></p>
+
+<p>When or project is ready, if we want to install <em>Security Checker</em>, we have to do it like so:</p>
+
+<pre><code>composer require sec-checker
+</code></pre>
+
+<p><small><em>Installing Security Checker</em></small></p>
+
+<p>We also want to install the <em>Web Debug Toolbar</em>. It displays debugging information along the bottom of our page while developing.</p>
+
+<pre><code>composer require --dev profiler
+</code></pre>
+
+<p><small><em>Installing Web Debug Toolbar</em></small></p>
+
+<p>Maybe changing the permissions for the debugger will be necessary.</p>
+
+<pre><code>chmod -R 1777 /app/var
+</code></pre>
+
+<p><small><em>Changing permissions</em></small></p>
+
+<h3 id="creatingourfirstpage">Creating our first page</h3>
+
+<p>Let's now make our first page. But, first, let's install what we are going to use to define our <em>Routes</em>:</p>
+
+<pre><code>composer require annotations
+</code></pre>
+
+<p><small><em>Installing Framework Extra Bundle</em></small></p>
+
+<p>This allows us to use <em>Annotation Routes</em> instead of defining them into a <em>YAML</em> file. We also need to install <em>Twig</em>:</p>
+
+<pre><code>composer require twig
+</code></pre>
+
+<p><small><em>Installing Twig</em></small></p>
+
+<p>We can now create our first template:</p>
+
+<pre><code>&lt;h1&gt;Hello World!&lt;/h1&gt;
+</code></pre>
+
+<p><small><em>templates/hello.html.twig file</em></small></p>
+
+<p>Now, let's create our first <em>Controller</em>:</p>
+
+<pre><code>namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class SimpleController extends Controller
+{
+    /**
+    * @Route("/")
+    */
+    public function index()
+    {
+        return $this-&gt;render('hello.html.twig');
+    }
+}
+</code></pre>
+
+<p><small><em>src/Controller/SimpleController.php file</em></small></p>
+
+<p>Now, let's try our newly created page by visiting <em>http://localhost:8000</em>.</p>
+
+<h3 id="connectingtothedatabase">Connecting to the database</h3>
+
+<p>Now, it is time to try to connect our application to a database. Here, we are going to use <em>MySQL</em>. First, we have to install <em>Doctrine</em> and the <em>MakerBundle</em>.</p>
+
+<pre><code>composer require doctrine maker
+</code></pre>
+
+<p><small><em>Installing Doctrine and MakerBundle</em></small></p>
+
+<p>Now, we can edit the <em>.env</em> file like so:</p>
+
+<pre><code>DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name"
+# If we are using PHP Docker Boilerplate, it will be something like that:
+# DATABASE_URL=mysql://dev:dev@mysql:3306/database
+</code></pre>
+
+<p><small><em>.env file</em></small></p>
+
+<p>We can now use <em>Doctrine</em> to create the database:</p>
+
+<pre><code>php bin/console doctrine:database:create
+</code></pre>
+
+<p><small><em>Creating the database</em></small></p>
+
+<h3 id="entityclassandmigrations">Entity Class and Migrations</h3>
+
+<p>We are now ready to create our first <em>Entity Class</em>. Let's do it like so:</p>
+
+<pre><code>php bin/console make:entity Post
+</code></pre>
+
+<p><small><em>Creating a Post Entity</em></small></p>
+
+<p>Each property of an <em>Entity</em> can be mapped to a column in a corresponding table in our database. Using mapping will allow <em>Doctrine</em> to save an <em>Entity Object</em> to the corresponding table. It will also be able to query from that same table and turn the returned data into objects.</p>
+
+<p>Let's now add more fields to our <em>Post Entity</em>:</p>
+
+<pre><code>namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+* @ORM\Entity(repositoryClass="App\Repository\PostRepository")
+*/
+class Post
+{
+    /**
+    * @ORM\Id
+    * @ORM\GeneratedValue
+    * @ORM\Column(type="integer")
+    */
+    private $id;
+
+    /**
+    * @ORM\Column(type="string", length=100)
+    */
+    private $title;
+
+    /**
+    * @ORM\Column(type="text")
+    */
+    private $content;
+
+    /**
+    * @ORM\Column(type="text")
+    */
+    private $content;
+}
+</code></pre>
+
+<p><small><em>Entity/Post.php file</em></small></p>
+
+<p>Now we are ready to update our database. First, let's create a <em>migration</em>:</p>
+
+<pre><code>php bin/console doctrine:migrations:diff
+</code></pre>
+
+<p><small><em>Creating a migration</em></small></p>
+
+<p>And now, we can execute our newly generated <em>migration</em>:</p>
+
+<pre><code>php bin/console doctrine:migrations:migrate
+</code></pre>
+
+<p><small><em>Running our migration</em></small></p>
+
+<p>We now need to create <em>public</em> <em>setters</em> and <em>getters</em> for our properties:</p>
+
+<pre><code>...
+public function getId()
+{
+    return $this-&gt;id;
+}
+
+public function getTitle()
+{
+    return $this-&gt;title;
+}
+
+public function setTitle($title)
+{
+    $this-&gt;title = $title;
+}
+
+public function getContent()
+{
+    return $this-&gt;content;
+}
+
+public function setContent($content)
+{
+    $this-&gt;content = $content;
+}
+
+public function getExcerpt()
+{
+    return $this-&gt;excerpt;
+}
+
+public function setExcerpt($excerpt)
+{
+    $this-&gt;excerpt = $excerpt;
+}
+...
+</code></pre>
+
+<p><small><em>Entity/Post.php file edited</em></small></p>
+
+<p>We can now create a corresponding <em>Controller</em> like so:</p>
+
+<pre><code>php bin/console make:controller PostController
+</code></pre>
+
+<p><small><em>Creating a Controller</em></small></p>
+
+<p>Let's edit our <em>Controller</em> to have something like so:</p>
+
+<pre><code>namespace App\Controller;
+
+use App\Entity\Post;
+use App\Repository\PostRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class PostController extends Controller
+{
+    /**
+    * @Route("/posts", name="post")
+    */
+    public function index(): Response
+    {
+        $posts = $this-&gt;getDoctrine()
+                    -&gt;getRepository(Post::class)
+                    -&gt;findAll();
+        return $this-&gt;render('posts/list.html.twig', ['posts' =&gt; $posts]);
+    }
+}
+</code></pre>
+
+<p><small><em>Controller/PostController.php file edited</em></small></p>
+
+<p>As we can see in the above code, we query our posts before we pass the result to a view. To get our items, we use what is called a <em>Repository</em>. This last one is a <em>PHP class</em> that helps us to fetch entities of a certain class. We can edit this <em>Repository</em> class if we want, so we can add methods for more complex queries into it.</p>
+
+<p>We can now edit the <em>base.html.twig</em> template and create a new named <em>list.html.twig</em> in a new subdirectory called posts.</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;{% block title %}Simple App{% endblock %}&lt;/title&gt;
+        {% block stylesheets %}{% endblock %}
+    &lt;/head&gt;
+    &lt;body&gt;
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><small><em>templates/base.html.twig file</em></small></p>
+
+<pre><code>{% extends 'base.html.twig' %}
+
+{% block body %}
+    &lt;h1&gt;Posts&lt;/h1&gt;
+
+    &lt;table&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th scope="col"&gt;Title&lt;/th&gt;
+                &lt;th scope="col"&gt;Actions&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        {% for post in posts %}
+            &lt;tr&gt;
+                &lt;td&gt;{{ post.title }}&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;div class="item-actions"&gt;
+                        &lt;a href=""&gt;
+                            See
+                        &lt;/a&gt;
+                        &lt;a href=""&gt;
+                            Edit
+                        &lt;/a&gt;
+                        &lt;a href=""&gt;
+                            Delete
+                        &lt;/a&gt;
+                    &lt;/div&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        {% else %}
+            &lt;tr&gt;
+                &lt;td colspan="4" align="center"&gt;No posts found&lt;/td&gt;
+        &lt;/tr&gt;
+        {% endfor %}
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+{% endblock %}
+</code></pre>
+
+<p><small><em>templates/posts/list.html.twig file</em></small></p>
+
+<p>Now, if we go to <em>localhost:8000/posts</em>, we will see a pretty rough interface and our empty posts list.</p>
+
+<p>To fill our posts list, we are going to create a form. Let's install a new component:</p>
+
+<pre><code>composer require form
+</code></pre>
+
+<p><small><em>Installing Form component</em></small></p>
+
+<p>And of course, we need to validate that form. We can make it with <em>Validator</em>:</p>
+
+<pre><code>composer require validator
+</code></pre>
+
+<p><small><em>Installing Validatior</em></small></p>
+
+<p>We can now create a template for our form:</p>
+
+<pre><code>{% extends 'base.html.twig' %}
+
+{% block body %}
+    &lt;h1&gt;New post&lt;/h1&gt;
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    &lt;a href="{{ path('posts') }}"&gt;Back&lt;/a&gt;
+
+{% endblock %}
+</code></pre>
+
+<p><small><em>templates/posts/new.html.twig</em></small></p>
+
+<p>Here, we create the template that is used to render the form. The <em>form start(form)</em> renders the start tag of the form while the <em>form end(form)</em> renders the end tag of the form. <em>form widget(form)</em> renders all the fields, which includes the field element itself, a label and any validation error messages for the field. It is also possible to render each field manually as described in the <a href="https://symfony.com/doc/current/form/rendering.html">Symfony documentation</a>.</p>
+
+<p>We also need to edit our <em>Post Entity</em>:</p>
+
+<pre><code>namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+* @ORM\Entity(repositoryClass="App\Repository\PostRepository")
+*/
+class Post
+{
+    /**
+    * @ORM\Id
+    * @ORM\GeneratedValue
+    * @ORM\Column(type="integer")
+    */
+    private $id;
+
+    /**
+    * @ORM\Column(type="string", length=100)
+    * @Assert\NotBlank()
+    */
+    private $title;
+
+    /**
+    * @ORM\Column(type="text")
+    * @Assert\NotBlank()
+    */
+    private $content;
+
+    /**
+    * @ORM\Column(type="text")
+    * @Assert\NotBlank()
+    */
+    private $excerpt;
+    ...
+}
+</code></pre>
+
+<p><small><em>Entity/Post.php file edited</em></small></p>
+
+<p>Validation is done by adding a set of rules, or constraints, to a class. A completed documentation about those different rules can be found <a href="https://symfony.com/doc/current/validation.html">here</a>. In <em>Symfony</em>, validation is applied to the underlying object, it means it is checked if the object, here <em>Post</em>, is valid after the form has applied the submitted data to it.</p>
+
+<p>Now, edit our <em>PostController</em> like so:</p>
+
+<pre><code>namespace App\Controller;
+
+use App\Entity\Post;
+use App\Repository\PostRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+class PostController extends Controller
+{
+    /**
+    * @Route("/posts", name="posts")
+    */
+    public function index(PostRepository $repository): Response
+    {
+        $posts = $this-&gt;getDoctrine()
+                    -&gt;getRepository(Post::class)
+                    -&gt;findAll();
+        return $this-&gt;render('posts/list.html.twig', ['posts' =&gt; $posts]);
+    }
+
+    /**
+    * @Route("/posts/new", name="new")
+    * @Method({"GET", "POST"})
+    */
+    public function new(Request $request)
+    {
+        $post = new Post();
+
+        $form = $this-&gt;createFormBuilder($post)
+                    -&gt;add('title', TextType::class)
+                    -&gt;add('content', TextareaType::class)
+                    -&gt;add('excerpt', TextareaType::class)
+                    -&gt;add('create', SubmitType::class)
+                    -&gt;getForm();
+
+        $form-&gt;handleRequest($request);
+
+        if ($form-&gt;isSubmitted() &amp;&amp; $form-&gt;isValid()) {
+
+            $em = $this-&gt;getDoctrine()-&gt;getManager();
+            $em-&gt;persist($post);
+            $em-&gt;flush();
+
+            $this-&gt;addFlash('success', 'post created');
+
+            return $this-&gt;redirectToRoute('posts');
+        }
+
+        return $this-&gt;render('posts/new.html.twig', [
+            'form' =&gt; $form-&gt;createView(),
+        ]);
+    }
+}
+</code></pre>
+
+<p><small><em>Controller/PostController.php file edited</em></small></p>
+
+<p>In the first part of our new method, we use the <em>Form Builder</em>. We add three fields, corresponding to the properties of the <em>Post class</em> and a submit button.</p>
+
+<p>We then call <em>handleRequest</em> to see if the form was submitted or not when the page is loading. If the form was submitted and if it is valid, we can perform some actions using the <em>Post Object</em>.</p>
+
+<p>As we can see, here we use the <em>persist</em> method that tells <em>Doctrine</em> to "manage" the <em>Post Object</em>. We then call the <em>flush</em> method that tells <em>Doctrine</em> to look through all of the objects that it's managing to see if they need to be persisted to the database.</p>
+
+<p>We then render the view. It is important that the <em>createView</em> method is placed after the <em>handleRequest</em> method. Otherwise, changes done in the <em>* SUBMIT</em> events aren't applied to the view.</p>
+
+<p>Now, with what know, we can go a little further and add some features to our application. First, let's edit our <em>PostController</em> like so:</p>
+
+<pre><code>namespace App\Controller;
+
+use App\Entity\Post;
+use App\Repository\PostRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+class PostController extends Controller
+{
+    /**
+    * @Route("/posts", name="posts")
+    */
+    public function index(PostRepository $repository): Response
+    {
+        $posts = $this-&gt;getDoctrine()
+                    -&gt;getRepository(Post::class)
+                    -&gt;findAll();
+        return $this-&gt;render('posts/list.html.twig', ['posts' =&gt; $posts]);
+    }
+
+    /**
+    * @Route("/posts/new", name="new")
+    * @Method({"GET", "POST"})
+    */
+    public function new(Request $request)
+    {
+        $post = new Post();
+
+        $form = $this-&gt;createFormBuilder($post)
+                    -&gt;add('title', TextType::class)
+                    -&gt;add('content', TextareaType::class)
+                    -&gt;add('excerpt', TextareaType::class)
+                    -&gt;add('create', SubmitType::class)
+                    -&gt;getForm();
+
+        $form-&gt;handleRequest($request);
+
+        if ($form-&gt;isSubmitted() &amp;&amp; $form-&gt;isValid()) {
+
+            $em = $this-&gt;getDoctrine()-&gt;getManager();
+
+            $em-&gt;persist($post);
+            $em-&gt;flush();
+
+            $this-&gt;addFlash('success', 'post created');
+
+            return $this-&gt;redirectToRoute('posts');
+        }
+
+        return $this-&gt;render('posts/new.html.twig', [
+            'form' =&gt; $form-&gt;createView(),
+        ]);
+    }
+
+    /**
+    * @Route("/{id}/show", requirements={"id": "\d+"}, name="show")
+    * @Method("GET")
+    */
+    public function show(Post $post): Response
+    {
+        return $this-&gt;render('posts/show.html.twig', [
+            'post' =&gt; $post,
+        ]);
+    }
+
+    /**
+    * @Route("/{id}/edit", requirements={"id": "\d+"}, name="edit")
+    * @Method({"GET", "POST"})
+    */
+    public function edit(Request $request, Post $post): Response
+    {
+        $form = $this-&gt;createFormBuilder($post)
+                    -&gt;add('title', TextType::class)
+                    -&gt;add('content', TextareaType::class)
+                    -&gt;add('excerpt', TextareaType::class)
+                    -&gt;add('edit', SubmitType::class)
+                    -&gt;getForm();
+
+        $form-&gt;handleRequest($request);
+
+        if ($form-&gt;isSubmitted() &amp;&amp; $form-&gt;isValid()) {
+
+            $em = $this-&gt;getDoctrine()-&gt;getManager();
+
+            $em-&gt;flush();
+
+            $this-&gt;addFlash('success', 'post edited');
+
+            return $this-&gt;redirectToRoute('posts');
+        }
+
+        return $this-&gt;render('posts/edit.html.twig', [
+            'post' =&gt; $post,
+            'form' =&gt; $form-&gt;createView(),
+        ]);
+    }
+
+    /**
+    * @Route("/{id}/delete", requirements={"id": "\d+"}, name="delete")
+    * @Method({"GET"})
+    */
+    public function delete(Request $request, Post $post): Response
+    {
+        $em = $this-&gt;getDoctrine()-&gt;getManager();
+
+        $em -&gt;remove($post);
+        $em -&gt;flush();
+
+        $this-&gt;addFlash('success', 'post deleted');
+
+        return $this-&gt;redirectToRoute('posts');
+    }
+}
+</code></pre>
+
+<p><small><em>src/Controller/SimpleController.php file edited</em></small></p>
+
+<p>We can now create two additional templates:</p>
+
+<pre><code>{% extends 'base.html.twig' %}
+
+{% block body %}
+    &lt;h1&gt;{{ post.title }}&lt;/h1&gt;
+
+    {{ post.content }}
+
+    &lt;a href="{{ path('posts') }}"&gt;Back&lt;/a&gt;
+
+{% endblock %}
+</code></pre>
+
+<p><small><em>templates/posts/show.html.twig file</em></small></p>
+
+<pre><code>{% extends 'base.html.twig' %}
+
+{% block body %}
+    &lt;h1&gt;Edit post&lt;/h1&gt;
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    &lt;a href="{{ path('posts') }}"&gt;Back&lt;/a&gt;
+
+{% endblock %}
+</code></pre>
+
+<p><small><em>templates/posts/edit.html.twig file</em></small></p>
+
+<p>Now, we can read, edit our delete the posted we have created with our application.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we took a look at <em>Symfony 4</em>. We had an overview of the different concepts it is based on. We set up an installation of <em>Symfony 4</em> and created a very simple application that let us interact with a <em>MySQL</em> database.</p>
+
+<p>Now, we still have many things to see, like <em>Security Annotations</em> our custom <em>Twig Filters</em> that allow us to build a better application.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
