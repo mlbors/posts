@@ -66,7 +66,7 @@ In _Symfony_, incoming requests are interpreted by the _Routing_ component and p
 
 When we will start our project, our project directory will contain the following folders:
 
-* conifg - holds config files
+* config - holds config files
 * src - where we place our PHP code
 * bin - contains executable files
 * var - where automatically-created files are stored (cache, log)

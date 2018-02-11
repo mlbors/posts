@@ -1,0 +1,103 @@
+<h1 id="architecturalstylesandarchitecturalpatterns">Architectural Styles and Architectural Patterns</h1>
+
+<p>Through this article, we are going to take a look at what we call <em>Architectural Styles</em> and <em>Architectural Patterns</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In software engineering, an <em>Architectural Pattern</em> is a general and reusable solution to an occurring problem in a particular context. It is a recurring solution to a recurring problem.</p>
+
+<p>The purpose of <em>Architectural Patterns</em> is to understand how the major parts of the system fit together and how messages and data flow through the system.</p>
+
+<p>We can have multiple patterns in a single system to optimize each section of our code.</p>
+
+<h2 id="architecturalpatternsvsdesignpatterns">Architectural Patterns VS Design Patterns</h2>
+
+<p><em>Architectural Patterns</em> are similar to <em>Design Patterns</em>, but they have a different scope. In a few words, while <em>Design Patterns</em> impact a specific section of the code base, <em>Architectural Patterns</em> are high-level strategies that concern large-scale components, the global properties and mechanisms of a system.</p>
+
+<h2 id="stylesandpatterns">Styles and Patterns</h2>
+
+<p>Until now, we have talked about <em>Architectural Patterns</em>, but we can also talk about <em>Architectural Styles</em>. The main difference is, an <em>Architectural Pattern</em>, as we said, is a way to solve a recurring architectural problem, while an <em>Architectural Style</em> is a name given to a recurrent Architectural Design. It doesn't exist to solve a problem.</p>
+
+<p>A single architecture can contain several <em>Architectural Styles</em>, and each <em>Architectural Style</em> can make use of several <em>Architectural Patterns</em>. An Architecture Patterns can be a subset of an <em>Architectural Styles</em> targeting a specific scope.</p>
+
+<p>We can use the same words used by the Building Architecture domain, where an <em>Architectural Style</em> is characterized by the features that make a building notable and historically identifiable. A style may include such elements as form, a method of construction or building materials.</p>
+
+<h2 id="idiom">Idiom</h2>
+
+<p><em>Idiom</em> is also a term that we can regularly meet. An <em>Idiom</em> is a low-level pattern specific to a programming language. It describes how to implement particular aspects of the components or the relationships between them using the features of a given language. </p>
+
+<h2 id="somemajorarchitecturalpatternsandarchitecturalpatternsstyles">Some major Architectural Patterns and Architectural Patterns Styles</h2>
+
+<p>Knowing what we know, let's now have a brief overview of some major <em>Architectural Patterns</em> and <em>Architectural Styles</em>.</p>
+
+<h3 id="layered">Layered</h3>
+
+<p>This pattern is used to structure programs that can be decomposed into groups of subtasks. It partitions the concerns of the application into layers.</p>
+
+<p>Most of the time, we have four layers:</p>
+
+<ul>
+<li>Presentation layer or UI layer</li>
+
+<li>Application layer or Service layer</li>
+
+<li>Business logic layer or Domain layer</li>
+
+<li>Data access layer or Persistence layer</li>
+</ul>
+
+<p>The popular <em>Model-View-Controller structure</em> (<em>MVC</em>) is a <em>Layered</em> architecture. The <em>Model</em> layer is just above the database and it sometimes contains some business logic. The <em>View</em> is the top layer and corresponds to what the final user sees. The <em>Controller</em> layer is in the middle and it is in charge to send data from the <em>Model</em> to the <em>View</em> and vice versa.</p>
+
+<p>One major advantage of this pattern is the separation of concerns. It means that each layer focuses only on its role.</p>
+
+<h3 id="eventdriven">Event-Driven</h3>
+
+<p>Also called EDA, this pattern organizes a system around the production, detection and consumption of events. Such a system consists of event <em>Emitters</em> and event <em>Consumers</em>. <em>Emitters</em> are decoupled from <em>Consumers</em>, which are also decoupled from each other.</p>
+
+<p>An <em>Emitter</em> is an event source and only knows that the event has occurred. A <em>Consumer</em> needs to know an event has occurred and it has the responsibility of applying a reaction as soon as an event is presented. Sometimes, the reaction is not completely provided by a single <em>Consumer</em> that might forward the event to another component after it has filtered or transformed it.</p>
+
+<p><em>Consumers</em> can subscribe to an event manager receives notifications when events are emitted and forward events to all registered <em>Consumers</em>.</p>
+
+<p>Event-driven architecture is easily adaptable to complex environments and can be easily extended when new event types appear. On the other hand, testing can be complex because interactions between modules can only be tested in a fully functioning system.</p>
+
+<p>That kind of architecture is often used for asynchronous systems or user interfaces.</p>
+
+<h3 id="domaindrivendesign">Domain Driven Design</h3>
+
+<p>This <em>Architectural Style</em>, also known has <em>DDD</em>, is an object-oriented approach. Here, the idea is to design software based on the <em>Business Domain</em>, its elements and behaviors, and the relationships between them.</p>
+
+<p>The <em>Business Domain</em> is like a sphere of knowledge and activity around which the application logic revolves. It involves rules, processes and existing systems that need to be integrated into our solution. It is a set of classes that represent objects in the <em>Business Model</em> being implemented. The <em>Business Model</em> is the solution to the problem we are trying to solve. To organize and structure the knowledge of our problem, we use a <em>Domain Model</em> that should be accessible and understandable by everyone who is involved with the project. <em>Domain Driven Design</em> is about solving the problems of an organization. The <em>Domain Model</em> is about understanding and interpreting the important aspects of the given problems.</p>
+
+<p>A language is also structured around the <em>Domain Model</em> and used by all team members to connect all the activities of the team with the software. It is called <em>Ubiquitous Language</em>. We also refer to the <em>Context</em> to define the setting that determines the meaning of a statement.</p>
+
+<p><em>Domain Driven Design</em> eases communication and improves flexibility.</p>
+
+<p><em>Domain Driven Design</em> is useful when we build complex software where the need for change is determined. We have to be careful and remember that <em>DDD</em> is not about how to code, but it is a way of looking at things.</p>
+
+<h3 id="pipesandfilters">Pipes and Filters</h3>
+
+<p>This <em>Architectural Style</em> decomposes a task that performs complex processing into a series of separate elements that can be reused. In other words, it consists of any number of components, called <em>Filters</em>, that transform or filter data, before passing it to other components through connectors called <em>Pipes</em>.</p>
+
+<p>A <em>Filter</em> transforms the data it receives through <em>Pipes</em> with which it is connected. A <em>Filter</em> can have many input <em>Pipes</em> and many output <em>Pipes</em>.</p>
+
+<p>A <em>Pipe</em> is some kind of connector that passes data from one <em>Filter</em> to the next.</p>
+
+<p>There are also two other components, the <em>Pump</em>, which is the data source, and the <em>Sink</em>, which is the final target.</p>
+
+<p><em>Pipes and Filters</em> can be applied when the processing of our application can be broken down into a set of independent steps. It can also be useful when flexibility is required or when each step of the processing of the application have different scalability requirements.</p>
+
+<h3 id="microservices">Microservices</h3>
+
+<p>The goal of a <em>Microservices</em> architecture is, instead of building one single big monolithic application, to create several tiny programs.</p>
+
+<p>Such an architecture requires every service to be completely independent of the others.</p>
+
+<p>This architecture can be helpful when we want to develop new businesses or web applications rapidly.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we saw what <em>Architectural Patterns</em> are. We compared them to <em>Architectural Styles</em> and <em>Design Patterns</em> to understand the differences. We also had a brief overview of some major <em>Architectural Patterns</em> and Styles.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
