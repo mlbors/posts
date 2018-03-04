@@ -1,0 +1,136 @@
+<h1 id="covariancecontravariance">Covariance &amp; Contravariance</h1>
+
+<p>Through this article, we are going to take a look at some terms like "<em>Covariance</em>" or "<em>Contravariance</em>" to understand to which concepts they are related to.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Sometimes in the happy and sparkling world of programming, we can meet some terms that we have hardly heard before. More often, those terms are borrowed from other domains and seem to hide very advanced concepts while, indeed, they encapsulate very simple ideas.</p>
+
+<h2 id="asmalldefinition">A small definition</h2>
+
+<p><em>Covariance</em> and <em>contravariance</em> come from mathematics. It is a measure of how changes in one variable are associated with changes in a second variable. It measures the degree to which two variables are linearly associated. In other words, it describes what happens when a change occurs. If the result goes in the same direction as the change, it is <em>covariant</em>, otherwise it is <em>contravariant</em>. </p>
+
+<p>We are not going to dig deeper with mathematical notions. We are rather going to take a look at how these concepts are translated in the world of computer science. First, we have to understand <em>Subtyping</em>.</p>
+
+<h2 id="subtyping">Subtyping</h2>
+
+<p><em>Subtyping</em> is a notion where a <em>subtype</em>, which is a data type, is related to a <em>supertype</em>. <em>Subtypes</em> are an essential concept in object-oriented programming and are substitutable to <em>supertypes</em>. There is a difference between <em>Inheritance</em> and <em>Subtyping</em> and it can be defined like so:</p>
+
+<ul>
+<li><em>Subtyping</em> refers to compatibility of interfaces. A type <em>B</em> is a <em>subtype</em> of <em>A</em> if every function that can be invoked on an object of type <em>A</em> can also be invoked on an object of type <em>B</em>.</li>
+
+<li><em>Inheritance</em> refers to reuse of implementations. A type <em>B</em> inherits from another type <em>A</em> if some functions for <em>B</em> are written in terms of functions of <em>A</em>.</li>
+</ul>
+
+<p>In other words, <em>Subtyping</em> refers to the compatibility of interfaces. <em>Inheritance</em> refers to reuse of implementations. <em>Subtyping</em> is about implementing an interface, and so being able to substitute different implementations of that interface at runtime. <em>Inheritance</em> is about gaining attributes and functionalities of super types.</p>
+
+<p><em>Subtyping</em> relation is defined by the type system of a programming language. A type system is a set of rules that assigns a type, which is a property, to the various constructs of a program (variables, expressions, functions, modules). The way to assign types is defined by type rules. A programming language has primitive data types. Those basic types are considered to be built using nullary type <em>constructors</em>, or, in other words, <em>constructors</em> without any argument. A type <em>constructor</em> is a feature that builds new types from old ones. A type <em>constructor</em> is an <em>n-ary</em> (number of arguments) type operator taking as argument zero or more types, and returning another type.</p>
+
+<h2 id="objecthierarchiesandsubstitution">Object hierarchies and substitution</h2>
+
+<p><em>Covariance</em> and <em>contravariance</em> have a slightly different meaning in programming than in mathematics. The idea is related to the hierarchy of types.</p>
+
+<p>Let's say we have two classes, <em>A</em> and <em>B</em>. Let's say that <em>B</em> is derived from type <em>A</em>. So, in other words, <em>A</em> is the <em>base class</em> for <em>B</em>. So <em>B</em> contains every method and property that type <em>A</em> does and more. So, we can say that <em>B</em> is "bigger" than <em>A</em>. So, here we have a way of ordering classes. We can also say that <em>A</em> is higher in the type hierarchy than <em>B</em>.</p>
+
+<p>If <em>B</em> derives from <em>A</em>, it means that it contains everything that <em>A</em> contains. So, we can use <em>B</em> anywhere that we could have used <em>A</em>. Of course, we can't always use <em>A</em> in place of <em>B</em>. The relationship is asymmetrical. This is formally known as the <em>Liskov Substitution principle</em>. This principle also states that everything that is true for <em>A</em> should be true for <em>B</em>.</p>
+
+<h2 id="formaldefinitions">Formal definitions</h2>
+
+<p>Knowing what we know, let's try to elaborate some formal definitions.</p>
+
+<p>A typing rule or a type <em>constructor</em> is:</p>
+
+<ul>
+<li><em>covariant</em> if it preserves the ordering of types, which orders types from more specific to more generic</li>
+
+<li><em>contravariant</em> if it reverses this ordering</li>
+
+<li><em>bivariant</em> if it is <em>covariant</em> and <em>contravariant</em> at the same time</li>
+
+<li><em>invariant</em> or <em>nonvariant</em> if it is neither <em>covariant</em> or <em>contravariant</em></li>
+</ul>
+
+<p>So, we can say that <em>Covariance</em> and <em>contravariance</em> are about very specific situations, where we can treat one type as if it were another type in a certain context. <em>Covariance</em> allows a "bigger", or less specific, type to be substituted in an <em>API</em> where the original type is only used in an "output" position. <em>contravariance</em> allows a "smaller", or more specific, type to be substituted in an <em>API</em> where the original type is only used in an "input" position. <em>Covariance</em> and <em>contravariance</em> are the ability of a programming language to take advantage of commonalities between generic types deduced from known commonalities of their type arguments.</p>
+
+<h2 id="examples">Examples</h2>
+
+<p>Let's try to use examples to illustrate a little more what we have seen until now. Let's imagine that we have the following class:</p>
+
+<pre><code>public class Person
+{
+    public string Name { get; set; }
+} 
+</code></pre>
+
+<p>Now, we have a <em>derived class</em>:</p>
+
+<pre><code>public class Client : Person { } 
+</code></pre>
+
+<p>Let's now imagine the following classes: </p>
+
+<pre><code>public class MailingList
+{
+    public void Add(IEnumerable&lt;out Person&gt; persons) { }
+}
+
+public class Company
+{
+    public IEnumerable&lt;Client&gt; GetClients() { }
+}
+</code></pre>
+
+<p>We can now make the following operations:</p>
+
+<pre><code>var clients = company.GetClients();
+var mailingList = new MailingList();
+mailingList.Add(clients);
+</code></pre>
+
+<p>Here, we use a more derived type, <em>Client</em>, with the <em>Add()</em> method. So, this last method is <em>covariant</em>. <em>Covariance</em> allows us to pass a derived type where a base type is expected.</p>
+
+<p>Let's now try to illustrate <em>contravariance</em>. Let's imagine the following <em>base class</em> and <em>derived class</em>:</p>
+
+<pre><code>class A { }
+class B : A { }
+</code></pre>
+
+<p>Suppose that we have a <em>delegate</em>:</p>
+
+<pre><code>public delegate A MyDelegate(B b);
+</code></pre>
+
+<p>Now can imagine the following code:</p>
+
+<pre><code>class Program
+{
+    static A Method1(A a)
+    {
+        Console.WriteLine("Method 1");
+        return new A();
+    }
+
+    static B Method2(B b)
+    {
+        Console.WriteLine("Method 2");
+        return new B();
+    }
+
+    static void Main(string[] args)
+    {
+        MyDelegate myDelegate = Method1;
+        myDelegate(new B());
+    }
+</code></pre>
+
+<p>}</p>
+
+<p><em>contravariance</em> allows a method with the parameter of a <em>base class</em> to be assigned to a <em>delegate</em> that expects the parameter of a <em>derived class</em>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we took a look at the concepts of <em>Covariance</em> and <em>contravariance</em>. We saw that those terms were borrowed from mathematics and are relative to <em>Subtyping</em>, more specifically to object hierarchies and substitution. We saw that <em>Covariance</em> allows us to pass a derived type where a base type is expected. On the other hand, <em>contravariance</em> allows a method with the parameter of a <em>base class</em> to be assigned to a <em>delegate</em> that expects the parameter of a <em>derived class</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
