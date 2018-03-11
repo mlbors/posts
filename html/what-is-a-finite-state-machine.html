@@ -1,0 +1,139 @@
+<h1 id="whatisafinitestatemachine">What is a Finite State Machine?</h1>
+
+<p>In this article, we are going to see what a <em>Finite State Machine</em> is.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>A <em>Finite State Machine</em>, or <em>FSM</em>, is a computation model that can be used to simulate sequential logic, or, in other words, to represent and control execution flow. <em>Finite State Machines</em> can be used to model problems in many fields, including mathematics, artificial intelligence, games or linguistics. </p>
+
+<h2 id="definition">Definition</h2>
+
+<p>A <em>Finite State Machine</em> is a model of computation based on a hypothetical machine made of one or more states. Only one single state of this machine can be active at the same time. It means the machine has to transition from one state to another in to perform different actions.</p>
+
+<p>A <em>Finite State Machine</em> is any device storing the state of something at a given time. The state will change based on inputs, providing the resulting output for the implemented changes.</p>
+
+<p><em>Finite State Machines</em> come from a branch of <em>Computer Science</em> called "<em>automata theory</em>". The family of data structure belonging to this domain also includes the <em>Turing Machine</em>.</p>
+
+<p>The important points here are the following:</p>
+
+<ul>
+<li>We have a fixed set of states that the machine can be in</li>
+
+<li>The machine can only be in one state at a time</li>
+
+<li>A sequence of inputs is sent to the machine</li>
+
+<li>Every state has a set of transitions and every transition is associated with an input and pointing to a state</li>
+</ul>
+
+<h2 id="realworldexamples">Real world examples</h2>
+
+<p>Let's see what could be a <em>Finite State Machine</em> in the real world:</p>
+
+<h3 id="coinoperatedturnstile">Coin-operated turnstile</h3>
+
+<ul>
+<li><strong>States:</strong> locked, unlocked</li>
+
+<li><strong>Transitions:</strong> pointing a coin in the slot will unlock the turnstile, pushing the arm of the unlocked turnstile will let the costumer pass and lock the turnstile again</li>
+</ul>
+
+<h3 id="trafficlight">Traffic Light</h3>
+
+<ul>
+<li><strong>States:</strong> Red, Yellow, Green</li>
+
+<li><strong>Transitions:</strong> After a given time, Red will change to Green, Green to Yellow, and Yellow to Red</li>
+</ul>
+
+<h3 id="asafe">A Safe</h3>
+
+<ul>
+<li><strong>States:</strong> Multiple "locked" states, one "unlocked" state</li>
+
+<li><strong>Transitions:</strong> Correct combinations move us from initial locked states to locked states closer to the unlocked state, until we finally get to the unlocked state. Incorrect combinations land us back in the initial locked state</li>
+</ul>
+
+<h2 id="programmingexample">Programming example</h2>
+
+<p>Knowing what we know, let's make a simple and basic programming example. Let's say we have our friend Mario in our favourite video game. So, Mario can do the following actions:</p>
+
+<ul>
+<li>Stand still</li>
+
+<li>Run</li>
+
+<li>Jump</li>
+
+<li>Duck</li>
+</ul>
+
+<p>We can see that Mario can do a lot of things and all of those things should be a specific state. Before writing any single line of code, we should ask ourselves how all of our different states fit together. We need to know exactly what Mario can do and how and when he can do these actions. For example, Mario can stand still then run when we push the corresponding button, but cannot run while he is jumping. So, an input that doesn't cause a change of state is ignored.</p>
+
+<p>We could start first by defining a "<em>State Interface</em>":</p>
+
+<pre><code>interface State
+{
+    void enter(Character character);
+    State handleInput(Character character, Input input);
+    void update(Character character);
+}
+</code></pre>
+
+<p>Then, we can a create a class for each state:</p>
+
+<pre><code>class RunningState : State
+{
+    void enter(Character character)
+    {
+        // Various operations like
+        // setting the graphics
+    }
+
+    State handleInput(Character character, Input input)
+    {
+        // Various operations like
+        // checking the input
+
+        // Returning a state after all the operations
+        return new StandingState();
+    }
+
+    void update(Character character)
+    {
+        // Various operations
+    }
+}
+</code></pre>
+
+<p>So, our character, here our dear Mario, could have the following code:</p>
+
+<pre><code>class Mario : Character, Player
+{
+    private State _state;
+
+    void handleInput(Input input)
+    {
+        _state.handleInput(this, input);
+    }
+
+    void update()
+    {
+        _state.update(this);
+    }
+}
+</code></pre>
+
+<h2 id="stackbasedfsm">Stack-Based FSM</h2>
+
+<p>We could go a little further. We could use a <em>Stack-Based FSM</em>. With our previous solution, we have no concept of history. We know our current state, but we can't go back to the previous state.</p>
+
+<p>To solve this problem, we could use a <em>Stack</em>, which stores elements in <em>LIFO</em> style (<em>Last In, First Out</em>), to save our different states. That means the current state is the one on the top of the <em>Stack</em>. Then, when we want to transition to a new state, we <em>push</em> that new state onto the <em>Stack</em> and this state becomes the current state. When we are done, we <em>pop</em> this state and the previous state becomes the current state. Of course, it is our responsibility to manage which state we want in the <em>Stack</em> and which we want to discard.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw what a <em>Finite State Machine</em> is. We saw that a <em>Finite State Machine</em> is a model of computation based on a hypothetical machine made of one or more states and only one single state of this machine can be active at the same time.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

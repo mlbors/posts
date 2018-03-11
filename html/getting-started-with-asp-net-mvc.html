@@ -1,0 +1,567 @@
+<h1 id="gettingstartedwithaspnetmvc">Getting started with ASP.NET MVC</h1>
+
+<p>In this article, we are going to create a really simple application using <em>ASP.NET MVC</em> to get more familiar with this technology.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Through this post, we are going to build a really simple application using the <em>ASP.NET MVC</em> technology. It is going to be pretty straightforward and this will allow us to have a brief overview of this tool.</p>
+
+<h2 id="whatisaspnetmvc">What is ASP.NET MVC?</h2>
+
+<p><em>ASP.NET MVC</em> is an open-source software created by <em>Microsoft</em>. In a few words, it is some kind of web development framework based on <em>ASP.NET</em>. As its name tells us, it is an <em>MVC</em> framework and this last one allows us to create dynamic web applications.</p>
+
+<p>Recently, <em>Microsoft</em> released <em>ASP.NET Core</em>. This last one also allows us to develop applications using the <em>MVC</em> pattern, but has a slightly different approach. The main differences are that <em>ASP.NET Core</em> is open source and cross-platform. But we are not going to focus on this one here.</p>
+
+<h2 id="whatismvc">What is MVC?</h2>
+
+<p>Firstly, let's refresh our mind and let's have a look at <em>MVC</em>. <em>MVC</em>, or <em>Model-View-Controller</em>, is a pattern that allows us to separate an application in three main components: <em>Model</em>, <em>View</em>, <em>Controller</em>. Now, we can debate over the question, "<em>is MVC a design pattern or an architectural pattern?</em>" but that's another subject. Here, we have to retain the following information:</p>
+
+<h3 id="model">Model</h3>
+
+<p>The <em>Model</em> represents the data business logic layer. The <em>Business Logic</em> should be encapsulated in the model, along with any implementation logic for persisting the state of the application.</p>
+
+<h3 id="view">View</h3>
+
+<p><em>Views</em> are responsible for presenting content through the user interface. There should be minimal logic within a <em>View</em> and this logic should be related to presenting content.</p>
+
+<h3 id="controller">Controller</h3>
+
+<p>A <em>Controller</em> is a component that handles and responds to user input and interaction. It renders the appropriate <em>View</em> with the <em>Model</em> data as a response. So, it is responsible for selecting which <em>Model</em> type to work with and which <em>View</em> to render.</p>
+
+<h2 id="creatingourproject">Creating our project</h2>
+
+<p>Let's head to <em>Visual Studio</em> and choose "<em>New Project > Visual C# > Web > ASP.NET We Application (.NET Framework)</em>". After we entered a name for our application, we can go to the next step and chose the "<em>MVC</em>" option. We can check the box for unit tests if we want to generate a second assembly for unit testing.</p>
+
+<h2 id="projectstructure">Project structure</h2>
+
+<p>Now that our application is generated, let's take a look at the different folders we have.</p>
+
+<h3 id="applicationinformation">Application information</h3>
+
+<ul>
+<li>Properties - application properties (application type, startup object, assembly information)</li>
+
+<li>References - used to pull additional libraries into the project</li>
+</ul>
+
+<h3 id="applicationfolders">Application folders</h3>
+
+<ul>
+<li>App_Data - application data (for example, SQL database)</li>
+
+<li>Content - static files like CSS files, icons or images</li>
+
+<li>Controllers - Controller classes</li>
+
+<li>Fonts - custom font files</li>
+
+<li>Models - Model classes</li>
+
+<li>Scripts - JavaScript files</li>
+
+<li>Views - HTML files for views</li>
+</ul>
+
+<h3 id="configurationfiles">Configuration files</h3>
+
+<ul>
+<li>Global.asax - contains code for responding to application-level events raised by ASP.NET or by HttpModules</li>
+
+<li>packages.config - is managed by the NuGet infrastructure and tracks installed packages with their respective versions</li>
+
+<li>Web.config - contains settings that apply to the web site</li>
+</ul>
+
+<h2 id="firstrun">First run</h2>
+
+<p>Now, let's hit "<em>F5</em>", or click the "<em>play</em>" button in <em>Visual Studio</em> and wait a few seconds. This will start <em>IIS Express</em> and run our web app. <em>Visual Studio</em> then launches a browser and opens the application's home page. If everything is alright, our application will by available at "<em>localhost:RANDOM</em>PORT_".</p>
+
+<h2 id="creatingacontrolleramodelandaview">Creating a Controller, a Model and a View</h2>
+
+<p>It is now time to create our first <em>Controller</em>. To achieve this, in the <em>Solution Explorer</em>, we need to right-click on the <em>Controllers</em> folders and choose "<em>Add > Controller</em>". Select "<em>MVC 5 Controller - Empty</em>" and name our <em>Controller</em> "<em>GamesController</em>". As we can see, the <em>Controller</em> was created in the "<em>Controllers</em>" folder, but a new folder, named "<em>Games</em>" was also generated in the "<em>Views</em>" folder. Now, let's create a <em>Model</em> by right-clicking on the <em>Models</em> folder and choosing "<em>Add > Class</em>". Let's call this Model "<em>Game</em>". Let's give our <em>Model</em> a few properties.</p>
+
+<pre><code>public class Game
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+</code></pre>
+
+<p><small><em>Models/Game.cs file</em></small></p>
+
+<p>Now let's create a <em>View</em>. For this, we need to right-click on the "<em>Views/Games</em>" folder and select "<em>Add > View</em>". Let's name this view "<em>Index</em>" and, under the "<em>Layout</em>" option, select the layout named "<em>_Layout.cshtml</em>" in "<em>Views/Shared</em>".</p>
+
+<p>Let's go back to our "<em>GamesController</em>" and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using WebApplication1.Models;
+
+namespace WebApplication1.Controllers
+{
+    public class GamesController : Controller
+    {
+        // GET: Games
+        public ActionResult Index()
+        {
+            Game game = new Game() { Name = "Super Mario Bros" };
+            return View(game);
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>Controllers/GamesController.cs file</em></small></p>
+
+<p>Here, we just have one action, "<em>Index()</em>", where we create a new "<em>Game</em>" object before passing it to the specific <em>View</em>. the "<em>View()</em>" method is inherited from the base <em>Controller</em> class. It returns a "<em>ViewResult</em>" object that is derived from "<em>ActionResult</em>".</p>
+
+<p>In our recently created <em>View</em>, let's put the following code:</p>
+
+<pre><code>model WebApplication1.Models.Game
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+&lt;h2&gt;@Model.Name&lt;/h2&gt;
+</code></pre>
+
+<p><small><em>Views/Games/Index.cshtml file</em></small></p>
+
+<p>At the top of the file, we can see a few properties. The "<em>@model</em>" at the very top defines the type of the <em>Model</em> used with this <em>View</em>. "<em>ViewBag.Title</em>" is basically the title of the page showed in the browser. "<em>Layout</em>" is the layout for this view. In the body of the <em>View</em>, we can see something like "<em>@Model</em>". Every View has this property which gives us access to the <em>Model</em> we pass to it in the <em>Controller</em>.</p>
+
+<p>Now, if we go to "<em>localhost:RANDOM</em>PORT/games_", we should have something interesting.</p>
+
+<h2 id="creatingroutesactionparameters">Creating Routes &amp; Action Parameters</h2>
+
+<p>Now it is time to confront ourselves with <em>Routes</em> and <em>Action Parameters</em>.</p>
+
+<p>When a request comes into our application, the <em>ASP.NET MVC Framework</em> maps request data to parameters values for <em>Action Methods</em>. If an <em>Action Method</em> takes a parameter, the framework looks for a parameter with the exact same name in the request data. If the parameter exists, it will be passed to the <em>Action</em>.</p>
+
+<p>Let's define a new <em>Action</em> in our "<em>GamesController</em>":</p>
+
+<pre><code>public ActionResult Edit(int id, string stringParameter, int? optionalParameter)
+{
+    if (String.IsNullOrWhiteSpace(stringParameter))
+    {
+        stringParameter = "None";
+    }
+
+    if (!optionalParameter.HasValue)
+    {
+        optionalParameter = 1;
+    }
+
+    return Content(String.Format("id={0}&amp;stringParameter={1}&amp;optionParameter={2}", id, stringParameter, optionalParameter));
+}
+</code></pre>
+
+<p><small><em>Controllers/GamesController.cs file edited</em></small></p>
+
+<p>Here, we add three parameters to our <em>Action</em>. The first is and <em>ID</em>, the second a <em>string</em> and the third an <em>optional integer</em>. Now if we go to "<em>localhost:RANDOM</em>PORT/games/edit?id=1&amp;stringParameter=someString&amp;optionalParameter=42_", we should have something on the screen. Here, we just use the query string to pass our parameters. But we can do something more elegant by defining some Routes.</p>
+
+<p><em>Routes</em> are available in the "<em>App</em>Start/RouteConfig.cs<em>" file. As we can see, there is a default _Route</em> that works for most scenarios. However, let's define a custom <em>Route</em>. Let's place the following code before the default <em>Route</em>.</p>
+
+<pre><code>routes.MapRoute(
+    name: "EditGame",
+    url: "games/edit/{id}/{stringParameter}/{optionalParameter}",
+    defaults: new { controller = "Games", action = "Edit" }
+);
+</code></pre>
+
+<p><small><em>Defining a custom Route in App</em>Start/RouteConfig.cs_</small></p>
+
+<p>If we go to "<em>localhost:RANDOM</em>PORT/games/edit/1/foo/42_", we should see something.</p>
+
+<p>This way to create <em>Routes</em> is not really clean if we have many custom <em>Routes</em>. So, let's delete this code and replace it with this one:</p>
+
+<pre><code>routes.MapMvcAttributeRoutes();
+</code></pre>
+
+<p><small><em>Adding Attributes Routes in App</em>Start/RouteConfig.cs_</small></p>
+
+<p>Now, go back to our "<em>GamesController</em>" to edit it like so:</p>
+
+<pre><code>[Route("games/edit/{id}/{stringParameter}/{optionalParameter:regex(\\d{2})}")]
+public ActionResult Edit(int id, string stringParameter, int? optionalParameter)
+{
+    ...
+}
+</code></pre>
+
+<p><small><em>Controllers/GamesController.cs file edited</em></small></p>
+
+<p>Here, we just place our URL pattern in an attribute before our "<em>Edit()</em>" action. Notice that we also, on this occasion, add a constraint to the third parameter.</p>
+
+<h2 id="viewmodels">View Models</h2>
+
+<p>For now, we just display the name of a game in our view "<em>Index</em>". What if we want to display more information? To achieve this, we can use a <em>View Model</em>. A <em>View Model</em> is a <em>Model</em> build for a <em>View</em>, including data and rules specific to that <em>View</em>.</p>
+
+<p>Let's say we want to display characters that are in our game. To achieve this, let's create a new <em>Model</em> name "<em>Character</em>".</p>
+
+<pre><code>public class Character
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+</code></pre>
+
+<p><small><em>Models/Character.cs file</em></small></p>
+
+<p>Now, let's create a folder named "<em>ViewModels</em>" at the root of our project. We can now place a new class in this folder. Name this last one "<em>IndexGameViewModel</em>". We can fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using WebApplication1.Models;
+
+namespace WebApplication1.ViewModels
+{
+    public class IndexGameViewModel
+    {
+        public Game Game { get; set; }
+        public List&lt;Character&gt; Characters { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>ViewModels/IndexGameViewModel.cs file</em></small></p>
+
+<p>Now, go back to our "<em>GamesController</em>" and edit it like so:</p>
+
+<pre><code>using System.Web;
+using System.Web.Mvc;
+using WebApplication1.Models;
+using WebApplication1.ViewModels;
+
+namespace WebApplication1.Controllers
+{
+    public class GamesController : Controller
+    {
+        // GET: Games
+        public ActionResult Index()
+        {
+            Game game = new Game() { Name = "Super Mario Bros" };
+            List&lt;Character&gt; characters = new List&lt;Character&gt;
+            {
+                new Character { Name = "Mario" },
+                new Character { Name = "Luigi" },
+                new Character { Name = "Peach" },
+                new Character { Name = "Bowser" }
+            };
+
+            IndexGameViewModel viewModel = new IndexGameViewModel()
+            {
+                Game = game,
+                Characters = characters
+            };
+
+            return View(viewModel);
+        }
+
+        ...
+    }
+}
+</code></pre>
+
+<p><small><em>Controllers/GamesController.cs file edited</em></small></p>
+
+<p>As we can see, we added a few lines in our "<em>Index()</em>" action. We created a "<em>List</em>" containing a list of characters and a "<em>IndexGameViewModel</em>" object that we pass to the <em>View</em>.</p>
+
+<p>We also have to edit our <em>View</em> like so:</p>
+
+<pre><code>@using WebApplication1.Models;
+
+@model WebApplication1.ViewModels.IndexGameViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+&lt;h2&gt;@Model.Game.Name&lt;/h2&gt;
+
+&lt;ul&gt;
+    @foreach (Character character in Model.Characters)
+    {
+        &lt;li&gt;@character.Name&lt;/li&gt;
+    }
+&lt;/ul&gt;
+</code></pre>
+
+<p><small><em>Views/Games/Index.cshtml file edited</em></small></p>
+
+<p>We can go back to "<em>localhost:RANDOM</em>PORT/games_" to see the result.</p>
+
+<h2 id="usingentityframework">Using Entity Framework</h2>
+
+<p>Let's go a little further and use the <em>Entity Framework</em>. <em>Entity Framework</em> is an <em>object-relational mapper</em> (<em>ORM</em>) that allows us to work with a database using <em>.NET</em> objects. It supports a development paradigm called <em>Code First</em>. It lets us create <em>Model</em> objects by writing simple classes (also known as <em>POCO</em> classes, from "<em>plain-old CLR objects</em>"). We can have the database created on the fly from our classes.</p>
+
+<p>First, we need to install the <em>Entity Framework</em>. We can achieve this by calling the graphic <em>Package Manager</em> or using the command line version like so:</p>
+
+<pre><code>PM&gt; Install-Package EntityFramework -Version 6.2.0 
+</code></pre>
+
+<p><small><em>Installing Entity Framework</em></small></p>
+
+<p>Now, let's create another <em>Model</em> named "<em>Enemy</em>" and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
+
+namespace WebApplication1.Models
+{
+    public class Enemy
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>Models/Enemy.cs file</em></small></p>
+
+<p>Now, we can create a new folder, at the root of our project, named "<em>DAL</em>" (<em>Data Access Layer</em>). We now need to create a "<em>Context</em>". It is the class that coordinates <em>Entity Framework</em> functionality for a given data model.</p>
+
+<pre><code>using System;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using WebApplication1.Models;
+
+namespace WebApplication1.DAL
+{
+    public class GameContext : DbContext
+    {
+
+        public GameContext() : base("GameContext")
+        {
+        }
+
+        public DbSet&lt;Enemy&gt; Enemies { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove&lt;PluralizingTableNameConvention&gt;();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/GameContext.cs file</em></small></p>
+
+<p>First, we pass the name of the connection string to the <em>constructor</em>.</p>
+
+<p>Then, and because it is just a really simple example, we create only one "<em>DbSet</em>" property. A "<em>DbSet</em>" corresponds to a database table and an entity corresponds to a row in the table.</p>
+
+<p>Finally, we specify we don't want our tables in the database to be pluralized.</p>
+
+<p>We can now initialize the database with test data. So, in the "<em>DAL</em>" folder, we can create a file named "<em>GameInitializer</em>".</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
+using WebApplication1.Models;
+
+namespace WebApplication1.DAL
+{
+    public class GameInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges&lt;GameContext&gt;
+    {
+        protected override void Seed(GameContext context)
+        {
+            var enemies = new List&lt;Enemy&gt;
+            {
+                new Enemy{Name="Goomba"},
+                new Enemy{Name="Koopa Troopa"},
+                new Enemy{Name="Lakitu"},
+                new Enemy{Name="Boo"}
+            };
+
+            enemies.ForEach(e =&gt; context.Enemies.Add(e));
+            context.SaveChanges();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/GameInitializer.cs file</em></small></p>
+
+<p>Here, we initialize the database with test data. We specify that we want to drop the database each time the model changes. This is great for development, but obviously, we don't want it in production.</p>
+
+<p>The "<em>Seed()</em>" method takes the database context object as an input parameter, and the code in the method uses that object to add new entities to the database. </p>
+
+<p>We now have to edit the "<em>Web.config</em>" file to use our initializer.</p>
+
+<pre><code>&lt;entityFramework&gt;
+    &lt;contexts&gt;
+        &lt;context type="WebApplication1.DAL.GameContext, WebApplication1"&gt;
+            &lt;databaseInitializer type="WebApplication1.DAL.GameInitializer, WebApplication1" /&gt;
+        &lt;/context&gt;
+    &lt;/contexts&gt;
+    ...
+&lt;/entityFramework&gt;
+</code></pre>
+
+<p><small><em>Web.config file edited</em></small></p>
+
+<h2 id="settingupentityframeworktouselocaldb">Setting up Entity Framework to use LocalDB</h2>
+
+<p><em>LocalDB</em> is a lightweight version of the <em>SQL Server Express Database Engine</em>. <em>LocalDB</em> runs in a special execution mode of <em>SQL Server Express</em> that allows us to work with databases as "<em>.mdf</em>" files. <em>LocalDB</em> is installed by default with <em>Visual Studio</em>.</p>
+
+<p>Let's edit again our "<em>Web.config</em>" file:</p>
+
+<pre><code>&lt;connectionStrings&gt;
+    &lt;add name="GameContext" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=WebApplication1;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/&gt;
+&lt;/connectionStrings&gt;
+&lt;appSettings&gt;
+    ...
+&lt;/appSettings&gt;
+</code></pre>
+
+<p><small><em>Web.config file edited</em></small></p>
+
+<h2 id="anothercontroller">Another Controller</h2>
+
+<p>We are now going to create another <em>Controller</em> name "<em>EnemyController</em>" using the "<em>MVC 5 Controller with views, using Entity Framework</em>" option. We can enter "<em>Enemy</em>" as the <em>Model</em> class and "<em>GameContext</em>" for the database context. After a few seconds, we can see that a <em>Controller</em> with some code in it and a bunch of <em>Views</em> have been created for us.</p>
+
+<p>It is time to run our application again. Let's go to "<em>localhost:RANDOM</em>PORT/enemy_" to see the result. As we can see by looking at the result and the code, a lot has been made for us.</p>
+
+<h2 id="migrations">Migrations</h2>
+
+<p>In a real application, our data model will change frequently. So, for each change, we need to sync that database. For now, we have configured the <em>Entity Framework</em> to automatically drop and re-create the database each time we change the data model. This is alright for development, but not for production because we would lose data. To solve this problem, we need to enable the <em>Code First Migrations</em> feature.</p>
+
+<p>First, we need to edit the "<em>Web.config</em>" file:</p>
+
+<pre><code>...
+&lt;connectionStrings&gt;
+    &lt;add name="GameContext" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=WebApplication12;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/&gt;
+&lt;/connectionStrings&gt;
+...
+&lt;!-- remove or comment &lt;contexts&gt;
+    &lt;context type="WebApplication1.DAL.GameContext, WebApplication1"&gt;
+        &lt;databaseInitializer type="WebApplication1.DAL.GameInitializer, WebApplication1" /&gt;
+    &lt;/context&gt;
+&lt;/contexts&gt; --&gt;
+</code></pre>
+
+<p><small><em>Web.config file edited</em></small></p>
+
+<p>It isn't required to change the database as we did here, but that will let the first migration create a new database.</p>
+
+<p>We can now enable migrations:</p>
+
+<pre><code>PM&gt; enable-migrations
+PM&gt; add-migration InitialCreate
+</code></pre>
+
+<p><small><em>Enabling migrations and adding a migration</em></small></p>
+
+<p>As we can see, a "<em>Migrations</em>" folder has been created. In this folder, we can find a file "<em>Configuration</em>" that contains a "<em>Seed()</em>" method like our initializer. Let's place the following code into that file:</p>
+
+<pre><code>protected override void Seed(WebApplication1.DAL.GameContext context)
+{
+    var enemies = new List&lt;Enemy&gt;
+    {
+        new Enemy{Name="Goomba"},
+        new Enemy{Name="Koopa Troopa"},
+        new Enemy{Name="Lakitu"},
+        new Enemy{Name="Boo"}
+    };
+
+    enemies.ForEach(e =&gt; context.Enemies.AddOrUpdate(p =&gt; p.Name, e));
+    context.SaveChanges();
+}
+</code></pre>
+
+<p><small><em>Migrations/Configuration.cs file</em></small></p>
+
+<p>In the "<em>Migrations</em>" folder, we can also find the code that would create the database from scratch. The "<em>Up()</em>" method creates the database tables that correspond to the data model entity sets, and the "<em>Down()</em>" method deletes them.</p>
+
+<p>Now, edit our "<em>Enemy</em>" <em>Model</em> like so:</p>
+
+<pre><code>public class Enemy
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Level { get; set; }
+}
+</code></pre>
+
+<p><small><em>Models/Enemy.cs file edited</em></small></p>
+
+<p>Then, change the "<em>Configuration</em>" file:</p>
+
+<pre><code>protected override void Seed(WebApplication1.DAL.GameContext context)
+{
+    var enemies = new List&lt;Enemy&gt;
+    {
+        new Enemy{Name="Goomba", Level=1},
+        new Enemy{Name="Koopa Troopa", Level=2},
+        new Enemy{Name="Lakitu", Level=5},
+        new Enemy{Name="Boo", Level=4}
+    };
+
+    enemies.ForEach(e =&gt; context.Enemies.AddOrUpdate(p =&gt; p.Name, e));
+    context.SaveChanges();
+}
+</code></pre>
+
+<p><small><em>Migrations/Configuration.cs file edited</em></small></p>
+
+<p>We can now create a migration and execute it:</p>
+
+<pre><code>PM&gt; add-migration EnemyModelEdited
+PM&gt; update-database -TargetMigration EnemyModelEdited
+</code></pre>
+
+<p><small><em>Creating and executing a migration</em></small></p>
+
+<p>We can use the <em>Server Explorer</em> to see that our migration has been run.</p>
+
+<h2 id="unittesting">Unit Testing</h2>
+
+<p>Let's talk a little bit about unit tests. If we checked the appropriate box when we created the project, we should see, in the <em>Solution Explorer</em>, a second <em>Assembly</em> made for unit tests. If it isn't the case, we have to add a new project to our solution (right-click on our solution, "<em>Add > Project</em>") using the unit test template. After that, we had to create a reference to our first project in the second project (right-click on "<em>References</em>", "<em>Add reference</em>"). We also need to add a few other things like "<em>System.Web</em>" in reference. We then need to install the "<em>Microsoft AspNet Mvc</em>" package. This will probably require from us to update the package in the first project.</p>
+
+<p>Keep things very simple and in the file "<em>UnitTest1.cs</em>", put the following code:</p>
+
+<pre><code>using System;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplication1;
+using WebApplication1.Controllers;
+
+namespace WebApplication1Test
+{
+    [TestClass]
+    public class GameControllerTest
+    {
+        [TestMethod]
+        public void Index()
+        {
+            GamesController controller = new GamesController();
+            ViewResult result = controller.Index() as ViewResult;
+            Assert.IsNotNull(result);
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>UnitTest1.cs file</em></small></p>
+
+<p>We can now execute our test and if everything is alright, we should have a success message.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we got an overview of the <em>ASP.NET MVC Framework</em>. We saw the basic concepts it uses. We built a small application using the <em>MVC</em> pattern and saw the different options that we have to create a dynamic web application. We saw how to create basic <em>Models</em>, <em>Views</em> and <em>Controllers</em>. We had a brief overview of the <em>Entity Framework</em> and how to use it. We are now ready to get further, because, of course, here, we didn't talk about production environment or the <em>Repository Pattern</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

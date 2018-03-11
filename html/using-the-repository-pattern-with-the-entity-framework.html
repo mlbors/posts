@@ -1,0 +1,435 @@
+<h1 id="usingthe_repositorypatternwiththeentityframework">Using the Repository Pattern with the Entity Framework</h1>
+
+<p>Through this article, we are going to see how to use the <em>Repository Pattern</em> with the <em>Entity Framework</em> in an <em>ASP.NET MVC</em> application.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>Repository Pattern</em>, as well as the <em>Unit of Work Pattern</em>, allows to create an abstraction layer between the data access layer and the business logic layer of an application. The purpose of creating this layer is to isolate data access layer so that the changes we may operate cannot affect the business logic layer directly. Implementing these patterns is also helpful for automated unit testing or test-driven development.</p>
+
+<h2 id="therepositorypattern">The Repository Pattern</h2>
+
+<p>The <em>Repository Pattern</em> allows us to create an abstraction layer between the data access layer and the business logic layer of an application. So, this <em>Data Access Pattern</em> offers a more loosely coupled approach to data access. So, we are able to create the data access logic in a separate class, called a <em>Repository</em>, which has the responsibility of persisting the application's business model.</p>
+
+<h2 id="theunitofworkpattern">The Unit of Work Pattern</h2>
+
+<p>The <em>Unit of Work Pattern</em> is a pattern that handles the transactions during data manipulation using the <em>Repository Pattern</em>. <em>Unit of Work</em> is referred to as a single transaction that involves multiple operations.</p>
+
+<h2 id="settingupourproject">Setting up our project</h2>
+
+<p>First, we have to set up our project. So, let's head to <em>Visual Studio</em> and choose "<em>New Project > Visual C# > Web > ASP.NET We Application (.NET Framework)</em>". Name our application "<em>GameApplication</em>".</p>
+
+<p>Now, let's install the <em>Entity Framework</em> and enable <em>Migrations</em>:</p>
+
+<pre><code>PM&gt; Install-Package EntityFramework -Version 6.2.0 
+PM&gt; enable-migrations
+</code></pre>
+
+<p><small><em>Installing Entity Framework and enabling migrations</em></small></p>
+
+<p>Enable <em>Routes</em> attributes:</p>
+
+<pre><code>routes.MapMvcAttributeRoutes();
+</code></pre>
+
+<p><small><em>Adding Attributes Routes in App</em>Start/RouteConfig.cs file_</small></p>
+
+<p>We can now create our first <em>Model</em>, that we are going to name "<em>Game</em>", like so:</p>
+
+<pre><code>namespace GameApplication.Models
+{
+    public class Game
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>Models/Game.cs file</em></small></p>
+
+<p>We now have to create a "<em>DAL</em>" folder at the root of our application where we are going to create a "<em>GameContext</em>" file.</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Linq;
+using System.Web;
+using GameApplication.Models;
+
+namespace GameApplication.DAL
+{
+    public class GameContext : DbContext
+    {
+        public GameContext() : base("GameContext")
+        {
+        }
+
+        public DbSet&lt;Game&gt; Games { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove&lt;PluralizingTableNameConvention&gt;();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/GameContext.cs file</em></small></p>
+
+<p>Now, in the "<em>Migrations/Configuration.cs</em>" file, let's place the following code:</p>
+
+<pre><code>namespace GameApplication.Migrations
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using GameApplication.Models;
+
+    internal sealed class Configuration : DbMigrationsConfiguration&lt;GameApplication.DAL.GameContext&gt;
+    {
+        public Configuration()
+        {
+            AutomaticMigrationsEnabled = false;
+        }
+
+        protected override void Seed(GameApplication.DAL.GameContext context)
+        {
+            var games = new List&lt;Game&gt;
+            {
+                new Game{Name="Super Mario Bros"},
+                new Game{Name="Super Mario 64"},
+                new Game{Name="Super Mario Galaxy"}
+            };
+
+            games.ForEach(e =&gt; context.Games.AddOrUpdate(p =&gt; p.Name, e));
+            context.SaveChanges();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>Migrations/Configuration.cs file</em></small></p>
+
+<p>We then have to make little changes in our "<em>Web.config</em>" file:</p>
+
+<pre><code>&lt;connectionStrings&gt;
+    &lt;add name="GameContext" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=GameApplication;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/&gt;
+&lt;/connectionStrings&gt;
+</code></pre>
+
+<p><small><em>Web.config file edited</em></small></p>
+
+<p>Now, we are ready to create our first <em>Controller</em>. Let's choose the "<em>MVC 5 Controller with views, using Entity Framework</em>" option and name it "<em>GameController</em>". We can enter "<em>Game</em>" as the <em>Model</em> class and "<em>GameContext</em>" for the database <em>Context</em>. After a few seconds, we can see that a <em>Controller</em> with some code in it and a bunch of <em>Views</em> have been created for us.</p>
+
+<p>Now, if we run our application and go to "<em>localhost:RANDOM</em>PORT/game_", we should see something interesting.</p>
+
+<h2 id="genericrepository">Generic Repository</h2>
+
+<p>There are many ways to implement the <em>Repository Patterns</em>. We could create a <em>Repository Class</em> for each entity type, but it results in a lot of redundant code or in partial updates. So, to avoid this, we are going to create a <em>Generic Repository</em>.</p>
+
+<p>First, let's create a file named "<em>GenericRepository.cs</em>" in our "<em>DAL</em>" folder and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Web;
+using GameApplication.Models;
+
+namespace GameApplication.DAL
+{
+    public class GenericRepository&lt;TEntity&gt; where TEntity : class
+    {
+        internal GameContext context;
+        internal DbSet&lt;TEntity&gt; dbSet;
+
+        public GenericRepository(GameContext context)
+        {
+            this.context = context;
+            this.dbSet = context.Set&lt;TEntity&gt;();
+        }
+
+        public virtual IEnumerable&lt;TEntity&gt; Get(
+            Expression&lt;Func&lt;TEntity, bool&gt;&gt; filter = null,
+            Func&lt;IQueryable&lt;TEntity&gt;, IOrderedQueryable&lt;TEntity&gt;&gt; orderBy = null,
+            string includeProperties = "")
+        {
+            IQueryable&lt;TEntity&gt; query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            foreach (var includeProperty in includeProperties.Split
+                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+
+            if (orderBy != null)
+            {
+                return orderBy(query).ToList();
+            }
+            else
+            {
+                return query.ToList();
+            }
+        }
+
+        public virtual TEntity GetByID(object id)
+        {
+            return dbSet.Find(id);
+        }
+
+        public virtual void Insert(TEntity entity)
+        {
+            dbSet.Add(entity);
+        }
+
+        public virtual void Delete(object id)
+        {
+            TEntity entityToDelete = dbSet.Find(id);
+            Delete(entityToDelete);
+        }
+
+        public virtual void Delete(TEntity entityToDelete)
+        {
+            if (context.Entry(entityToDelete).State == EntityState.Detached)
+            {
+                dbSet.Attach(entityToDelete);
+            }
+            dbSet.Remove(entityToDelete);
+        }
+
+        public virtual void Update(TEntity entityToUpdate)
+        {
+            dbSet.Attach(entityToUpdate);
+            context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/GenericRepository.cs file</em></small></p>
+
+<p>As we can see, first, we declare two class variables: one for the context and one for the entity set that the <em>Repository</em> is instantiated for. The <em>constructor</em> accepts a database context instance and initializes the entity set variable.</p>
+
+<p>If we just overview the class, we can notice that the code declares a typical set of "<em>CRUD</em>" methods.</p>
+
+<p>The signature of the "<em>Get()</em>" method can seem impressive. The first two arguments are <em>lambda expressions</em>. "<em>Expression<Func<TEntity, bool>> filter</em>" means that a <em>lambda expression</em>, based on "<em>TEntity</em>", will be provided and it will return a Boolean value. "<em>Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy</em>" also means that a <em>lambda expression</em> will be provided. The input of this expression is an "<em>IQueryable</em>" object and it will return an ordered version of that object. Finally, the third argument is a string that allows us to provide a comma-delimited list of navigation properties for eager loading. In the body of this method, we can see that, first, the filter expression is applied if there is one. Secondly, the eager-loading expression is performed. Finally, the order expression is applied if there is one.</p>
+
+<p>Come next two methods, one to get an <em>Entity</em> by its <em>ID</em>, then a method that handles insertion. We then have two "<em>Delete()</em>" methods that manage the deletion. Finally, we find the "<em>Update()</em>" method.</p>
+
+<h2 id="unitofwork">Unit of Work</h2>
+
+<p>As we said, the role of the <em>Unit of Work</em> class is to make sure that, when we use multiple <em>Repositories</em>, they share a single database <em>Context</em>. So, when a <em>Unit of Work</em> is complete, the "<em>SaveChanges()</em>" method is called on the instance corresponding to the current <em>Context</em>. We are then assured that all related changes will be coordinated.</p>
+
+<p>Let's create a file named "<em>UnitOfWork.cs</em>" in our "<em>DAL</em>" folder and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using GameApplication.Models;
+
+namespace GameApplication.DAL
+{
+    public class UnitOfWork : IDisposable
+    {
+        private GameContext context = new GameContext();
+        private GenericRepository&lt;Game&gt; gameRepository;
+
+        public GenericRepository&lt;Game&gt; GameRepository
+        {
+            get
+            {
+                return this.gameRepository ?? new GenericRepository&lt;Game&gt;(context);
+            }
+        }
+
+        public void Save()
+        {
+            context.SaveChanges();
+        }
+
+        private bool disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/UnitOfWork.cs file</em></small></p>
+
+<p>If we look at the code, we can see that the class implements the "<em>IDisposable</em>" interface. The main purpose of this interface is to release unmanaged resources. A managed resource means "<em>managed memory</em>" that is managed by the garbage collector. When we no longer have any references to a managed object, which uses managed memory, the garbage collector will release that memory for us. So, unmanaged resources are everything that the garbage collector does not know about (open files, open network connections, etc.). So, using the "<em>Dispose()</em>" method of this interface allows us to release unmanaged resources in conjunction with the garbage collector. The consumer of an object can call this method when the object is no longer needed.</p>
+
+<p>We also have a class variable for the database <em>Context</em> and another for the <em>Repository</em> we are going to use. If there were more <em>Repositories</em>, we would have to add variables representing each of them. We then perform a check to see if our <em>Repository</em> already exists. If not, we instantiate it using the <em>Context</em> instance.</p>
+
+<p>The "<em>Save()</em>" method calls the "<em>SaveChanges()</em>" on the <em>Context</em>.</p>
+
+<h2 id="changingthecontroller">Changing the Controller</h2>
+
+<p>Now, let's go back to our "<em>GameController</em>" and change it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using GameApplication.DAL;
+using GameApplication.Models;
+
+namespace GameApplication.Controllers
+{
+    public class GameController : Controller
+    {
+        private UnitOfWork unitOfWork = new UnitOfWork();
+
+        // GET: Game
+        public ActionResult Index()
+        {
+            var games = unitOfWork.GameRepository.Get();
+            return View(games.ToList());
+        }
+
+        // GET: Game/Details/5
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Game game = unitOfWork.GameRepository.GetByID(id);
+            if (game == null)
+            {
+                return HttpNotFound();
+            }
+            return View(game);
+        }
+
+        // GET: Game/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Game/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create([Bind(Include = "Id,Name")] Game game)
+        {
+            if (ModelState.IsValid)
+            {
+                unitOfWork.GameRepository.Insert(game);
+                unitOfWork.Save();
+                return RedirectToAction("Index");
+            }
+
+            return View(game);
+        }
+
+        // GET: Game/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Game game = unitOfWork.GameRepository.GetByID(id);
+            if (game == null)
+            {
+                return HttpNotFound();
+            }
+            return View(game);
+        }
+
+        // POST: Game/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "Id,Name")] Game game)
+        {
+            if (ModelState.IsValid)
+            {
+                unitOfWork.GameRepository.Update(game);
+                unitOfWork.Save();
+                return RedirectToAction("Index");
+            }
+            return View(game);
+        }
+
+        // GET: Game/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Game game = unitOfWork.GameRepository.GetByID(id);
+            if (game == null)
+            {
+                return HttpNotFound();
+            }
+            return View(game);
+        }
+
+        // POST: Game/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Game game = unitOfWork.GameRepository.GetByID(id);
+            unitOfWork.GameRepository.Delete(id);
+            unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                unitOfWork.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>Controllers/GameController.cs file edited</em></small></p>
+
+<p>Here, we add a class variable for the "<em>UnitOfWork</em>". One improvement we could do here is to use the <em>constructor</em> instead or to use <em>Dependency Injection</em>. The main change is that every reference to the database <em>Context</em> is replaced by a reference to the appropriate <em>Repository</em>, using "<em>UnitOfWork</em>" properties to access the <em>Repository</em>.</p>
+
+<p>If we run our application again, we see that it looks and works the same as before.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we defined the <em>Repository</em> and the <em>Unit of Work</em> patterns. We saw which concept they encapsulate and how we can use them in our application.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
