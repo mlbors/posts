@@ -1,0 +1,73 @@
+<h1 id="whatiscurrying">What is currying?</h1>
+
+<p>Through this article, we are going to talk about "<em>currying</em>".</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Currying has nothing to do with spices, unfortunately. In fact, this process is named after <em>Haskell Curry</em>, who was a mathematician. So, let's see what that means.</p>
+
+<h2 id="purefunctions">Pure functions</h2>
+
+<p>So currying allows us to get <em>pure functions</em>. But what is a <em>pure function</em>? A function is considered as pure if:</p>
+
+<ul>
+<li>The function always evaluates the same result value given the same argument value(s)</li>
+
+<li>Evaluation of the result does not cause any semantically observable side effect or output</li>
+</ul>
+
+<p>So for example, "<em>sin(x)</em>" is a <em>pure function</em>, because it returns the <em>sine</em> of a number <em>x</em>. On the other side, something like a "<em>date()</em>" function is not pure because it returns something different every day.</p>
+
+<p>A function that uses only its own arguments, its local variables and <em>pure functions</em>, is a <em>pure function</em>.</p>
+
+<h2 id="currying">Currying</h2>
+
+<p>So, now that we know what a <em>pure function</em> is, let's look a little closer at the <em>currying</em> process. <em>Currying</em> is a way to reduce functions of more than one argument to functions of one argument. In other words, it allows us to break down a function into a series of functions that each have a single argument. The inverse process of <em>currying</em> is <em>uncurrying</em>.</p>
+
+<p>But why would we do such a thing? Because it helps us to avoid passing the same variable over and over again. It lets use create little pieces that can be configured and reused with ease.</p>
+
+<h2 id="examples">Examples</h2>
+
+<p>Let's see in practice what we saw means. Using <em>JavaScript</em>, let's say that we have the following function:</p>
+
+<pre><code>function add (a, b) {
+    return a + b;
+}
+</code></pre>
+
+<p>So, this function could be used like so:</p>
+
+<pre><code>add(3, 5); // returns 8
+</code></pre>
+
+<p>So, we can use <em>currying</em> and transform this function like this:</p>
+
+<pre><code>function add (a) {
+    return function (b) {
+        return a + b;
+    }
+}
+</code></pre>
+
+<p>As we can see, our function now has only one argument and returns another function. So, we could use it like so:</p>
+
+<pre><code>add(3)(5); // returns 8
+</code></pre>
+
+<p>Now, let's say that we have to use the value "3" plenty of times. We can use the advantages of <em>currying</em> like so:</p>
+
+<pre><code>var add3 = add(3);
+add3(5); // returns 8
+add3(8); // returns 11
+add3(2); // returns 5
+</code></pre>
+
+<p>As we can see, we have a simple little "<em>piece</em>" named "<em>add3</em>" that we can reuse over and over. This process is called <em>partial application</em>. <em>Partial application</em> is when we call a function with one or multiple arguments and it returns a function that still accepts arguments. </p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we saw what "<em>currying</em>" means and how we can use it. We saw the concepts that it is related to and the advantages of this process.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

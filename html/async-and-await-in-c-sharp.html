@@ -1,0 +1,55 @@
+<h1 id="asyncandawaitinc">Async and Await in C#</h1>
+
+<p>In this article, we are going to look at the keywords "<em>async</em>" and "<em>await</em>" in <em>C#</em>. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Using asynchronous programming allows us to enhance the responsiveness of our application. It helps us in case we have a potentially blocking activity where the entire application has to wait before continuing. Using an asynchronous process lets the application continue its work that doesn't depend on the blocking activity until this task is finished. Let's see how we can put that in place.</p>
+
+<h2 id="tasks">Tasks</h2>
+
+<p>To achieve asynchronous programming with <em>C#</em>, we need to be aware of <em>Tasks</em>.</p>
+
+<p>A <em>Task</em> represents an asynchronous operation. It is an operation we want to perform and that is executed in the background. A <em>Task</em> is something like a <em>promise</em>, or a <em>future</em>, that says something like "<em>I will return this a little bit later</em>". <em>Tasks</em> can be chained to be executed one after the other.</p>
+
+<p>A <em>Task</em> mustn't be confused with a <em>Thread</em>. <em>Thread</em> is a lower-level concept. A <em>Thread</em> is a way of fulfilling a promise, but not every <em>Task</em> needs a brand-new <em>Thread</em>. A <em>Task</em> can return a result, while there is no direct mechanism to return a result from a <em>Thread</em>.</p>
+
+<p>If we are familiar with <em>JavaScript Promises</em>, <em>Tasks</em> are quite the same.</p>
+
+<h2 id="exampleandexplanation">Example and explanation</h2>
+
+<p>Let's imagine the following code:</p>
+
+<pre><code>private async void Button_Click(object sender, RoutedEventArgs e)
+{
+    textBox.Text = "Wait...";
+    // ... DOING SOME OPERATIONS
+    string result = await SimpleMethodAsync();
+    textBox.Text = result;
+}
+
+public async Task&lt;string&gt; SimpleMethodAsync()
+{
+    // ... DOING SOMETHING
+    await Task.Delay(2000);
+    return "Finished";
+}
+</code></pre>
+
+<p>As we can see, here we use three words that we had already mentioned: "<em>async</em>", "<em>await</em>", "<em>Task</em>". So, what does happen here? We can see that we use the keyword "<em>async</em>" in front of the "<em>Button_Click()</em>" method. It says that we define an asynchronous method. This also means that we are able to wait for something. So, when the method "<em>Button_Click()</em>" is called, responding to a click event, it is executed synchronously until it reaches the keyword "<em>await</em>". By that time, the "<em>SimpleMethodAsync()</em>" will be called and if other independent work can be done, it is operated. The "<em>await</em>" keyword tells the compiler that we ultimately need the result of the "<em>SimpleMethodAsync()</em>" method, but we don't need to block on that call.</p>
+
+<p>The "<em>SimpleMethodAsync()</em>" also has the "<em>async</em>" keyword in front of it. This method returns a <em>string</em> and we specify it with the return type "<em>Task\<string\></em>". After our "return" statement, the "<em>Button_Click()</em>" method can get the result.</p>
+
+<p>An important note is that even though returning "<em>void</em>" in an "<em>async</em>" method is allowed, it should not be used in most cases. The other two return types, "<em>Task</em>" and "Task\<T\>", represent "<em>void</em>" and "<em>T</em>", after the <em>awaitable</em> method completes and returns result. The use of void as return type should be only limited for <em>event handlers</em>.</p>
+
+<h2 id="inotherwords">In other words</h2>
+
+<p>The "<em>async</em>" keyword enables the "<em>await</em>" keyword in a method and changes how the method result is handled. An "<em>async</em>" method is executed like any other method, synchronously, until it reaches the "<em>await</em>" keyword. At this point, things get asynchronous. "<em>await</em>" takes a single argument, an "<em>awaitable</em>", something that is an asynchronous operation. "<em>await</em>" check if the "<em>awaitable</em>" has already completed and if it is the case, the method just continues synchronously. Otherwise, it tells the "<em>awaitable</em>" to run the remainder of the method when it completes, and then returns from the "<em>async</em>" method. When the "<em>awaitable</em>" completes, the remainder of the "<em>async</em>" method is executed.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw the meaning of the "<em>async</em>" and "<em>await</em>" keywords in <em>C#</em>. We had a basic overview of how asynchronous operations work and how we can use them.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

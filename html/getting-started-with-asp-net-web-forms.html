@@ -1,0 +1,546 @@
+<h1 id="gettingstartedwithaspnetwebforms">Getting Started with ASP.NET Web Forms</h1>
+
+<p>In this article, we are going to take a look at <em>ASP.NET Web Forms</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Through this post, we are going to build a really simple application using the <em>ASP.NET Web Forms</em> technology. It is going to be pretty straightforward and this will allow us to have a brief overview of this tool.</p>
+
+<h2 id="whatisaspnetwebforms">What is ASP.NET Web Forms?</h2>
+
+<p><em>ASP.NET</em> offers us a few ways to create dynamic web applications and web sites. <em>ASP.NET Web Forms</em> is one of them.</p>
+
+<p>As we said, with Web Forms, we can create web applications or web sites. Web applications need to be compiled before deployment, while web sites are compiled and executed on the server, which generates the <em>HTML</em> that displays the web pages.</p>
+
+<h3 id="vocabulary">Vocabulary</h3>
+
+<p>Before diving into our project, let's take a moment to see a little bit of vocabulary.</p>
+
+<h3 id="pages">Pages</h3>
+
+<p>In an <em>ASP.NET Web Forms</em>, a page looks like an <em>HTML</em> page. The extension of the file is "<em>.aspx</em>". When a browser requests an <em>ASP.NET</em> page, the server processes any executable code in the page, before the result is sent back to the browser.</p>
+
+<h3 id="directives">Directives</h3>
+
+<p>A directive is a special instruction on how <em>ASP.NET</em> should process the page.</p>
+
+<h3 id="controls">Controls</h3>
+
+<p><em>Controls</em> are tags that the server understands.</p>
+
+<p>There are three kinds of server <em>Controls</em>:</p>
+
+<ul>
+<li>HTML Server Controls - Traditional <em>HTML</em> tags</li>
+
+<li>Web Server Controls - New <em>ASP.NET</em> tags</li>
+
+<li>Validation Server Controls - For input validation</li>
+</ul>
+
+<h3 id="forms">Forms</h3>
+
+<p>All <em>Controls</em> must be embedded in a <em>Form</em>. The "<em>form</em>" tag must contain the "<em>runat="server"</em>" attribute that indicates that the form should be processed on the server.</p>
+
+<h3 id="masterpage">Master Page</h3>
+
+<p>A <em>Master Page</em> allows us to create a consistent layout for the pages in our application.</p>
+
+<h3 id="events">Events</h3>
+
+<p>In an <em>ASP.NET Web Forms</em> application, working with <em>Server Controls</em> on the page involves responding to <em>Events</em> raised by <em>Controls</em>. To control <em>Events</em>, we need to handle them with our own code that we will bind to the specific <em>Events</em>.</p>
+
+<h3 id="postback">Post Back</h3>
+
+<p>A <em>Post Back</em> occurs when we send data back to the server via a <em>POST request</em>. It is the name given to the process of submitting an <em>ASP.NET</em> page to the server for processing. </p>
+
+<h3 id="viewstate">View State</h3>
+
+<p>The <em>View State</em> is the method to preserve the value of the <em>Page</em> and <em>Controls</em>. It stores the value of the <em>Pages</em> at the time of <em>Post Back</em>.</p>
+
+<h3 id="codebehind">Code-Behind</h3>
+
+<p><em>Code-Behind</em> refers to the code that relates to a specific page and stored in another file with the "<em>.cs</em>" extension.</p>
+
+<h3 id="databinding">Data binding</h3>
+
+<p>Basically, data binding allows properties of two objects to be linked so that a change in one causes a change in the other.</p>
+
+<p>Data binding is used to simplify how an application displays and interacts with its data. It establishes a connection between the user interface and the underlying application. It defines a relationship between two objects: a source object that will provide data and a target object that will use the data from the source object.</p>
+
+<p>The benefit of data binding is that we no longer have to worry about synchronizing data between our views and data source. Most of the time, bindings are used to connect the visuals of an application with an underlying data model.</p>
+
+<h2 id="pagelifecyclestages">Page life-cycle stages</h2>
+
+<p>In an <em>ASP.NET Web Forms</em>, when a Page is requested, it goes through a life-cycle in which various processing steps are performed. Here are the different steps that are part of this life-cycle.</p>
+
+<ul>
+<li>Page request: occurs before the page life cycle begins. It determines whether the page needs to be parsed and compiled.</li>
+
+<li>Start: it sets page properties such as <em>Request</em> and Response. It also determines whether the <em>Request</em> is a <em>Post Back</em> or a new <em>Request</em>.</li>
+
+<li>Initialization: it sets the ID of each <em>Control</em> while they are available.</li>
+
+<li>Load: if the current <em>Request</em> is a <em>Post Back</em>, <em>Control</em> properties are loaded with information recovered from <em>View State</em> and <em>Control State</em>.</li>
+
+<li>Postback event handling: if the <em>Request</em> is a <em>Post Back</em>, <em>Control Event</em> handlers are called.</li>
+
+<li>Rendering: it saves <em>View State</em> for the <em>Page</em> and the <em>Controls</em>, then each element is rendered.</li>
+
+<li>Unload: it is raised after the page has been fully rendered, sent to the client, and is ready to be discarded.</li>
+</ul>
+
+<h2 id="creatingourproject">Creating our project</h2>
+
+<p>Let's head to <em>Visual Studio</em>, select "<em>New Project > Visual C# > Web > ASP.NET We Application (.NET Framework)</em>" and name our application "<em>MusicApplication</em>". Then, we have to select the "<em>Web Forms</em>" option. We can check the box for unit tests if we want to generate a second assembly for unit testing.</p>
+
+<h2 id="projectstructure">Project structure</h2>
+
+<p>Now that our application is generated, let's take a look at the different folders we have.</p>
+
+<h3 id="applicationinformation">Application information</h3>
+
+<ul>
+<li>Properties - application properties (application type, startup object, assembly information)</li>
+
+<li>References - used to pull additional libraries into the project</li>
+</ul>
+
+<h3 id="applicationfolders">Application folders</h3>
+
+<ul>
+<li>App_Data - application data (for example, SQL database)</li>
+
+<li>App_Start - routes and bundles</li>
+
+<li>Content - static files like CSS files, icons or images</li>
+</ul>
+
+<h3 id="configurationfiles">Configuration files</h3>
+
+<ul>
+<li>Global.asax - contains code for responding to application-level events raised by <em>ASP.NET</em> or by HttpModules</li>
+
+<li>packages.config - is managed by the NuGet infrastructure and tracks installed packages with their respective versions</li>
+
+<li>Web.config - contains settings that apply to the web site</li>
+</ul>
+
+<h2 id="firstrun">First run</h2>
+
+<p>Now, let's hit "<em>F5</em>", or click the "play" button in <em>Visual Studio</em> and wait a few seconds. This will start <em>IIS Express</em> and run our web app. <em>Visual Studio</em> then launches a browser and opens the application's home page. If everything is alright, our application will be available at "<em>http://localhost:RANDOM-PORT</em>".</p>
+
+<h2 id="creatingadatamodel">Creating a Data Model</h2>
+
+<p>First, we are going to define a <em>Data Model</em> for our application. We are going to need the <em>Entity Framework</em> and LocalDB.</p>
+
+<p>The <em>Entity Framework</em> is an <em>object-relational mapper</em> (<em>ORM</em>) that allows us to work with a database using <em>.NET</em> objects. It supports a development paradigm called <em>Code First</em>. It lets us create <em>Model</em> objects by writing simple classes (also known as <em>POCO</em> classes, from "<em>plain-old CLR objects</em>"). We can have the database created on the fly from our classes.</p>
+
+<p><em>LocalDB</em> is a lightweight version of the <em>SQL Server Express Database Engine</em>. <em>LocalDB</em> runs in a special execution mode of <em>SQL Server Express</em> that allows us to work with databases as "<em>.mdf</em>" files. <em>LocalDB</em> is installed by default with <em>Visual Studio</em>.</p>
+
+<p>First, we need to install the <em>Entity Framework</em>. We can achieve this by calling the graphic <em>Package Manager</em> or using the command line version like so:</p>
+
+<pre><code>PM&gt; Install-Package EntityFramework -Version 6.2.0 
+</code></pre>
+
+<p><small><em>Installing Entity Framework</em></small></p>
+
+<p>Now, let's create a new folder named "<em>Models</em>". Then, in that same folder, let's create a class named "<em>Band</em>" (<em>"Add > New Item > Code > Class"</em>) and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+
+namespace MusicApplication.Models
+{
+    public class Band
+    {
+        [ScaffoldColumn(false)]
+        public int Id { get; set; }
+
+        [Required, StringLength(100), Display(Name = "Name")]
+        public string BandName { get; set; }
+
+        [Required, StringLength(10000), Display(Name = "Band Biography"), DataType(DataType.MultilineText)]
+        public string Bio { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>Models/Band.cs file</em></small></p>
+
+<p>As we can see, we use <em>Data Annotations</em> that allow us to describe how to validate user input for a class member, to specify formatting for it, and to specify how it is modelled when the database is created.</p>
+
+<h2 id="creatingthecontext">Creating the Context</h2>
+
+<p>Let's create a "<em>DAL</em>" folder. In that folder, let's create a class named "<em>BandContext</em>" and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
+using MusicApplication.Models;
+
+namespace MusicApplication.DAL
+{
+    public class BandContext : DbContext
+    {
+
+        public BandContext() : base("BandContext")
+        {
+        }
+
+        public DbSet&lt;Band&gt; Bands { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/BandContext.cs file</em></small></p>
+
+<p>First, we pass the name of the connection string to the <em>constructor</em>.</p>
+
+<p>Then, and because it is just a really simple example, we create only one "<em>DbSet</em>" property. A "<em>DbSet</em>" corresponds to a database table and an <em>Entity</em> corresponds to a row in the table.</p>
+
+<h2 id="settingupentityframeworktouselocaldb">Setting up Entity Framework to use LocalDB</h2>
+
+<p>Let's edit our "<em>Web.config</em>" file and put the following lines in to that one:</p>
+
+<pre><code>&lt;connectionStrings&gt;
+    &lt;add name="BandContext" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=MusicApplication;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/&gt;
+&lt;/connectionStrings&gt;
+</code></pre>
+
+<p><small><em>Web.config file edited</em></small></p>
+
+<h2 id="migrations">Migrations</h2>
+
+<p>In a real application, our <em>Data Model</em> will change frequently. So, for each change, we need to sync that database. We could configure the <em>Entity Framework</em> to automatically drop and re-create the database each time we change the <em>Data Model</em>. This is alright for development, but not for production because we would lose data. To solve this problem, we need to enable the <em>Code First Migrations</em> feature.</p>
+
+<p>We can enable <em>Migrations</em> like so:</p>
+
+<pre><code>PM&gt; enable-migrations
+</code></pre>
+
+<p><small><em>Enabling Migrations</em></small></p>
+
+<p>As we can see, a "<em>Migrations</em>" folder has been created. In this folder, we can find a file "<em>Configuration</em>" that contains a "<em>Seed()</em>" method. Let's place the following code into that file:</p>
+
+<pre><code>namespace MusicApplication.Migrations
+{
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Collections.Generic;
+    using System.Linq;
+    using MusicApplication.Models;
+
+    internal sealed class Configuration : DbMigrationsConfiguration&lt;MusicApplication.DAL.BandContext&gt;
+    {
+        public Configuration()
+        {
+            AutomaticMigrationsEnabled = false;
+        }
+
+        protected override void Seed(MusicApplication.DAL.BandContext context)
+        {
+            var bands = new List&lt;Band&gt;
+            {
+                new Band{BandName="Depeche Mode", Bio="A band from Basildon."},
+                new Band{BandName="The Beatles", Bio="A band from Liverpool."}
+            };
+
+            bands.ForEach(e =&gt; context.Bands.AddOrUpdate(p =&gt; p.BandName, e));
+            context.SaveChanges();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>Migrations/Configuration.cs file</em></small></p>
+
+<p>Now, we can create a <em>Migration</em> like so:</p>
+
+<pre><code>PM&gt; add-migration InitialCreate
+</code></pre>
+
+<p><small><em>Creating a Migration</em></small></p>
+
+<p>In the "<em>Migrations</em>" folder, we can now find the code that would create the database from scratch. The "<em>Up()</em>" method creates the database tables that correspond to the data model entity sets, and the "<em>Down()</em>" method deletes them.</p>
+
+<p>To execute our <em>Migration</em>, we can use the following code:</p>
+
+<pre><code>PM&gt; update-database -TargetMigration InitialCreate
+</code></pre>
+
+<p><small><em>Executing our Migration</em></small></p>
+
+<p>We can use the <em>SQL Server Explorer</em> to see that our <em>Migration</em> has been run.</p>
+
+<h2 id="displayingdata">Displaying data</h2>
+
+<p>We can now create the different views we need to display our data. First, let's create a view named "<em>BandList</em>" ("<em>Add > New Item > Web > Web Forms > Web Form</em>") and fill it like so:</p>
+
+<pre><code>&lt;%@ Page Title="Bands" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" 
+        CodeBehind="BandList.aspx.cs" Inherits="MusicApplication.BandList" %&gt;
+&lt;asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server"&gt;
+    &lt;section&gt;
+        &lt;div&gt;
+            &lt;hgroup&gt;
+                &lt;h2&gt;&lt;%: Page.Title %&gt;&lt;/h2&gt;
+            &lt;/hgroup&gt;
+
+            &lt;asp:ListView ID="bandList" runat="server" 
+                DataKeyNames="Id" GroupItemCount="4"
+                ItemType="MusicApplication.Models.Band" SelectMethod="GetBands"&gt;
+                &lt;EmptyDataTemplate&gt;
+                    &lt;table &gt;
+                        &lt;tr&gt;
+                            &lt;td&gt;No data was returned.&lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/table&gt;
+                &lt;/EmptyDataTemplate&gt;
+                &lt;EmptyItemTemplate&gt;
+                    &lt;td/&gt;
+                &lt;/EmptyItemTemplate&gt;
+                &lt;GroupTemplate&gt;
+                    &lt;tr id="itemPlaceholderContainer" runat="server"&gt;
+                        &lt;td id="itemPlaceholder" runat="server"&gt;&lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/GroupTemplate&gt;
+                &lt;ItemTemplate&gt;
+                    &lt;td runat="server"&gt;
+                        &lt;table&gt;
+                            &lt;tr&gt;
+                                &lt;td&gt;
+                                    &lt;a href="BandDetails.aspx?Id=&lt;%#:Item.Id%&gt;"&gt;
+                                        &lt;span&gt;
+                                            &lt;%#:Item.BandName%&gt;
+                                        &lt;/span&gt;
+                                    &lt;/a&gt;
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                        &lt;/table&gt;
+                        &lt;/p&gt;
+                    &lt;/td&gt;
+                &lt;/ItemTemplate&gt;
+                &lt;LayoutTemplate&gt;
+                    &lt;table style="width:100%;"&gt;
+                        &lt;tbody&gt;
+                            &lt;tr&gt;
+                                &lt;td&gt;
+                                    &lt;table id="groupPlaceholderContainer" runat="server" style="width:100%"&gt;
+                                        &lt;tr id="groupPlaceholder"&gt;&lt;/tr&gt;
+                                    &lt;/table&gt;
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                            &lt;tr&gt;
+                                &lt;td&gt;&lt;/td&gt;
+                            &lt;/tr&gt;
+                            &lt;tr&gt;&lt;/tr&gt;
+                        &lt;/tbody&gt;
+                    &lt;/table&gt;
+                &lt;/LayoutTemplate&gt;
+            &lt;/asp:ListView&gt;
+        &lt;/div&gt;
+    &lt;/section&gt;
+&lt;/asp:Content&gt;
+</code></pre>
+
+<p><small><em>BandList.aspx file</em></small></p>
+
+<p>We can see that there are various curious symbols in our code. Let's take a look at their meaning:</p>
+
+<ul>
+<li>&lt;% %> - inline code (especially logic flow)</li>
+
+<li>&lt;%$ %> - evaluating expressions (like resource variables)</li>
+
+<li>&lt;%@ %> - Page directives, registering assemblies, importing namespaces, etc.</li>
+
+<li>&lt;%= %> - short-hand for Response.Write</li>
+
+<li>&lt;%# %> - used for data binding expressions.</li>
+
+<li>&lt;%: %> - short-hand for Response.Write(Server.HTMLEncode()) ASP.NET 4.0+</li>
+
+<li>&lt;%#: %> - used for data binding expressions and is automatically HTMLEncoded</li>
+
+<li>&lt;%-- --%> - is for server-side comments</li>
+</ul>
+
+<p>We now have to add the <em>code-behind</em> file. For that, we need to unfold the "<em>BandList.aspx</em>" file by clicking on the little arrow next to it. In the file "<em>BandList.aspx.cs</em>", let's put to following code:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.ModelBinding;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using MusicApplication.DAL;
+using MusicApplication.Models;
+
+namespace MusicApplication
+{
+    public partial class BandList : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        public IQueryable&lt;Band&gt; GetBands()
+        {
+            var _db = new MusicApplication.DAL.BandContext();
+            IQueryable&lt;Band&gt; query = _db.Bands;
+            return query;
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>BandList.aspx.cs file</em></small></p>
+
+<p>As we can see, here we have a method named "<em>GetBands()</em>" that is used in the "<em>BandList.aspx</em>" file in the "<em>ListView</em>" <em>Control</em>.</p>
+
+<p>Let's create another view named "<em>BandDetails.aspx</em>" and place the following code into it:</p>
+
+<pre><code>&lt;%@ Page Title="Band Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" 
+        CodeBehind="BandDetails.aspx.cs" Inherits="MusicApplication.BandDetails" %&gt;
+&lt;asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server"&gt;
+    &lt;asp:FormView ID="bandDetail" runat="server" ItemType="MusicApplication.Models.Band" SelectMethod ="GetBand" RenderOuterTable="false"&gt;
+        &lt;ItemTemplate&gt;
+            &lt;div&gt;
+                &lt;h1&gt;&lt;%#:Item.BandName %&gt;&lt;/h1&gt;
+            &lt;/div&gt;
+            &lt;br /&gt;
+            &lt;table&gt;
+                &lt;tr&gt;
+                    &lt;td style="vertical-align: top; text-align:left;"&gt;
+                        &lt;b&gt;Biography:&lt;/b&gt;&lt;br /&gt;&lt;%#:Item.Bio %&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/table&gt;
+        &lt;/ItemTemplate&gt;
+    &lt;/asp:FormView&gt;
+&lt;/asp:Content&gt;
+</code></pre>
+
+<p><small><em>BandDetails.aspx file</em></small></p>
+
+<p>Now, let's add the <em>code-behind</em>:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.ModelBinding;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using MusicApplication.DAL;
+using MusicApplication.Models;
+
+namespace MusicApplication
+{
+    public partial class BandDetails : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        public IQueryable&lt;Band&gt; GetBand([QueryString("Id")] int? Id)
+        {
+            var _db = new MusicApplication.DAL.BandContext();
+            IQueryable&lt;Band&gt; query = _db.Bands;
+            if (Id.HasValue &amp;&amp; Id &gt; 0)
+            {
+                query = query.Where(p =&gt; p.Id == Id);
+            }
+            else
+            {
+                query = null;
+            }
+            return query;
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>BandDetails.aspx.cs</em></small></p>
+
+<p>As we can see, here, we have a method called "<em>GetBand()</em>" that takes an <em>ID</em> as an argument. This method is used in our file "<em>BandDetails.aspx</em>".</p>
+
+<h2 id="addingroutes">Adding routes</h2>
+
+<p>It is time to work on our URLs. For now, we can access to our views using "<em>http://localhost:RANDOM-PORT/BandList</em>" and something like "<em>http://localhost:RANDOM-PORT/BandDetails?Id=1</em>".</p>
+
+<p>Let's start by adding the following code in the "<em>RouteConfig</em>" file:</p>
+
+<pre><code>public static void RegisterCustomRoutes(RouteCollection routes)
+{
+    routes.MapPageRoute(
+        "BandById",
+        "Band/{Id}",
+        "~/BandDetails.aspx"
+    );
+}
+</code></pre>
+
+<p><small><em>App</em>Start/RouteConfig.cs file edited_</small></p>
+
+<p>We also have to edit our "<em>Global.asax.cs</em>" file:</p>
+
+<pre><code>namespace MusicApplication
+{
+    public class Global : HttpApplication
+    {
+        void Application_Start(object sender, EventArgs e)
+        {
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            RouteConfig.RegisterCustomRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>Global.asax.cs file edited</em></small></p>
+
+<p>Now, head to our "<em>BandList.apsx</em>" file and change our links like so:</p>
+
+<pre><code>&lt;a href="&lt;%#: GetRouteUrl("BandById", new {Id = Item.Id}) %&gt;"&gt;
+    &lt;span&gt;
+        &lt;%#:Item.BandName%&gt;
+    &lt;/span&gt;
+&lt;/a&gt;
+</code></pre>
+
+<p><small><em>BandList.apsx file edited</em></small></p>
+
+<p>Finally, we have to edit our "<em>BandDetails</em>" like so:</p>
+
+<pre><code>...
+using System.Web.Routing;
+...
+
+public IQueryable&lt;Band&gt; GetBand([RouteData] int? Id)
+{
+    ...
+}
+</code></pre>
+
+<p><small><em>BandDetails.aspx.cs file edited</em></small></p>
+
+<p>Now, if everything is alright, we should have something displayed if we go to "<em>http://localhost:RANDOM-PORT/Band/1</em>".</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we got an overview of <em>ASP.NET Web Forms</em>. We saw the basic concepts it uses. We built a small application and saw the different options that we have to create a dynamic web application. </p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

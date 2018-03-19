@@ -1,0 +1,261 @@
+<h1 id="gettingstartedwithaspnetcoremvc">Getting Started with ASP.NET Core MVC</h1>
+
+<p>In this article, we are going to create a really simple application using <em>ASP.NET Core MVC</em> to get more familiar with this technology.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Through this post, we are going to build a really simple application using the <em>ASP.NET Core MVC</em> technology. It is going to be pretty straightforward and this will allow us to have a brief overview of this tool. Here, we are going to use the second version of <em>ASP.NET Core</em>.</p>
+
+<h2 id="whatisaspnetcore">What is ASP.NET Core?</h2>
+
+<p><em>ASP.NET Core</em> is an open-source software created by <em>Microsoft</em>. It allows us to develop web apps, services, IoT apps or mobile backends. The main difference with <em>ASP.NET</em> is <em>ASP.NET Core</em> is cross-platform. By the way, it lets us to run on <em>.NET Core</em> or <em>.NET Framework</em>.</p>
+
+<h2 id="whatismvc">What is MVC?</h2>
+
+<p>Firstly, let's refresh our mind and let's have a look at <em>MVC</em>. <em>MVC</em>, or <em>Model-View-Controller</em>, is a pattern that allows us to separate an application in three main components: <em>Model</em>, <em>View</em>, <em>Controller</em>. Now, we can debate over the question, "<em>is MVC a design pattern or an architectural pattern?</em>" but that's another subject. Here, we have to retain the following information:</p>
+
+<h3 id="model">Model</h3>
+
+<p>The <em>Model</em> represents the data business logic layer. The <em>Business Logic</em> should be encapsulated in the model, along with any implementation logic for persisting the state of the application.</p>
+
+<h3 id="view">View</h3>
+
+<p><em>Views</em> are responsible for presenting content through the user interface. There should be minimal logic within a <em>View</em> and this logic should be related to presenting content.</p>
+
+<h3 id="controller">Controller</h3>
+
+<p>A Controller is a component that handles and responds to user input and interaction. It renders the appropriate <em>View</em> with the <em>Model</em> data as a response. So, it is responsible for selecting which <em>Model</em> type to work with and which <em>View</em> to render.</p>
+
+<h2 id="creatingourproject">Creating our project</h2>
+
+<p>Let's create our project, wherever we want, by doing the following commands:</p>
+
+<pre><code>dotnet new mvc -o gameapplication
+cd gameapplication
+</code></pre>
+
+<p><small><em>Creating our project and entering the folder</em></small></p>
+
+<p>We can also create our project inside <em>Visual Studio</em> ("<em>New > Project > Visual C# > .NET Core > ASP.NET Core Web Application</em>", then select "<em>Web Application (Model-View-Controller)</em>"). This will generate a <em>Solution</em> and the project itself.</p>
+
+<h2 id="projectstructure">Project structure</h2>
+
+<p>Now that we created our application, let's take a look at the structure of our folder.</p>
+
+<h3 id="applicationfolders">Application folders</h3>
+
+<ul>
+<li><em>Controllers</em> - <em>Controller</em> classes</li>
+
+<li><em>Models</em> - <em>Model</em> classes</li>
+
+<li><em>Views</em> - HTML files for views</li>
+
+<li><em>wwwroot</em> - static files like <em>CSS</em> files, icons or images</li>
+</ul>
+
+<h3 id="configurationfiles">Configuration files</h3>
+
+<ul>
+<li><em>Program.cs</em> - contains the "<em>Main()</em>" method and it is used to initiate, build, run the server and host the application</li>
+
+<li><em>Startup.cs</em> - used to configure middlewares on the request pipeline</li>
+
+<li><em>bundleconfig.json</em> - used to store the project bundling and minification configuration for scripts and styles</li>
+</ul>
+
+<h2 id="firstrun">First run</h2>
+
+<p>We can now run our project with the following command:</p>
+
+<pre><code>dotnet run
+</code></pre>
+
+<p><small><em>Running our project</em></small></p>
+
+<p>We can also hit "<em>F5"</em>, or click the "<em>play"</em> button in <em>Visual Studio</em> and wait a few seconds.</p>
+
+<p>Our project will be available at "<em>http://localhost:RANDOM-PORT</em>".</p>
+
+<h2 id="addingtheentityframeworkcore">Adding the Entity Framework Core</h2>
+
+<p>For our project, we are going to use the <em>Entity Framework Core</em>. <em>Entity Framework Core</em> is an <em>object-relational mapper</em> (<em>ORM</em>) that allows us to work with a database using <em>.NET objects</em>. It supports a development paradigm called <em>Code First</em>. It lets us create <em>Model</em> objects by writing simple classes (also known as <em>POCO</em> classes, from "<em>plain-old CLR objects</em>"). We can have the database created on the fly from our classes.</p>
+
+<p>We can install the <em>Entity Framework Core</em> with the following command:</p>
+
+<pre><code>dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.EntityFrameworkCore.Tools 
+</code></pre>
+
+<p><small><em>Installing the Entity Framework Core</em></small></p>
+
+<p>We can also use the <em>NuGet package manager</em> through <em>Visual Studio</em> like so:</p>
+
+<pre><code>Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Design
+Install-Package Microsoft.EntityFrameworkCore.Tools 
+</code></pre>
+
+<p><small><em>Installing the Entity Framework Core</em></small></p>
+
+<h2 id="creatingthecontext">Creating the Context</h2>
+
+<p>In our project, let's create a folder named "<em>Data</em>". In this folder, we can now create a file named "<em>GameContext</em>" and place the following code into that one:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameApplication._Models_;
+
+namespace GameApplication.Data
+{
+    public class GameContext : DbContext
+    {
+        public GameContext(DbContextOptions&lt;GameContext&gt; options) : base(options)
+        {
+        }
+
+        public DbSet&lt;Game&gt; Games { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>Data/GameContext.cs file</em></small></p>
+
+<p>Here we create only one "<em>DbSet</em>" property. A "<em>DbSet</em>" corresponds to a database table and an <em>Entity</em> corresponds to a row in the table.</p>
+
+<p>Now, in our "<em>Startup.cs</em>" file, we have to add the following lines:</p>
+
+<pre><code>...
+using Microsoft.EntityFrameworkCore;
+...
+using GameApplication.Data;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDbContext&lt;GameContext&gt;(options =&gt;
+        options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+    services.AddMvc();
+}
+</code></pre>
+
+<p><small><em>Startup.cs file edited</em></small></p>
+
+<p>Here, we register our context for <em>Dependency Injection</em>.</p>
+
+<h2 id="usinglocaldb">Using LocalDB</h2>
+
+<p><em>LocalDB</em> is a lightweight version of the <em>SQL Server Express Database Engine</em>. <em>LocalDB</em> runs in a special execution mode of <em>SQL Server Express</em> that allows us to work with databases as "<em>.mdf</em>" files. <em>LocalDB</em> is installed by default with <em>Visual Studio</em>.</p>
+
+<p>To use <em>LocalDB</em>, we have to change the connection string. So, in our "<em>appsettings.json</em>" file, we have to add the following things:</p>
+
+<pre><code>"ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=GameApplication;Trusted_Connection=True;MultipleActiveResultSets=true"
+}
+</code></pre>
+
+<p><small><em>appsettings.json file edited</em></small></p>
+
+<h2 id="initializingdata">Initializing Data</h2>
+
+<p>In our "<em>Data</em>" folder, let's create a file named "<em>DbInitializer</em>" and fill it like so:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameApplication._Models_;
+
+namespace GameApplication.Data
+{
+    public class DbInitializer
+    {
+        public static void Initialize(GameContext context)
+        {
+            if (context.Games.Any())
+            {
+                return;
+            }
+
+            var games = new List&lt;Game&gt;
+            {
+                new Game{Name="Super Mario Bros"},
+                new Game{Name="The Legend of Zelda"},
+                new Game{Name="Metroid"},
+                new Game{Name="Donkey Kong Country"}
+            };
+
+            games.ForEach(g =&gt; context.Games.Add(g));
+            context.SaveChanges();
+        }
+    }
+}
+</code></pre>
+
+<p><small><em>Data/DbInitializer.cs file</em></small></p>
+
+<p>We now have to change the "<em>Main()</em>" method in the "<em>Program.cs</em>" file like so:</p>
+
+<pre><code>...
+using Microsoft.Extensions.DependencyInjection;
+...
+using GameApplication.Data;
+
+public static void Main(string[] args)
+{
+    var host = BuildWebHost(args);
+
+    using (var scope = host.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService&lt;GameContext&gt;();
+            DbInitializer.Initialize(context);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService&lt;ILogger&lt;Program&gt;&gt;();
+            logger.LogError(ex, "An error occurred while seeding the database.");
+        }
+    }
+
+    host.Run();
+}
+</code></pre>
+
+<p><small><em>Program.cs filed edited</em></small></p>
+
+<h2 id="migrations">Migrations</h2>
+
+<p>In a real application, our data model will change frequently. So, for each change, we need to sync that database. We could configure the <em>Entity Framework Core</em> to automatically drop and re-create the database each time we change the data model. This is alright for development, but not for production because we would lose data. To solve this problem, we need to use the <em>Code First Migrations</em> feature.</p>
+
+<p>Let's create and execute a <em>Migration</em> like so:</p>
+
+<pre><code>dotnet ef migrations add InitialCreate
+dotnet ef database update
+// OR
+add-migration InitialCreate
+update-database
+</code></pre>
+
+<p><small><em>Creation and running a Migration</em></small></p>
+
+<p>We can use the <em>Server Explorer</em> to see that our migration has been run. Now, the first time we run the application, the database will be seeded with test data.</p>
+
+<h2 id="creatingourcontroller">Creating our Controller</h2>
+
+<p>Now, we are going to create our "<em>GamesController</em>". To achieve this, we are going to use the "<em>scaffold</em>" option, so we need <em>Visual Studio</em> and it is required that our project is embedded in a <em>Solution</em>. So, we can right click on the "<em>Controllers</em>" folder and select " <em>MVC controller with views, using Entity Framework</em>". Let's name our <em>Controller</em> "<em>Games</em>". For the <em>Model</em> class, we can select "<em>Game</em>" and for the <em>Context</em> "<em>GameContext</em>". We can also choose to use shared view "<em>_Layout.cshtml</em>". After a few seconds, we can see that a <em>Controller</em> with some code in it and a bunch of <em>Views</em> have been created for us.</p>
+
+<p>It is time to run our application again. Let's go to "<em>http://localhost:RANDOM-PORT/games</em>" to see the result. As we can see by looking at the result and the code, a lot has been made for us.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we got an overview of the <em>ASP.NET Core MVC Framework</em>. We saw the basic concepts it uses. We built a small application using the <em>MVC</em> pattern and saw the different options that we have to create a dynamic web application. We saw how to create basic <em>Models</em>, <em>Views</em> and <em>Controllers</em>. We had a brief overview of the <em>Entity Framework</em> and how to use it. We are now ready to get further, because, of course, here, we didn't talk about production environment or other elements.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

@@ -1,0 +1,74 @@
+<h1 id="whatisimmutability">What is immutability?</h1>
+
+<p>Through this article, we are going to talk about the concept of "<em>immutability</em>". Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>"<em>Immutability</em>" is a word that we can hear a lot without knowing exactly what it is. We can even use what it refers to without knowing it. Let's see what it means.</p>
+
+<h2 id="definition">Definition</h2>
+
+<p>In functional and in object-oriented programming, an object is considered as <em>immutable</em> when its <em>state</em> can't be changed after it was created. The opposite of such an object is a <em>mutable</em> object, which can be modified after its creation.</p>
+
+<p>But what is the <em>state</em> of an object? If, at a given time, for a given object, we wrote down on a piece of paper all the variables of this same object, we would get the <em>state</em> of this object. A program also has a <em>state</em> and this one corresponds to the <em>state</em> of all its objects at a given time. But, to evolve, a program needs to change <em>state</em> and that rapidly. So, an <em>immutable</em> object has a fixed <em>state</em> over time and even if the whole <em>state</em> of the program changes, once created, the <em>state</em> of such an object doesn't.</p>
+
+<p>Now, we can have some cases where an object is considered as <em>immutable</em> even if some of its attributes change because that object's <em>state</em> remains unchanged from an external point of view.</p>
+
+<h2 id="benefits">Benefits</h2>
+
+<p>But what are the benefits of <em>immutable</em> objects? For example, they can be helpful in <em>multi-threaded</em> applications where multiple <em>threads</em> can use data represented by <em>immutable</em> objects without concern of the data being changed by other <em>threads</em>.</p>
+
+<p><em>Immutable</em> objects also provide a consistent <em>state</em>. It means that an <em>immutable</em> object will always remain safe. For example, if we pass all the needed values to an object using the <em>constructor</em> and not through <em>setter methods</em>, we can be sure that all the necessary data to have a valid object will always be present.</p>
+
+<h2 id="example">Example</h2>
+
+<p>Let's now see a more practical example.</p>
+
+<p><em>Strings</em> are considered as <em>immutable</em>. However, we can do the following thing without any problem:</p>
+
+<pre><code>name = 'Mario'
+print name // Output: Mario
+
+name = 'Luigi'
+print name // Output: Luigi
+</code></pre>
+
+<p><em>Immutability</em> doesn't mean we can't reassign a variable, here "<em>name</em>", again. So, what is going on? Here, we don't modify our <em>String</em> object. In fact, we create a new <em>String</em> object. We could look at the memory address of our "<em>name</em>" variable after both assignments and we would see that the memory address is different.</p>
+
+<p>Now, the following example would return an error because a <em>String</em> is <em>immutable</em>:</p>
+
+<pre><code>name = 'Mario'
+name[0] = 'W' // Output: error
+</code></pre>
+
+<p>The following example shows the use of a <em>mutable</em> object:</p>
+
+<pre><code>characters = ['Mario', 'Luigi', 'Peach', 'Bowser']
+print characters // Output: ['Mario', 'Luigi', 'Peach', 'Bowser']
+
+characters[0] = 'Wario'
+print characters // Output: ['Wario', 'Luigi', 'Peach', 'Bowser']
+</code></pre>
+
+<p>Here, we can do this because our <em>List</em> object is <em>mutable</em> and if we looked at the memory address of this object after our different operations, we would see that the memory address stays the same.</p>
+
+<p>Now, just to cogitate a little bit, let's consider the following case:</p>
+
+<pre><code>characters = ['Mario', 'Luigi', 'Peach', 'Bowser']
+output = ''
+
+for character in characters:
+    output += character
+
+print output
+</code></pre>
+
+<p>Our example here doesn't do really interesting things. However, what we can say is in our loop, we create each time a new <em>String</em> object. So, it means that, if our list was more important, we could be confronted with a performance problem.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article we took a look at the concept of <em>immutability</em>. We saw what it means, what its benefits are and how we can deal with such a concept.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

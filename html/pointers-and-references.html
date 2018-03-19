@@ -1,0 +1,150 @@
+<h1 id="pointersreferences">Pointers &amp; References</h1>
+
+<p>In this article, we are going to talk about <em>pointers</em> and <em>references</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Pointers</em> and <em>references</em> can be something that confuses us quickly, mostly if we are not really familiar with <em>C++</em>. Let's take a little look at these different notions. Here, we are going to use <em>C++</em> through our various examples.</p>
+
+<h2 id="memory">Memory</h2>
+
+<p>We know that a <em>variable</em> is some kind of box where we put a value. A <em>variable</em> is a location in the computer's memory and it can be accessed by its name, or identifier. For a program, the computer's memory is a set of cells and each of these cells has a size and a unique address. Cells are ordered in a specific order that makes, for example, the cell with the address <em>1234</em> always follows immediately after the cell with the address <em>1233</em> and precedes the cell with the address <em>1235</em>. We can think of some kind of very long street where all the houses are on the same side and are sorted in an ascending way.</p>
+
+<p>When we declare a <em>variable</em>, the required memory to store the value is assigned to a specific location in the memory. So, our value has now a memory address. This task of assignment is left to the execution environment.</p>
+
+<p>Now, it would be useful if we could get the address of a <em>variable</em> during runtime to achieve some operations. But how can we achieve such a thing? Let's go a little further.</p>
+
+<h2 id="pointers">Pointers: *</h2>
+
+<p>A <em>pointer</em> <em>variable</em>, or more simply, a <em>pointer</em>, is a <em>variable</em> that stores a memory address. We can declare a <em>pointer</em> by using the "<em>*</em>" symbol.</p>
+
+<pre><code>// Declaring an integer
+int a = 5;
+// Declaring a pointer
+int * b = &amp;a;
+// Printing the result: memory address
+cout &lt;&lt; b;
+</code></pre>
+
+<p>Here, we get a result like "<em>0x7ffd9931be2c</em>". We can also see that our <em>pointer</em> is associated with a type, here, an <em>integer</em>.</p>
+
+<h2 id="addressofoperator">Address-of operator: &amp;</h2>
+
+<p>In our previous example, we used another symbol: "<em>&amp;</em>". This is the "<em>address-of</em>" operator. This operator returns the memory address of a <em>variable</em>.</p>
+
+<p>In our previous example, we could have just done something like this:</p>
+
+<pre><code>int * b;
+</code></pre>
+
+<p>This possible, but the content of our <em>pointer</em> is not initialized. Here, the value of our <em>pointer</em> would point to "<em>somewhere</em>", which is not a valid location.</p>
+
+<h2 id="dereferencingoperator">Dereferencing operator</h2>
+
+<p>The "<em>dereferencing</em>" operator, or "<em>indirection</em>" operator, "<em>*</em>", operates on a <em>pointer</em>. It returns the value stored in the address placed into a <em>pointer</em> <em>variable</em>.</p>
+
+<pre><code>// Declaring an integer
+int a = 5;
+// Declaring a pointer
+int * b = &amp;a;
+// Getting the value stored in the address kept by b
+int c = *b;
+// Printing the result: 5
+cout &lt;&lt; c;
+</code></pre>
+
+<h2 id="references">References</h2>
+
+<p>A <em>reference</em> <em>variable</em>, or just <em>reference</em>, is an alias of an existing <em>variable</em>. It means if we make the <em>variable</em> "<em>b</em>" a <em>reference</em> to "<em>a</em>", we can refer to this <em>variable</em> by using both names.</p>
+
+<p>A <em>reference</em> allows us to achieve something called "pass-by-<em>reference</em>". It means that when a <em>reference</em> is passed to a function, the function will work with the original <em>variable</em> that was passed, not a copy. So, if a change is made inside the function, it is also reflected outside the function.</p>
+
+<p>To declare a <em>reference</em>, we use the same symbol we use for the "<em>address-of</em>" operator, "<em>&amp;</em>".</p>
+
+<pre><code>// Declaring an integer
+int a = 5;
+// Declaring a reference
+int &amp; b = a;
+// Modifying the value
+b = 6;
+// Printing a: 6
+cout &lt;&lt; a;
+</code></pre>
+
+<p>But, how does a <em>reference</em> work? It is like a <em>pointer</em> and it stores a memory address.</p>
+
+<h2 id="pointersvsreferences">Pointers VS References</h2>
+
+<p>So, what are the differences between <em>pointers</em> and <em>references</em>?</p>
+
+<p>In case of a <em>pointer</em>, we store the address of a <em>variable</em> while in case of a <em>reference</em>, we create an alias for the original <em>variable</em>, so the same address is used by two variables with different names. In other words, a <em>pointer</em> has its own memory address and size, while a <em>reference</em> has the same address as the original <em>variable</em> itself.</p>
+
+<p>To get the value pointed by a <em>pointer</em>, we need to use the dereferencing operator "<em>*</em>", and to assign an address of a <em>variable</em> to a <em>pointer</em>, we need to use the "<em>address-of</em>" operator "<em>&amp;</em>".</p>
+
+<p>For <em>references</em>, referencing and dereferencing operations are done implicitly.</p>
+
+<p>A <em>pointer</em> can be re-assigned while a <em>reference</em> can't and must be assigned at initialization:</p>
+
+<pre><code>// Pointers
+int a = 5;
+int b = 6;
+int * p;
+p = &amp;a;
+cout &lt;&lt; p &lt;&lt; endl;
+p = &amp;b;
+cout &lt;&lt; p &lt;&lt; endl;
+
+// References
+int c = 7;
+int d = 8;
+int &amp; r = c;
+cout &lt;&lt; r &lt;&lt; endl;
+
+int &amp; r2; // ERROR !!!
+r2 = d;
+cout &lt;&lt; r2 &lt;&lt; endl;   
+</code></pre>
+
+<p>A <em>pointer</em> can be "<em>NULL</em>" while a <em>reference</em> can't:</p>
+
+<pre><code>// Pointers
+int *p = NULL;
+cout &lt;&lt; p &lt;&lt; endl;
+
+// References
+int &amp; r = NULL; // ERROR !!!
+cout &lt;&lt; r &lt;&lt; endl;
+</code></pre>
+
+<p>We can have something we call "<em>pointer to pointer</em>" that allows us to preserve the Memory-Allocation or Assignment even outside of a function call: </p>
+
+<pre><code>int a = 4;
+int b = 5;
+int *p1 = &amp;a;
+int *p2 = &amp;b;
+
+cout &lt;&lt; p1 &lt;&lt; " - " &lt;&lt; *p1 &lt;&lt; endl; // Print: 0x7ffe3b49bfe8 - 4 
+cout &lt;&lt; p2 &lt;&lt; " - " &lt;&lt; *p2 &lt;&lt; endl; // Print: 0x7ffe3b49bfec - 5  
+
+int **pp = &amp;p1;
+
+cout &lt;&lt; pp &lt;&lt; " - " &lt;&lt; *pp &lt;&lt; " - " &lt;&lt; **pp &lt;&lt; endl; // Print: 0x7ffe3b49bff0 - 0x7ffe3b49bfe8 - 4     
+
+pp = &amp;p2;
+
+cout &lt;&lt; pp &lt;&lt; " - " &lt;&lt; *pp &lt;&lt; " - " &lt;&lt; **pp &lt;&lt; endl; // Print: 0x7ffe3b49bff8 - 0x7ffe3b49bfec - 5  
+
+**pp = 6;
+
+cout &lt;&lt; pp &lt;&lt; " - " &lt;&lt; *pp &lt;&lt; " - " &lt;&lt; **pp &lt;&lt; endl; // Print: 0x7ffe3b49bff8 - 0x7ffe3b49bfec - 6           
+cout &lt;&lt; p1 &lt;&lt; " - " &lt;&lt; *p1 &lt;&lt; endl; // Print: 0x7ffe3b49bfe8 - 4 
+cout &lt;&lt; p2 &lt;&lt; " - " &lt;&lt; *p2 &lt;&lt; endl; // Print: 0x7ffe3b49bfec - 6    
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw what <em>pointers</em> and <em>references</em> are. We saw that a <em>pointer</em> is a <em>variable</em> that stores a memory address while a <em>reference</em> is an alias of an existing <em>variable</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
