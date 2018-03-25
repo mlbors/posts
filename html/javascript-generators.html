@@ -1,0 +1,58 @@
+<h1 id="javascriptgenerators">JavaScript Generators</h1>
+
+<p>In this article, we are going to take a look at <em>Generators</em> in <em>JavaScript</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>JavaScript Generators</em> were introduced by <em>ES6</em>. It is a type of function that can be entered and exited a number of times. Let's see what it really is. </p>
+
+<h2 id="definition">Definition</h2>
+
+<p>When a standard <em>JavaScript</em> function is called, it runs until it reaches a return value or the end of the function. <em>Generators</em> allow us to run just one part of a function, then exit it to come back later and restart it exactly where we left. They give us the control over the flow of a function.</p>
+
+<p>To pause such a function, we have to use the "<em>yield</em>" keyword inside this function. The function will be exited. To re-enter the same function, we have to use the "<em>next()</em>" method. Each time we exit a function, we can gather some information. We have access to the value that was possibly returned and the status of the <em>Generator</em> function. </p>
+
+<h2 id="exampleandexplanation">Example and explanation</h2>
+
+<p>Let's make a simple example of a <em>Generator</em> function.</p>
+
+<pre><code>function* mario() {
+    console.log("It's-a Me, Mario!");
+    console.log("Jumping");
+    console.log("Eating a mushroom")
+    yield "pause";
+    console.log("Running");
+    yield "pause";
+    console.log("Falling into lava");
+    yield "game over";
+}
+
+const marioValues = mario();
+let gen;
+
+gen = marioValues.next(); // Output: It's-a Me, Mario!; Jumping; Eating a mushroom
+console.log(gen.value, gen.done); // Output: pause false
+
+gen = marioValues.next(); // Output: Running
+console.log(gen.value, gen.done); // Output: pause false
+
+gen = marioValues.next(); // Output: Falling into lava
+console.log(gen.value, gen.done); // Output: game over false
+
+gen = marioValues.next(); // Output: -
+console.log(gen.value, gen.done); // Output: undefined true
+</code></pre>
+
+<p>As we can see, we declare a <em>Generator</em> by using the "<em>*</em>" symbol. Here, we have three "<em>yield</em>" statements and we can see that each time one of them is reached, the function is exited.</p>
+
+<p>We can notice that the "<em>done</em>" value turns to "<em>true</em>" after we called the "<em>next()</em>" method for the fourth time. At this time only, the function is complete and the "<em>value</em>" turns to "<em>undefined</em>". We can correct this by replacing the last "<em>yield</em>" by a "<em>return</em>". In this case, it will work. However, in the case of a "<em>for..of</em>" loop, the value returned by the "<em>return</em>" keyword would be thrown away.</p>
+
+<p>When we call the <em>Generator</em>, the function is not executed. In fact, an iterator object is created that will let us interact with the <em>Generator</em>. As soon as the iterator is created, the <em>Generator</em> goes into a suspended state. </p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this small article, we saw what <em>Generators</em> are in JavaScript. We saw how to use them through a really basic example.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

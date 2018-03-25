@@ -1,0 +1,69 @@
+<h1 id="memoization">Memoization</h1>
+
+<p>Through this article, we are going to look at "<em>memoization</em>".</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The word "<em>memoization</em>" seems to be misspelled, but in fact it is not. It is an optimization technique to speed up a program. Let's see how it works.</p>
+
+<h2 id="definition">Definition</h2>
+
+<p>The word "<em>memoization</em>" seems to be derived from the <em>Latin</em> word "<em>memorandum</em>" ("to be remembered"). This technique consists, for a given function, in storing previously computed results to increase performances. The idea is to remember the computed result for certain inputs and to use the memorized result, instead of recomputation if these specific inputs get used once again.</p>
+
+<p>We can see <em>memoization</em> as some kind of <em>caching</em> technique, but there is a tiny difference: with <em>memoization</em>, which is a specific form of <em>caching</em>, we store the returned value of a function based on its parameters. With <em>caching</em>, we speak of a more general domain that includes any <em>output-buffering strategy</em>.</p>
+
+<h2 id="example">Example</h2>
+
+<p>Let's make an example using what we know. Consider the following function:</p>
+
+<pre><code>const factorial = n =&gt; {
+    return n === 0 || n === 1 ? 1 : n * factorial(n-1)
+}
+</code></pre>
+
+<p>We can see this is a factorial function. However, calling this function multiple times for the same value of "<em>n</em>" can damage performances. That's where we can make use of <em>memoization</em>. Let's modify our function like so:</p>
+
+<pre><code>const factorial = n =&gt; {
+    let cache = {}
+
+    if (n in cache) {
+        return cache[n]
+    }
+
+    if (n === 0 || n === 1) {
+        return 1
+    }
+
+    return cache[n] = n * factorial(n-1)
+}
+</code></pre>
+
+<p>As we can see, now, in our function, we store the different computed values in a really simple manner.</p>
+
+<p>Now, let's go a little further. What if we want to use <em>memoization</em> with multiple functions?</p>
+
+<pre><code>const memoize = f =&gt; {
+    let cache = {}
+
+    return (args) =&gt; {
+        let n = arg
+        if (n in cache) {
+            return cache[n]
+        }
+        return cache[n] = f(n)
+    }
+}
+
+const factorial = memoize(n =&gt; n === 0 || n === 1 ? 1 : n * factorial(n-1))
+const fibonacci = memoize(n =&gt; n === 0 || n === 1 ? n : fibonacci(n-1) + fibonacci(n-2))
+</code></pre>
+
+<p>Here, we now have a "<em>memoize</em>" function that wraps any function to create a "<em>memoized</em>" version. We have to notice that we only manage one argument.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw the meaning of the word "<em>memoization</em>" and how, here with <em>JavaScript</em>, we can use such a concept.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

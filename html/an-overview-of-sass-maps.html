@@ -1,0 +1,143 @@
+<h1 id="anoverviewofsassmaps">An overview of Sass Maps</h1>
+
+<p>In this article, we are going to have an overview of <em>Sass Maps</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Sass</em> brought a lot of interesting features that help us to create <em>style sheets</em> more easily and more elegantly. One of those features are the <em>Maps</em>. Let's see what they are.</p>
+
+<h2 id="definition">Definition</h2>
+
+<p>Basically, <em>Maps</em> are like <em>associative arrays</em>. A <em>Map</em> has a name and one or more unique <em>key</em> associated with one value. A <em>Sass Map</em> looks like this:</p>
+
+<pre><code>$map: (
+    key: value,
+    another-key: another-value
+);
+</code></pre>
+
+<h2 id="examples">Examples</h2>
+
+<p>So, let's declare a <em>Map</em> to make a few examples:</p>
+
+<pre><code>$colors: (
+    red: #cc3120,
+    green: #3fcc41,
+    blue: #4286f4
+);
+</code></pre>
+
+<h3 id="accessingavalue">Accessing a value</h3>
+
+<p>We can access a value like so:</p>
+
+<pre><code>.element {
+    background-color: map-get($colors, red);
+}
+</code></pre>
+
+<p>Here, we use the function "<em>map-get()</em>" that takes, as arguments, the name of the <em>Map</em> and the <em>key</em> we want to target.</p>
+
+<h3 id="checkingavalue">Checking a value</h3>
+
+<p>We can check if a value exists like so:</p>
+
+<pre><code>.element {
+    @if map-has-key($colors, orange) {
+        background-color: map-get($colors, orange);
+    } @else {
+        background-color: $default;
+    }
+}
+</code></pre>
+
+<p>So, knowing that, it is easy to create such a function:</p>
+
+<pre><code>@function color($key) {
+    @if map-has-key($colors, $key) {
+        @return map-get($colors, $key);
+    }
+
+    @warn "Unknown `#{$key}` in $colors.";
+    @return null;
+}
+
+.element {
+    background-color: color(red);
+}
+</code></pre>
+
+<h3 id="nestedmaps">Nested Maps</h3>
+
+<p>Let's go a little further and imagine something like this:</p>
+
+<pre><code>$colors: (
+    red: (
+        color: #f4cfcb,
+        background: #cc3120
+    ),
+    green: (
+        color: #b8d6b8,
+        background: #3fcc41
+    ),
+    blue: (
+        color: #bacff2,
+        background: #4286f4
+    )
+);
+</code></pre>
+
+<p>Here, we have a nested <em>Map</em>. We can use it like so:</p>
+
+<pre><code>@function color($color, $attribute) {
+    @return map-get(map-get($colors, $color), $attribute);
+}
+
+.element {
+    color: color(green, color);
+}
+</code></pre>
+
+<h3 id="creatingloops">Creating loops</h3>
+
+<p>With <em>Maps</em>, we can easily create loops like so:</p>
+
+<pre><code>// Map
+$sections:(
+    'red-section': (
+        'background':         #cc3120,
+        'color':              #ffffff
+    ),
+    'green-section':(
+        'background':         #3fcc41,
+        'color':              #ffffff
+    )
+);
+
+// Function
+@function color($map, $section, $attribute) {
+    @if map-has-key($map, $section) {
+        @return map-get(map-get($map, $section), $attribute);
+    }
+    @warn "The key ´#{$section} is not available in the map.";
+    @return null;
+}
+
+// Loop
+@each $key, $val in $sections {
+    @if map-has-key($sections, $key) {
+        .#{$key} {
+            background-color: color($sections, $key, background);
+            color: color($sections, $key, color);
+        }
+    }
+}
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this brief article, we saw what <em>Sass Maps</em> are. We had a few examples of how to use them and where they could be helpful.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

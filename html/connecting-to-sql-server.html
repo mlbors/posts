@@ -1,0 +1,126 @@
+<h1 id="connectingtosqlserver">Connecting to SQL Server</h1>
+
+<p>Through this article, we are going to see how we can install <em>SQL Server</em> and connect an application to this last one.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Microsoft SQL Server</em> is a relational database management system developed by <em>Microsoft</em>. Here, we are going to have a look at how we can install it and how an <em>ASP.NET MVC</em> application using the <em>Entity Framework</em> can connect to this last one.</p>
+
+<h2 id="installingsqlserver">Installing SQL Server</h2>
+
+<p>Head to <a href="https://www.microsoft.com/en-us/sql-server/sql-server-downloads">https://www.microsoft.com/en-us/sql-server/sql-server-downloads</a>. Here, we are going to choose the <em>Developer Edition</em>. When the download is achieved, we just have to install it. So double-click on the installer and then choose the basic installation.</p>
+
+<p>We may encounter a problem during the installation giving us the error <em>1638</em>. There are two solutions: we can uninstall <em>Visual Studio 2017</em> completely, install <em>SQL Server</em> then reinstall <em>Visual Studio 2017</em> or uninstall <em>Microsoft Visual C++ 2017 Redistributable (x86) and (x64)</em>, install <em>SQL Server</em> then reinstall <em>Microsoft Visual C++ 2017 Redistributable (x86) and (x64)</em>.</p>
+
+<p>At the end of the installation, notice that several details are given, like the <em>Connection String</em>. We also have the opportunity to directly install SQL <em>Server Management Studio (SSMS)</em>. Here, we are going to do this also.</p>
+
+<h2 id="settinguptheproject">Setting up the project</h2>
+
+<p>For our example, we are going to do a really simple application. Let's head to Visual Studio and choose "<em>New Project > Visual C# > Web > ASP.NET We Application (.NET Framework)</em>". After we entered a name for our application, we can go to the next step and chose the "<em>MVC</em>" option. We can check the box for unit tests if we want to generate a second assembly for unit testing.</p>
+
+<p>Let's create a <em>Model</em>, named "<em>Movie.cs</em>" and fill it like so:</p>
+
+<pre><code>public class Movie
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+</code></pre>
+
+<p><small><em>Models/Movies.cs file</em></small></p>
+
+<p>We can now create a folder named "<em>DAL</em>" and place a file named "<em>MovieContext.cs</em>" into it. Let's insert the following code inside that file:</p>
+
+<pre><code>using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Linq;
+using System.Web;
+using SQLServerApp.Models;
+
+namespace SQLServerApp.DAL
+{
+    public class MovieContext : DbContext
+    {
+        public MovieContext() : base("MovieContext")
+        {
+        }
+
+        public DbSet&lt;Movie&gt; Movies { get; set; }
+    }
+}
+</code></pre>
+
+<p><small><em>DAL/MovieContext.cs</em></small></p>
+
+<h2 id="entityframeworkandmigrations">Entity Framework and Migrations</h2>
+
+<p>We can now install the <em>Entity Framework</em> like so:</p>
+
+<pre><code>PM&gt; Install-Package EntityFramework -Version 6.2.0
+</code></pre>
+
+<p><small><em>Installing the Entity Framework</small></em></p>
+
+<p>We also have to set up our <em>Connection String</em> in the "<em>Web.config</em>" file:</p>
+
+<pre><code>&lt;connectionStrings&gt;
+    &lt;add name="MovieContext" connectionString="Data Source=OUR_SERVER\INSTANCE;Initial Catalog=MoviesDB;Integrated Security=True;MultipleActiveResultSets=True" providerName="System.Data.SqlClient"/&gt;
+&lt;/connectionStrings&gt;
+</code></pre>
+
+<p><small><em>Web.config file edited</em></small></p>
+
+<p>Here, to make things work, we have to target the right server and the right instance.</p>
+
+<p>We can now enable <em>Migrations</em>:</p>
+
+<pre><code>PM&gt; enable-migrations
+</code></pre>
+
+<p><small><em>Enabling migrations</em></small></p>
+
+<p>In the newly created "<em>Migrations</em>" folder, we can find a file named "<em>Configuration.cs</em>". Just for our example, let's place the following code into the "<em>Seed()</em>" method:</p>
+
+<pre><code>...
+using System.Collections.Generic;
+...
+using SQLServerApp.Models;
+
+protected override void Seed(SQLServerApp.DAL.MovieContext context)
+{
+    var movies = new List&lt;Movie&gt;
+    {
+        new Movie{Name="2001: A Space Odyssey"},
+        new Movie{Name="Gattaca"},
+        new Movie{Name="Interstellar"},
+        new Movie{Name="Cloud Atlas"}
+    };
+
+    movies.ForEach(e =&gt; context.Movies.AddOrUpdate(p =&gt; p.Name, e));
+    context.SaveChanges();
+}
+</code></pre>
+
+<p><small><em>Migrations/Configuration.cs</em></small></p>
+
+<p>Let's now create a <em>Migration</em> and update the database:</p>
+
+<pre><code>PM&gt; add-migration Init
+PM&gt; update-database
+</code></pre>
+
+<p><small><em>Creating a Migration and updating the database</em></small></p>
+
+<h2 id="check">Check</h2>
+
+<p>We can use the <em>SQL Server Object Explorer</em> to check if everything is right. We first have to add a server. Let's click on "<em>Add SQL Server</em>" and choose the targeted one. We can now see our database and our data. We can achieve the same thing through <em>SQL Server Management Studio</em> by right-clicking our database's tables.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this brief article, we saw how to install <em>SQL Server</em> and how we can link an <em>ASP.NET MVC</em> application using the <em>Entity Framework</em> to this relational database management system.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
