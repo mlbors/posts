@@ -1,0 +1,613 @@
+<h1 id="anoverviewofangular">An overview of Angular</h1>
+
+<p>In this article, we are going to have a look at the <em>Angular</em> framework. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Nowadays, we have plenty of options to develop something that is ready for various platforms. However, <em>Angular</em> has made its way and it is now one of the most important actors. Let's see what it is and how it works.</p>
+
+<p>We could jump right into the code of a project, but we would probably miss a few things. So, here, we are going to look at the architecture of <em>Angular</em> to understand the different concepts and elements this last one uses.</p>
+
+<h2 id="whatisangular">What is Angular?</h2>
+
+<p>Now, when we talk about <em>Angular</em>, we talk about <em>Angular 2</em> or <em>Angular 5</em>. <em>Angular</em> is a complete rewrite of the <em>AngularJS</em> framework. <em>Angular</em> as a different approach from its predecessor.</p>
+
+<p><em>Angular</em> allows us to build applications across all platforms. It is an open-source platform that uses <em>TypeScript</em>. In a few words, <em>TypeScript</em> is a strict syntactical superset of <em>JavaScript</em>, and adds optional static typing to the language.</p>
+
+<h2 id="architectureoverview">Architecture overview</h2>
+
+<p><em>Angular</em> is written in <em>TypeScript</em> and it implements core and optional functionality as a set of <em>TypeScript libraries</em> that we can import.</p>
+
+<p>An <em>Angular</em> application has, for building blocks, a thing called <em>NgModules</em>. An <em>Angular</em> app is defined by a set of <em>NgModules</em>. An app always has at least a <em>Root Module</em> that enables bootstrapping. An <em>NgModule</em> is made of <em>Components</em>. Every app has at least a <em>Root Component</em>.</p>
+
+<p><em>Components</em>, and things like <em>Services</em>, are just classes. They are, however, marked with decorators that tells <em>Angular</em> how to use them.</p>
+
+<p><em>Angular</em> provides a <em>Router Service</em> that helps us to define navigation paths among the different <em>Views</em>.</p>
+
+<h2 id="modules">Modules</h2>
+
+<p><em>Angular</em> apps are modular and this modularity system is called <em>NgModules</em>.</p>
+
+<p>An <em>NgModule</em> defines a set of <em>Components</em>. An <em>NgModule</em> associate related code to form functional units. Every <em>Angular</em> app has a <em>Root Module</em>, conventionally named <em>AppModule</em>, which provides the bootstrap mechanism that launches the application.</p>
+
+<p>Even if they are different and unrelated, <em>NgModules</em>, like <em>JavaScript</em> modules, can import functionality from other <em>NgModules</em>, and allow their own functionality to be exported and used by other <em>NgModules</em>. What we call <em>Angular Libraries</em> are <em>NgModules</em>.</p>
+
+<p>We declare an <em>NgModule</em> by decorating our class with the "<em>@NgModule</em>" decorator. This decorator is a metadata object whose properties describe the module. The most important properties, which are arrays, are the following:</p>
+
+<ul>
+<li><em>declarations</em> - <em>Components</em>, <em>Directives</em>, and <em>Pipes</em> that belong to the <em>NgModule</em></li>
+
+<li><em>exports</em> - the subset of declarations that should be visible and usable in the <em>Components</em> of other <em>NgModules</em></li>
+
+<li><em>imports</em> - other modules whose exported classes are needed by <em>Components</em> declared in the <em>NgModule</em></li>
+
+<li><em>providers</em> - list of the needed <em>Services</em> that, because they are listed here, become are available app-wide</li>
+
+<li><em>bootstrap</em> - the main application <em>View</em>, called the <em>Root Component</em>, which hosts all other app views. (only the <em>Root Module</em> should set this bootstrap property)</li>
+</ul>
+
+<p>An <em>NgModule</em> provides a compilation context for its various <em>Components</em>. So, the <em>Components</em> that belong to an <em>NgModule</em> share a compilation context. <em>NgModules</em> define a cohesive block of functionality.</p>
+
+<p>The <em>Root Module</em> of our application is the one that we bootstrap to launch the application. The application launches by bootstrapping the root <em>AppModule</em>. We also call it the <em>entryComponent</em>. The bootstrapping process creates the <em>Components</em> listed in the "<em>bootstrap</em>" array and inserts each one into the browser <em>DOM</em>. So, each bootstrapped <em>Component</em> is the base of its own tree of <em>Components</em>.</p>
+
+<p>As we saw, we can have a <em>Root Module</em>, but we can have what we call <em>Feature Modules</em>. A <em>Feature Module</em> delivers a cohesive set of functionality focused on a specific application needs. We could do everything in the <em>Root Module</em>, but a <em>Feature Module</em> will help us partition our app into focused areas. However, the structure of a <em>Feature Module</em> is exactly the same as the one of a <em>Root Module</em>.</p>
+
+<p>Down below, we can find an example of how could look an <em>NgModule</em>. Here, it is the <em>AppModule</em>:</p>
+
+<pre><code>// Importing Angular Libraries
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
+
+// Importing the AppComponent
+import { AppComponent } from './app.component';
+
+// Importing a custom feature module
+import { CustomFeatureModule } from './custom-feature-module/custom-feature-module.module';
+
+// Declaring the Module
+@NgModule({
+    declarations: [
+        AppComponent
+    ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+        CustomerDashboardModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+})
+export class AppModule { }
+</code></pre>
+
+<h2 id="components">Components</h2>
+
+<p>A <em>Component</em> controls a patch of screen called a <em>View</em>. The logic of a <em>Component</em> is defined inside a class. <em>Angular</em> creates, updates, and destroys <em>Components</em> as the user moves through the application.</p>
+
+<p>A <em>Component</em> is identified by the "<em>@Component</em>" decorator that has a set of properties. The most import properties are the following ones:</p>
+
+<ul>
+<li><em>selector</em> - tells how the component is referenced in <em>HTML</em>; in simple words, it corresponds to the <em>HTML</em> tag.</li>
+
+<li><em>templateUrl</em> - gives the path of the <em>HTML</em> template.</li>
+
+<li><em>providers</em> - an array of <em>Dependency Injection Providers</em> for <em>Services</em> that the <em>Component</em> requires.</li>
+</ul>
+
+<p>Notice that instead of the "<em>templateUrl</em>" property, we could use the "<em>template</em>" property that lets us provide the <em>HTML</em> template inline.</p>
+
+<p>A <em>Component</em> has a <em>View</em> and this last one is defined through an <em>HTML</em> template. This <em>HTML</em> file also contains some syntactic elements that are included in <em>Angular</em>.</p>
+
+<p>A <em>Component</em> will typically look like so:</p>
+
+<pre><code>@Component({
+    selector:    'my-component',
+    templateUrl: './my-component.component.html',
+    providers:  [ MyService ]
+})
+export class MyComponent implements OnInit {
+    // Some code
+}
+</code></pre>
+
+<p>Before going any further with <em>Components</em>, let's take a look at a few other elements to simplify some terms that we will use later.</p>
+
+<h2 id="services">Services</h2>
+
+<p>A <em>Service</em> is useful to define things that can't fit into a <em>Component</em> and find their reason to exist in the <em>separation of concerns</em>. A <em>Service</em> is a class with a well-defined purpose. For example, we should create a <em>Service</em> when two or more <em>Components</em> or other things need to access the same data or if we want to encapsulate interactions with a web server or if we want to define how to validate user inputs.</p>
+
+<p><em>Services</em> are <em>Singletons</em>, so there is only one instance of each <em>Service</em> we define. They are <em>stateless objects</em> that can be invoked from any <em>Components</em>. Their purpose is to help us to divide our application into small, different logical units that can be reused.</p>
+
+<p>A <em>Service</em> is a simple class and could look like so:</p>
+
+<pre><code>export class Logger {
+    log(msg: any)   { console.log(msg); }
+    error(msg: any) { console.error(msg); }
+    warn(msg: any)  { console.warn(msg); }
+}
+</code></pre>
+
+<h2 id="dependencyinjection">Dependency Injection</h2>
+
+<p><em>Dependency Injection</em> is a large subject. <em>Dependency Injection</em>, also called <em>DI</em>, is a <em>Design Pattern</em> in which one or more dependencies (<em>Services</em>) are injected into a dependent object (<em>Client</em>). This pattern allows us to implement a loosely coupled architecture by separating the creation of a client's dependencies from its own behavior. </p>
+
+<p>We can apply this pattern when we want to remove knowledge of concrete implementations from objects, but also when we want to get a better testable code in isolation using mock objects.</p>
+
+<p>The <em>DI</em> Pattern is commonly used to implement the <em>Inversion of Control Principle</em>, which in a few words, separates the <em>what-to-do</em> part of the <em>when-to-do part</em>. In other words, it is about letting somebody else handles the flow of control. It is based on the <em>Hollywood Principle</em>: "<em>Don't call us, we'll call you</em>".</p>
+
+<p><em>Dependency Injection</em> could be achieved by using the "<em>constructor</em>" of a class or "<em>setter</em>" methods. It can also be achieved with a <em>Container</em> that handles the instantiation of other objects.</p>
+
+<p>In <em>Angular</em>, <em>DI</em> is widely used and we can take a moment to dig a little into it.</p>
+
+<p><em>Angular</em> uses its own <em>Dependency Injection</em> framework that basically uses three things:</p>
+
+<ul>
+<li>The <em>Injector</em>, that exposes <em>APIs</em>. It is responsible for creating <em>Service</em> instances and injecting them into classes.</li>
+
+<li>The <em>Provider</em>, that tells the <em>Injector</em> how to create an instance of a dependency.</li>
+
+<li>The <em>Dependency</em>, the type of which an object should be created.</li>
+</ul>
+
+<p><em>Angular</em> has a <em>Hierarchical Dependency Injection</em> system. There is a tree of <em>Injectors</em> that parallels an application's <em>Component</em> tree. An application may have multiple <em>Injectors</em>. That means we can configure <em>Providers</em> at different levels:</p>
+
+<ul>
+<li>For the whole application when bootstrapping it. All sub <em>Injectors</em> will see the <em>Provider</em> and share the instance associated with. It will always be the same instance.</li>
+
+<li>For a specific <em>Component</em> and its sub <em>Components</em>. Other <em>Components</em> won't see the <em>Provider</em>.</li>
+
+<li>For <em>Services</em>. They use one of the <em>Injectors</em> from the element that calls the <em>Service</em> chain.</li>
+</ul>
+
+<p>When using <em>DI</em> with <em>Angular</em>, we will mainly see the "<em>@Injectable</em>" decorator. This decorator marks a class as available to <em>Injector</em> for creation.</p>
+
+<p>In an <em>Angular</em> app, <em>Components</em> consume <em>Services</em>. A <em>Component</em> shouldn't create a <em>Service</em>. So, we inject the different required <em>Services</em> into the different <em>Components</em>. When <em>Angular</em> creates a new instance of a <em>Component</em> class, it determines which <em>Services</em> or other dependencies that <em>Component</em> needs by looking at the types of its <em>constructor</em> parameters. When <em>Angular</em> discovers that a <em>Component</em> needs a <em>Service</em>, it checks if the <em>Injector</em> already has any existing instances of that same <em>Service</em>. If an instance of that requested <em>Service</em> doesn't exist, the <em>Injector</em> makes one using the registered <em>Provider</em> and adds it to the <em>Injector</em> before returning the <em>Service</em> to <em>Angular</em>.</p>
+
+<p>A <em>Provider</em> is a recipe for creating a dependency. We must at least register one <em>Provider</em> of any <em>Service</em> we want to use. It can be done in Modules or in <em>Components</em>. Doing this in a <em>Module</em> allows <em>Angular</em> to inject the corresponding <em>Services</em> in any class it creates and so the <em>Service</em> instance lives for the life of the app. By using a <em>Component Provider</em> we restrict the scope of the <em>Service</em> and so it will only be injected into that <em>Component</em> instance or one of its descendant <em>Component</em> instances. It means that <em>Angular</em> can't inject the same <em>Service</em> instance anywhere else. The lifetime of this <em>Service</em> will also be different: the <em>Service</em> instance will be destroyed when the <em>Component</em> instance is destroyed.</p>
+
+<p>Here is how we can inject a <em>Service</em> in a <em>Component</em>:</p>
+
+<pre><code>import { Injectable } from '@angular/core';
+import { Logger } from './logger';
+
+@Injectable()
+export class Logger {
+    log(msg: any)   { console.log(msg); }
+    error(msg: any) { console.error(msg); }
+    warn(msg: any)  { console.warn(msg); }
+}
+</code></pre>
+
+<p><small><em>logger.service.ts file</em></small></p>
+
+<pre><code>import { Component } from '@angular/core';
+import { Logger } from './logger';
+
+@Component({
+    selector:    'my-component',
+    templateUrl: './my-component.component.html',
+    providers:  [ Logger ]
+})
+export class HeroListComponent implements OnInit {
+    constructor(private logger: Logger {}
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<p>We could also do it with the <em>Root Module</em> like so:</p>
+
+<pre><code>@NgModule({
+    providers: [
+        Logger
+    ]
+})
+</code></pre>
+
+<p><small><em>app.module.ts file</em></small></p>
+
+<pre><code>import { Component } from '@angular/core';
+import { Logger } from './logger';
+
+@Component({
+    selector:    'my-component',
+    templateUrl: './my-component.component.html',
+})
+export class MyComponent implements OnInit {
+    constructor(private logger: Logger {}
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<p>We can also imagine the a <em>Service</em> needs another <em>Service</em>:</p>
+
+<pre><code>import { Injectable } from '@angular/core';
+import { Logger }     from './logger.service';
+
+@Injectable()
+export class MyService {
+    constructor(private logger: Logger) {  }
+}
+</code></pre>
+
+<h2 id="databinding">Data Binding</h2>
+
+<p>Basically, <em>data bindings</em> allow properties of two objects to be linked so that a change in one causes a change in the other. It establishes a connection between the user interface and the underlying application. It defines a relationship between two objects: a source object that will provide data and a target object that will use the data from the source object. The benefit of <em>data binding</em> is that we no longer have to worry about synchronizing data between our <em>Views</em> and data source.</p>
+
+<p>With <em>Angular</em>, the most common way to display a <em>Component</em> property is to bind that property name through <em>interpolation</em>. <em>Interpolation</em> is the estimation of a value or a set of values based on their context. It allows to evaluate a string containing one or more placeholders and to replace those placeholders with a computed and corresponding value. The context is typically the <em>Component</em> instance. So, basically, in <em>Angular</em>, to achieve this, we have to put the property name in the <em>View</em> enclosed in double curly braces. It will be something like so:</p>
+
+<pre><code>&lt;h1&gt;{{title}}&lt;/h1&gt;
+</code></pre>
+
+<p>Most of the time, <em>bindings</em> are used to connect the visuals of an application with an underlying data model, usually in a realization of the <em>MVVM Pattern</em> (<em>Model-View-ViewModel</em>) or the <em>MVC Pattern</em> (<em>Mode-View-Controller</em>). In <em>Angular</em>, the <em>Component</em> plays the part of the <em>Controller/ViewModel</em>, and the template represents the <em>View</em>.</p>
+
+<p><em>Angular</em> provides many kinds of <em>data binding</em>. <em>Binding types</em> can be grouped into three categories distinguished by the direction of the data flow: <em>source-to-view</em>, <em>view-to-source</em> and <em>two-way sequence: view-to-source-to-view</em>. When we use <em>binding types</em> other than <em>interpolation</em>, we have to specify a target name that is the name of a property. It looks like an attribute name, but it is not. With <em>data binding</em>, we are not working with <em>HTML</em> attributes, but properties of <em>DOM</em> (<em>Document Object Model</em>) elements. Just to refresh our minds, we may say that attributes are defined by <em>HTML</em> and properties are defined by <em>DOM</em> and the responsibility of <em>HTML</em> attributes is just to initialize <em>DOM</em> properties. Later <em>DOM</em> properties can change, but <em>HTML</em> attributes cannot. Some <em>DOM</em> properties don't have corresponding attributes and some <em>HTML</em> attributes don't have corresponding properties. The target of a <em>data binding</em> is something in the <em>DOM</em>.</p>
+
+<pre><code>import { Component } from '@angular/core';
+
+@Component({
+    selector:    'my-component',
+    templateUrl: './my-component.component.html',
+})
+export class MyComponent {
+    imgSrc: String = 'path-to-image';
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<pre><code>&lt;img [src]="imgSrc"&gt;
+</code></pre>
+
+<p><small><em>my-component.component.html file</em></small></p>
+
+<p>We often say that property binding is one-way <em>data binding</em> because it flows a value in one direction, from a <em>Component</em>'s data property into a target element property. However, we are allowed to achieve something called two-way <em>data binding</em> that, for example, lets us display a data property and update that property when the user makes changes. We can do this by using the syntax "<em>[(x)]</em>".</p>
+
+<p>We are also able to achieve event binding:</p>
+
+<pre><code>export class MyComponent {
+    doSomething() {
+        // some code
+    }
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<pre><code>&lt;button (click)="doSomething()"&gt;Do something&lt;/button&gt;
+</code></pre>
+
+<p><small><em>my-component.component.html file</em></small></p>
+
+<h2 id="inputandoutput">Input and Output</h2>
+
+<p>In a <em>Component</em>, we can use two decorators on properties: "<em>@Input</em>" and "<em>@Output</em>".</p>
+
+<p>An <em>Input</em> property is a settable property. An <em>Output</em> property is an observable property. <em>Input</em> properties usually receive data values. <em>Output</em> properties expose <em>Event</em> producers.</p>
+
+<p>Declaring an <em>Input</em> property would give something like so:</p>
+
+<pre><code>export class MyComponent {
+    @Input() name: String;
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<pre><code>&lt;my-component name="foo"&gt;&lt;/my-component&gt;
+</code></pre>
+
+<p><small><em>my-component.component.html file</em></small></p>
+
+<p>An Output property almost always returns an <em>Angular</em> <em>EventEmitter</em>. An <em>EventEmitter</em> allows us to emit a custom <em>Event</em>. It is helpful to pass a value to a parent <em>Component</em>. Let's say that we have something like this:</p>
+
+<pre><code>export class MyComponent {
+    @Output() deleteItemRequest = new EventEmitter&lt;Item&gt;();
+
+    delete() {
+        this.deleteItemRequest.emit(this.item)
+    }
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<pre><code>&lt;button (click)="delete()"&gt;Delete&lt;/button&gt;
+</code></pre>
+
+<p><small><em>my-component.component.html file</em></small></p>
+
+<p>As we can see, here, we use event binding. So, when the button is clicked, we call the "<em>delete()</em>" method. In the <em>Component</em>, we also declare an <em>Output</em> property that returns an <em>EventEmitter</em> and we declare its underlying type as "<em>Item</em>". So, when the "<em>delete()</em>" method is called, we use this <em>EventEmitter</em> to emit a new <em>Event</em>. In fact, it will emit an "<em>Item</em>" object.</p>
+
+<p>So, we can now imagine that we have the following thing as a parent <em>Component</em>:</p>
+
+<pre><code>export class ParentComponent {
+    deleteItem(item: Item) {
+        // Some code
+    } 
+}
+</code></pre>
+
+<p><small><em>parent-component.component.ts file</em></small></p>
+
+<pre><code>&lt;parent-component (deleteItemRequest)="deleteItem($event)"&gt;&lt;/parent-component&gt;
+</code></pre>
+
+<p><small><em>parent-component.component.ts file</em></small></p>
+
+<p>When the child <em>Component</em> emits its <em>Event</em>, the parent <em>Component</em> will use the result of this same <em>Event</em> with its own method.</p>
+
+<h2 id="componentlifecyclehooks">Component Lifecycle Hooks</h2>
+
+<p><em>Angular</em> manages the lifecycle of the different <em>Components</em>. Through different <em>Hooks</em>, it provides a way to perform actions when those different moments occur. We access to those moments by implementing one or more of the lifecycle <em>Hook</em> interfaces in the <em>Angular</em> core library. Each interface has a single <em>Hook</em> method whose name is the interface name prefixed with "<em>ng</em>".</p>
+
+<p>Down below, we have an example of a <em>Component</em> using the "<em>OnInit</em>" interface:</p>
+
+<pre><code>export class MyComponent implements OnInit {
+    ngOnInit() {
+        // Some code
+    }
+}
+</code></pre>
+
+<h2 id="communicationbetweenparentandchildcomponents">Communication between parent and child Components</h2>
+
+<p>There are a few ways to make a parent and child <em>Component</em> interact. One way is to inject the child <em>Component</em> into the parent as a <em>ViewChild</em>. This could be achieved like so:</p>
+
+<pre><code>import { ViewChild }       from '@angular/core';
+import { Component }       from '@angular/core';
+import { ChildComponent }  from './child-component.component';
+
+export class ParentComponent {
+    @ViewChild(ChildComponent)
+    private childComponent: ChildComponent;
+
+    method1() {
+        this.childComponent.childMethod1();
+    }
+
+    method2() {
+        this.childComponent.childMethod2();
+    }
+}
+</code></pre>
+
+<p>Another way to make a parent and child <em>Component</em> interact is to make them share a <em>Service</em>.</p>
+
+<h2 id="directives">Directives</h2>
+
+<p>In <em>Angular</em>, there are three kinds of <em>Directives</em>:</p>
+
+<ul>
+<li><em>Components</em> - <em>Directives</em> with a template</li>
+
+<li><em>Structural Directives</em> - change the <em>DOM</em> layout by adding and removing <em>DOM</em> elements</li>
+
+<li><em>Attribute Directives</em> - change the appearance or behavior of an element, <em>Component</em>, or another <em>Directive</em></li>
+</ul>
+
+<p>We have already seen <em>Components</em>. They are the most common <em>Directives</em>.</p>
+
+<p><em>Structural Directives</em> change the structure of the <em>View</em>. They are things like "<em>NgFor</em>" or "<em>NgIf</em>". Here is an example of different <em>Structural Directives</em>:</p>
+
+<pre><code>&lt;div *ngIf="character" class="name"&gt;{{character.name}}&lt;/div&gt;
+
+&lt;ul&gt;
+    &lt;li *ngFor="let character of characters"&gt;{{character.name}}&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div [ngSwitch]="character?.size"&gt;
+    &lt;app-big-character    *ngSwitchCase="'big'"       [character]="character"&gt;&lt;/app-big-character&gt;
+    &lt;app-medium-character *ngSwitchCase="'medium'"    [character]="character"&gt;&lt;/app-medium-character&gt;
+    &lt;app-small-character  *ngSwitchCase="'small'"     [character]="character"&gt;&lt;/app-small-character&gt;
+    &lt;app-character        *ngSwitchDefault="'small'"  [character]="character"&gt;&lt;/app-character&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p><em>Attribute Directives</em> are used as attributes of elements. They are things like "<em>NgClass</em>" or "<em>NgStyle</em>". Here is an example of different <em>Attribute Directives</em>:</p>
+
+<pre><code>&lt;div [ngStyle]="currentStyles"&gt;
+    Some content.
+&lt;/div&gt;
+
+&lt;div [class.error]="hasError"&gt;Some error&lt;/div&gt;
+</code></pre>
+
+<p>Let's make a little side note for the "<em>NgModel</em>" <em>Directive</em> that is part of the "<em>FormsModule</em>". This <em>Directive</em> helps us when we want to display a data property and update that property when the user makes changes through a form. Using this <em>two-way data binding</em> makes this easier. It will map the various fields of our form to our <em>Data Model</em>. It will ensure that the data in the <em>View</em> and the data in our <em>Data Model</em> are synced.</p>
+
+<p>We can use this <em>Directive</em> like so:</p>
+
+<pre><code>export class MyComponent {
+    name: string;
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<pre><code>&lt;input type="text" [(ngModel)]="name" /&gt;
+</code></pre>
+
+<p><small><em>my-component.component.html file</em></small></p>
+
+<p>We are also able to build <em>Attribute Directives</em>. We just have to create a class annotated with the "<em>@Directive</em>" decorator.</p>
+
+<h2 id="pipes">Pipes</h2>
+
+<p><em>Pipes</em> are a way to operate some transformations over data before displaying them. <em>Angular</em> comes with several built-in <em>Pipes</em>. For example, we can have something like so:</p>
+
+<pre><code>&lt;p&gt;The character's birthday is {{ birthday | date:"MM/dd/yy" }}&lt;/p&gt;
+</code></pre>
+
+<p>We are also able to create our own <em>Pipes</em> by using the "<em>@Pipe</em>" decorator and implementing the "<em>PipeTransform</em>" interface. This could be done like so:</p>
+
+<pre><code>import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({name: 'exponentialStrength'})
+export class ExponentialStrengthPipe implements PipeTransform {
+    transform(value: number, exponent: string): number {
+        let exp = parseFloat(exponent);
+        return Math.pow(value, isNaN(exp) ? 1 : exp);
+    }
+}
+</code></pre>
+
+<h2 id="observables">Observables</h2>
+
+<p><em>Observables</em> provide support for passing messages between <em>Publishers</em> and <em>Subscribers</em> in our application. An <em>Observable</em> can deliver multiple values of any type.</p>
+
+<p>A <em>Publisher</em> must create an <em>Observable</em> instance. This object defines a function that is executed when a consumer calls the "<em>subscribe()</em>" method. This method, called the <em>subscriber function</em>, states how to get data to be published. To execute our <em>Observable</em>, we have to call its "<em>subscribe()</em>" method and pass it an <em>Observer</em>. This object implements the "<em>Observer</em>" interface and is responsible to handle the various notifications from the <em>Observable</em>.</p>
+
+<p>To use <em>Observables</em>, we need to import the <em>RxJS Library</em>. <em>RxJS</em> is a library for reactive programming, which is a declarative programming paradigm where we program with asynchronous data streams. Data streams can be anything and we are so able to listen to them and react accordingly. A stream is a sequence of continuous <em>Events</em> ordered in time and it can emit three different things: a value of some type, an error or a "<em>completed</em>" value. Asynchronously, we capture these different emitted events by defining functions: one that will execute when a value is emitted, another that will execute when an error is emitted and another one that will execute when "<em>completed</em>" is emitted. The action of listening to the stream is named "<em>subscribing</em>". The various functions we define are the "<em>Observers</em>" while the stream is the "subject" or the "<em>Observale</em>". This is the <em>Behavioral Design Pattern</em> called the <em>Observer Pattern</em>. We also have to deal with the "<em>Operators</em>" which are the various pure functions, functions that always evaluate the same result value when we give them the same argument value, that will let us work on the emitted values.</p>
+
+<p>This kind of programming is really helpful when we have to deal with various <em>UI Events</em> related to data <em>Events</em>. It helps us to achieve real-time apps.</p>
+
+<p>Let's imagine that we have a <em>Service</em> that is responsible to fetch users:</p>
+
+<pre><code>import { Observable } from 'rxjs/Rx'
+import { Injectable } from '@angular/core'
+import { Http, Response } from '@angular/http'
+
+@Injectable()
+export class UsersService  {
+
+    constructor(public http: Http) {}
+
+    public fetchUsers() {
+        return this.http.get('/api/users').map((res: Response) =&gt; res.json())
+    }
+}
+</code></pre>
+
+<p>Our method "<em>fetchUsers()</em>" returns an <em>Observable</em>, our subject. So, we can subscribe to our subject like so:</p>
+
+<pre><code>import { Component } from '@angular/core'
+import { Observable } from 'rxjs/Rx'
+
+import { UsersService } from './users.service'
+import { User } from './user'
+
+@Component({
+    selector: "my-component",
+    templateUrl:  "./my-component.component.html",
+    providers:  [ UsersService ]
+})
+export class MyComponent {
+    public users: Observable&lt;User[]&gt;
+
+    constructor(public usersServce: UsersService) {}
+
+    public ngOnInit() {
+        this.users = this.UsersService.fetchUsers()
+    }
+}
+</code></pre>
+
+<p>In our template file, we have to do the following things:</p>
+
+<pre><code>&lt;ul class="user-list" *ngIf="(users | async).length"&gt;
+    &lt;li class="user" *ngFor="let user of users | async"&gt;
+        {{ user.name }}
+    &lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>We may also want to create an <em>Observable</em> from a <em>Promise</em>. We can do it like so:</p>
+
+<pre><code>const data = fromPromise(fetch('/api/endpoint'));
+</code></pre>
+
+<p>This create an <em>Observable</em>. To subscribe, we have to do the following thing:</p>
+
+<pre><code>data.subscribe({
+    next(response) { console.log(response); },
+    error(err) { console.error('Error: ' + err); },
+    complete() { console.log('Completed'); }
+});
+</code></pre>
+
+<p>Here, we achieve the process of subscription and as we can see, we define the three functions that we talked about a little earlier.</p>
+
+<h2 id="forms">Forms</h2>
+
+<p>We can use <em>Angular</em> event bindings to respond to <em>Events</em> that are triggered by user input. For example, we can imagine the following situation:</p>
+
+<pre><code>export class MyComponent {
+    values = '';
+
+    onKey(event: any) {
+        this.values += event.target.value;
+    }
+}
+</code></pre>
+
+<p><small><em>my-component.component.ts file</em></small></p>
+
+<pre><code>&lt;input (keyup)="onKey($event)"&gt;
+&lt;p&gt;{{values}}&lt;/p&gt;
+</code></pre>
+
+<p><small><em>my-component.component.html file</em></small></p>
+
+<p><em>Angular</em> has also a whole "<em>Form</em>" library that helps us with many things. We can, for example, use it to add some validation rules to our forms.</p>
+
+<pre><code>&lt;input id="name" name="name" class="form-control" required minlength="4" [(ngModel)]="user.name" #name="ngModel" &gt;
+
+&lt;div *ngIf="name.invalid &amp;&amp; (name.dirty || name.touched)" class="alert alert-danger"&gt;
+
+    &lt;div *ngIf="name.errors.required"&gt;
+        Name is required.
+    &lt;/div&gt;
+    &lt;div *ngIf="name.errors.minlength"&gt;
+        Name must be at least 4 characters long.
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>Here, we start by defining a input with a few rules. As we can see, we export the "<em>ngModel</em>" <em>Directive</em> to achieve <em>two-way data binding</em>. We also export the form control's state to a local variable "<em>#name</em>". Then, we check if the control has been touched and we display different errors if there are some.</p>
+
+<p>With <em>Angular</em>, we also have the ability to dynamically generate forms. To achieve this, we have to create objects derived from the base class "<em>QuestionBase</em>" and that represents the various controls of our forms. We can then treat them through a <em>Service</em> that will build the form and return it as a "<em>FormGroup</em>" object.</p>
+
+<h2 id="routingnavigation">Routing &amp; Navigation</h2>
+
+<p>In <em>Angular</em>, the <em>Router</em> allows navigation from one <em>View</em> to the next. The <em>Router</em> interprets a browser <em>URL</em> to navigate to a client generated <em>View</em> and, if needed, pass optional parameters. The <em>Router</em> can be bound to links or it can be used in response to some actions.</p>
+
+<p>To use the <em>Router</em> correctly, we need to add a "<em>base</em>" element to our "<em>index.html</em>" file. We also need to import the <em>Router Module</em>. In our "<em>app.module.ts</em>" file, we can do the following thing:</p>
+
+<pre><code>import { RouterModule, Routes } from '@angular/router';
+
+const appRoutes: Routes = [
+    { path: 'characters',         component: CharactersComponent },
+    { path: 'character/:id',      component: CharacterDetailComponent },
+    { path: '', redirectTo: '/characters', pathMatch: 'full' },
+    { path: '**',                 component: PageNotFoundComponent }
+];
+
+@NgModule({
+    imports: [
+        RouterModule.forRoot(appRoutes)
+    ]
+})
+export class AppModule { }
+</code></pre>
+
+<p>As we can see, we define our navigation <em>Routes</em> in the array "<em>appRoutes</em>" and we pass this array to the "<em>RouterModule</em>". We can now use the "<em>RouterOutlet</em>" <em>Directive</em>, that marks where the <em>Router</em> displays a <em>View</em>, to create some kind of navigation menu:</p>
+
+<pre><code>&lt;nav&gt;
+    &lt;a routerLink="/characters" routerLinkActive="active"&gt;Characters&lt;/a&gt;
+&lt;/nav&gt;
+&lt;router-outlet&gt;&lt;/router-outlet&gt;
+</code></pre>
+
+<p>After the end of each successful navigation lifecycle, the <em>Router</em> builds a tree of "<em>ActivatedRoute</em>" objects that make up the current state of the <em>Router</em>. We are able to access the current "<em>RouterState</em>" from anywhere in the application using the <em>Router Service</em> and the "<em>routerState</em>" property.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we got a brief overview of the <em>Angular</em> technology. It was more a theoretical post than a practical example. Of course, we didn't cover entirely each subject and there are plenty of other subjects that we could have explored like <em>Unit Testing</em> or <em>E2E Testing</em>. Now, however, we have enough knowledge of <em>Angular</em> to start a project and to dig deeper into this framework.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
