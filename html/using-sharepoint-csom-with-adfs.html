@@ -1,0 +1,184 @@
+<h1 id="usingsharepointcsomwithadfs">Using SharePoint CSOM with ADFS</h1>
+
+<p>Through this article, we are going to see how we can use <em>SharePoint CSOM</em> when <em>ADFS</em> is used for authentication. Then, we are also going to make a little side note about <em>WSS</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Since <em>SharePoint 2010</em>, <em>SharePoint</em> provides us a way to interact with <em>SharePoint</em> sites called <em>Client Object Model</em>, or <em>CSOM</em>. So we are able to write scripts or add-ins without the need to program directly on the server where <em>SharePoint</em> is installed.</p>
+
+<p>Using <em>CSOM</em> is pretty straightforward, however, when <em>ADFS</em> is used, we can have some struggles. Just to refresh our mind, <em>ADFS</em>, or <em>Active Directory Federation Services</em>, that runs on <em>Windows Server</em>, allows single <em>sign-on access</em> (<em>SSO</em>) to systems and applications located across organizational boundaries.</p>
+
+<p>Let's see how we can achieve a simple authentication with such a setup. We will then have a little side note about old <em>SharePoint</em> environments.</p>
+
+<h2 id="usingcsom">Using CSOM</h2>
+
+<p>The trick is not so complicated. The secret is in the "<em>AuthenticationMode</em>" property and in the "<em>ExecutingWebRequest</em>" event of the "<em>ClientContext</em>" class. Let's make it with <em>C#</em>:</p>
+
+<pre><code>private void _ConnectSPCSOM(string url, string user, SecureString password)
+{
+    using (ClientContext context = new ClientContext(url))
+    {
+        context.AuthenticationMode = ClientAuthenticationMode.Default;
+        context.Credentials = new System.Net.NetworkCredential(user, password);
+        context.ExecutingWebRequest += new EventHandler&lt;WebRequestEventArgs&gt;(_MixedAuthRequestMethod);
+
+        try
+        {
+            Web web = context.Web;
+            Console.WriteLine("Loading web...");
+            context.Load(web);
+            context.ExecuteQuery();
+
+            Console.WriteLine(web.Title);
+            Console.WriteLine(web.Url);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine("Exception of type" + exception.GetType() + "caught.");
+            Console.WriteLine(exception.Message);
+            Console.WriteLine(exception.StackTrace);
+        }
+    }
+}
+
+private void _MixedAuthRequestMethod(object sender, WebRequestEventArgs e)
+{
+    try
+    {
+        e.WebRequestExecutor.RequestHeaders.Remove("X-FORMS_BASED_AUTH_ACCEPTED");
+        e.WebRequestExecutor.RequestHeaders.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+    }
+    catch (Exception exception)
+    {
+        Console.WriteLine("Exception of type" + exception.GetType() + "caught.");
+        Console.WriteLine(exception.Message);
+        Console.WriteLine(exception.StackTrace);
+    }
+}
+</code></pre>
+
+<p><small><em>C# code</em></small></p>
+
+<p>As we can see, we use <em>CSOM</em> as usual. However, we first set the authentication mode to "<em>default</em>". It is important that this line is placed before the next two lines. We then pass our credentials, using a "<em>SecureString</em>" for the password. Then we create a new "<em>EventHandler</em>" that uses the "<em>MixedAuthRequestMethod</em>" method. This method will add the right information in the request header to force <em>Windows Authentication</em>.</p>
+
+<p>If we have to do it with <em>PowerShell</em>, we can imagine doing it like so:</p>
+
+<pre><code>[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SharePoint.Client") | Out-Null
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SharePoint.Client.Runtime") | Out-Null
+
+Add-PSSnapin Microsoft.SharePoint.PowerShell
+
+function MixedAuthRequestMethod()
+{
+    param([Parameter(Mandatory=$true)][object]$clientContext)  
+    Add-Type -TypeDefinition @"
+    using System;
+    using Microsoft.SharePoint.Client;
+
+    namespace SPCSOM.SPOHelpers
+    {
+        public static class ClientContextHelper
+        {
+            public static void AddRequestHandler(ClientContext context)
+            {
+                context.ExecutingWebRequest += new EventHandler&lt;WebRequestEventArgs&gt;(RequestHandler);
+            }
+
+            private static void RequestHandler(object sender, WebRequestEventArgs e)
+            {
+                e.WebRequestExecutor.RequestHeaders.Remove("X-FORMS_BASED_AUTH_ACCEPTED");
+                e.WebRequestExecutor.RequestHeaders.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+            }
+        }
+    }
+"@ -ReferencedAssemblies "C:\Program Files\Common Files\Microsoft Shared\Web Server Extensions\16\ISAPI\Microsoft.SharePoint.Client.dll", "C:\Program Files\Common Files\Microsoft Shared\Web Server Extensions\16\ISAPI\Microsoft.SharePoint.Client.Runtime.dll";
+[SPCSOM.SPOHelpers.ClientContextHelper]::AddRequestHandler($clientContext);
+}
+
+$url = "SHAREPOINT-URL"
+$user = "username"
+$password = "plain-text-password"
+$secpw = ConvertTo-SecureString $password -AsPlainText -Force
+
+$context = New-Object Microsoft.SharePoint.Client.ClientContext($url)
+
+$context.AuthenticationMode = [Microsoft.SharePoint.Client.ClientAuthenticationMode]::Default
+$credentials = New-Object System.Net.NetworkCredential($user , $secpw)
+$context.Credentials = $credentials.$credentials
+
+MixedAuthRequestMethod $context;
+
+if (!$context.ServerObjectIsNull.Value) {
+
+    Try 
+    {
+        $web = $context.Web
+        $context.Load($web) 
+        $context.ExecuteQuery()
+
+        Write-Host $web.Title
+        Write-Host $web.Url
+    } 
+    Catch 
+    {
+        Write-Host $_.Exception.Message
+        Write-Host $_.Exception
+        Write-Host "Can't connect to" $url -ForegroundColor Red
+    }
+
+} else {
+    Write-Host "Server object is null"
+}
+</code></pre>
+
+<p><small><em>PowerShell code</em></small></p>
+
+<p>Now, with this little trick, we should be able to use <em>SharePoint CSOM</em> with <em>ADFS</em>. However, we may still get a <em>401 error</em>. In such a case, we probably have to check the security of our environment. For example, if there is a <em>Reverse Proxy</em> between us and the <em>SharePoint Front Server</em>, we can make a workaround by writing the <em>Front Server IP address</em> in our <em>host</em> file.</p>
+
+<h2 id="sidenote">Side note</h2>
+
+<p>We may find ourselves in such a situation where we want to achieve what we could achieve with <em>CSOM</em> in an old <em>SharePoint</em> environment, for example <em>WSS 3.0</em>. Unfortunately, here, <em>CSOM</em> is not available. Nevertheless, there is a solution: <em>SharePoint Web Services</em>. There are many different <em>Web Services</em> that are available at <em>URL</em> like "https://servername/<em>vti</em>bin/Lists.asmx". To use a <em>Web Service</em>, in <em>Visual Studio</em>, we have to right-click on "<em>References</em>", then we have to choose "<em>Add Service Reference</em>", then "<em>Advanced</em>". We then have to enter the <em>URL</em>, validate it and click on "<em>Add Web Reference</em>". We can then use our <em>Web Service</em> like so:</p>
+
+<pre><code>private void _GetWSSCollectionsInfo(string url, string user, SecureString password)
+{
+    TheWebService.Webs webs = new TheWebService.Webs
+    {
+        PreAuthenticate = true,
+        Credentials = new System.Net.NetworkCredential(user, password),
+        Url = url + "/_vti_bin/Webs.asmx"
+    };
+
+    try
+    {
+        XmlNode collection = webs.GetWebCollection();
+        XmlNodeList nodes = collection.SelectNodes("*");
+
+        if (collection == null || collection.ChildNodes[0] == null)
+        {
+            return;
+        }
+
+        foreach (XmlNode node in nodes)
+        {
+            Console.WriteLine("Title: " + node.Attributes["Title"].Value);
+            Console.WriteLine("Url: " + node.Attributes["Url"].Value);
+        }
+    }
+    catch (Exception exception)
+    {
+        Console.WriteLine("Exception of type" + exception.GetType() + "caught.");
+        Console.WriteLine(exception.Message);
+        Console.WriteLine(exception.StackTrace);
+    }
+}
+</code></pre>
+
+<p><small><em>C# code</em></small></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw how we can use <em>SharePoint CSOM</em> with <em>ADFS</em>. The trick is to force <em>Windows Authentication</em>. We saw how we can do it with <em>C#</em> and <em>PowerShell</em>. We also had a little side note about <em>SharePoint Web Services</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
