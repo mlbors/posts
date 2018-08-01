@@ -1,0 +1,407 @@
+<h1 id="asmallintroductiontounitycontainer">A small introduction to Unity Container</h1>
+
+<p>Through this post, we are going to take a look at how we can achieve <em>Dependency Injection</em> with <em>Unity</em> (the <em>IoC Container</em>, not the <em>Game Engine</em>). Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Dependency Injection</em> is one way to implement <em>Inversion of Control</em>. <em>Dependency Injection</em>, also called <em>DI</em>, is a design pattern in which one or more dependencies (services) are injected into a dependent object (client). This pattern allows us to implement a loosely coupled architecture by separating the creation of a client's dependencies from its own behavior. We can use this pattern when we want to remove knowledge of concrete implementations from objects, but also when we want to get a better testable code in isolation using mock objects.</p>
+
+<p>Here, we are going to see how we can achieve <em>Dependency Injection</em> using <em>Unity</em>, the IoC Container, not the <em>Game Engine</em>. By way, one way to apply <em>Dependency Injection</em> through our code when we work with <em>Unity3D</em> (here, the <em>Game Engine</em>), is to use <em>Zenject</em>.</p>
+
+<h2 id="installingunity">Installing Unity</h2>
+
+<p>First, we need to install <em>Unity</em>. This can be done through the <em>NuGet Packets Manager</em>.</p>
+
+<pre><code>PM&gt; Install-Package Unity
+</code></pre>
+
+<h2 id="creatingafewinterfaces">Creating a few interfaces</h2>
+
+<p>First, let's define a few interfaces:</p>
+
+<pre><code>public interface IGame
+{
+    void Play();
+}
+
+public interface IInitializer
+{   
+}
+</code></pre>
+
+<p>We can now create some concrete implementations for these two interfaces:</p>
+
+<pre><code>public class PlatformGame : IGame
+{
+    public void Play()
+    {
+        Console.WriteLine("Playing a platform game");
+    }
+}
+
+public class RPGGame : IGame
+{
+    public void Play()
+    {
+        Console.WriteLine("Playing an RPG game");
+    }
+}
+
+public class Initializer : IInitializer
+{   
+    public Initializer(IGame game)
+    {
+        game.Play();
+    }
+}
+</code></pre>
+
+<h2 id="usingunity">Using Unity</h2>
+
+<p>Now, let's wrap <em>Unity</em> with another class. The classes that will use DI will then do so through what we can call a <em>Facade</em>. Our wrapper could look like so:</p>
+
+<pre><code>public class DIWrapper
+{
+    /*********************/
+    /***** ATTRIBUTS *****/
+    /*********************/
+
+    /// &lt;param name="_container"&gt;_Unity_ Container&lt;/param&gt;
+
+    protected static IUnityContainer _container;
+
+    /**************************************************/
+    /**************************************************/
+
+    /***********************************/
+    /***** CONTAINER GETTER/SETTER *****/
+    /***********************************/
+
+    public static IUnityContainer Container
+    {
+        get { return _container; }
+        set { _container = value; }
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /*********************/
+    /***** CONSTRUCT *****/
+    /*********************/
+
+    static DIWrapper()
+    {
+        if (_container == null)
+        {
+            Container = new UnityContainer();
+        }
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /*******************/
+    /***** RESOLVE *****/
+    /*******************/
+
+    /// &lt;typeparam name="T"&gt;Type of object to return&lt;/typeparam&gt;
+    /// &lt;summary&gt;
+    /// Resolves the type parameter T to an instance of the appropriate type.
+    /// &lt;/summary&gt;
+
+    public static T Resolve&lt;T&gt;()
+    {
+        T result = default(T);
+
+        if (Container.IsRegistered(typeof(T)))
+        {
+            result = Container.Resolve&lt;T&gt;();
+        }
+
+        return result;
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /*******************/
+    /***** RESOLVE *****/
+    /*******************/
+
+    /// &lt;typeparam name="T"&gt;Type of object to return&lt;/typeparam&gt;
+    /// &lt;param name="name"&gt;Object to resolve&lt;/param&gt;
+    /// &lt;summary&gt;
+    /// Resolves the type parameter T to an instance of the appropriate type.
+    /// &lt;/summary&gt;
+
+    public static T Resolve&lt;T&gt;(string name)
+    {
+        T result = default(T);
+
+        if (Container.IsRegistered&lt;T&gt;(name))
+        {
+            return Container.Resolve&lt;T&gt;(name);
+        }
+
+        return result;
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /********************/
+    /***** REGISTER *****/
+    /********************/
+
+    /// &lt;typeparam name="T"&gt;Type of object to return&lt;/typeparam&gt;
+    /// &lt;param name="name"&gt;Object to resolve&lt;/param&gt;
+    /// &lt;summary&gt;
+    /// Register the type parameter T.
+    /// &lt;/summary&gt;
+
+    public static void Register&lt;T&gt;()
+    {
+        if (!Container.IsRegistered&lt;T&gt;())
+        {
+            Container.RegisterType&lt;T&gt;();
+        }
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /********************/
+    /***** REGISTER *****/
+    /********************/
+
+    /// &lt;typeparam name="TFrom"&gt;Type of object to return&lt;/typeparam&gt;
+    /// &lt;summary&gt;
+    /// Register the type parameter T.
+    /// &lt;/summary&gt;
+
+    public static void Register&lt;TFrom, TTo&gt;() where TTo : TFrom
+    {
+        if (!Container.IsRegistered&lt;TFrom&gt;())
+        {
+            Container.RegisterType&lt;TFrom, TTo&gt;();
+        }
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /********************/
+    /***** REGISTER *****/
+    /********************/
+
+    /// &lt;typeparam name="TFrom"&gt;Type of object to return&lt;/typeparam&gt;
+    /// &lt;param name="name"&gt;Object to resolve&lt;/param&gt;
+    /// &lt;summary&gt;
+    /// Register the type parameter T.
+    /// &lt;/summary&gt;
+
+    public static void Register&lt;TFrom, TTo&gt;(string name) where TTo : TFrom
+    {
+        if (!Container.IsRegistered&lt;TFrom&gt;(name))
+        {
+            Container.RegisterType&lt;TFrom, TTo&gt;(name);
+        }
+    }
+}
+</code></pre>
+
+<p>Now, for example, in our "<em>Program.cs</em>", inside our "<em>Main</em>" method, we can imagine to have the follwing lines:</p>
+
+<pre><code>static void Main(string[] args)
+{
+    DIWrapper.Register&lt;IGame, PlatformGame&gt;();
+    DIWrapper.Register&lt;IInitializer, Initializer&gt;();
+    IInitializer initializer = DIWrapper.Resolve&lt;IInitializer&gt;();
+}
+</code></pre>
+
+<p>The first line means that we map the interface "<em>IGame</em>" to the concrete class "<em>PlatformGame</em>". So, each time we want to resolve an object of type "<em>IGame</em>", we will get an object from the "<em>PlatformGame</em>" class. We then do the samine with the "<em>IInitializer</em>" interface and then ask <em>Unity</em> to resolve it. During the resolution, <em>Unity</em> will know that IGame is mapped to "<em>PlatformGame</em>" and will inject it into the "<em>Initializer</em>" object, through the consructor we previously defined.</p>
+
+<h2 id="alittlefutherwithfactories">A little futher with Factories</h2>
+
+<p>Now, let's imagine the following things:</p>
+
+<pre><code>public interface IDIFactory&lt;T&gt;
+{
+    T Create(params object[] constructorArguments);
+}
+
+public interface IGameFactory&lt;T&gt; : IDIFactory&lt;T&gt;
+{
+    GameType Type
+    {
+        get;
+        set;
+    }
+}
+
+public enum GameType
+{
+    Platform,
+    RPG
+}
+</code></pre>
+
+<p>Now, let's imagine the following implementation:</p>
+
+<pre><code>public class GameFactory&lt;IGame&gt; : IGameFactory&lt;IGame&gt;
+{
+    /*********************/
+    /***** ATTRIBUTS *****/
+    /*********************/
+
+    /// &lt;param name="_type"&gt;Type of object to create&lt;/param&gt;
+
+    protected GameType _type;
+
+    /**************************************************/
+    /**************************************************/
+
+    /******************************/
+    /***** TYPE GETTER/SETTER *****/
+    /******************************/
+
+    public GameType Type
+    {
+        get { return _type; }
+        set { _type = value; }
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /*********************/
+    /***** CONSTRUCT *****/
+    /*********************/
+
+    public GameFactory()
+    {
+        Type = GameType.Platform;
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /******************/
+    /***** CREATE *****/
+    /******************/
+
+    public IGame Create(params object[] constructorArguments)
+    {
+        IGame game;
+
+        switch(_type)
+        {
+            case GameType.Platform:
+                DIWrapper.Register&lt;CURRENT.NAMESPACE.IGame, PlatformGame&gt;("Platform");
+                game = DIWrapper.Resolve&lt;IGame&gt;("Platform");
+                break;
+
+            case GameType.RPG:
+                DIWrapper.Register&lt;CURRENT.NAMESPACE.IGame, RPGGame&gt;("RPG");
+                game = DIWrapper.Resolve&lt;IGame&gt;("RPG");
+                break;
+
+            default:
+                DIWrapper.Register&lt;CURRENT.NAMESPACE.IGame, PlatformGame&gt;("Platform");
+                game = DIWrapper.Resolve&lt;IGame&gt;("Platform");
+                break;
+        }
+
+        return game;
+    }
+}
+</code></pre>
+
+<p>Here, we create a <em>Factory</em> that registers the "<em>IGame</em>" interface with multiple objects and gives us the right object depending of what we ask.</p>
+
+<p>Let's imagine that we have the following code in our "<em>Main</em>" method:</p>
+
+<pre><code>static void Main(string[] args)
+{
+    DIWrapper.Register&lt;IGameFactory&lt;IGame&gt;, GameFactory&lt;IGame&gt;&gt;();
+    DIWrapper.Register&lt;IInitializer, Initializer&gt;();
+    IInitializer initializer = DIWrapper.Resolve&lt;IInitializer&gt;();
+}
+</code></pre>
+
+<p>We can then have the follwing code:</p>
+
+<pre><code>public class Initializer : IInitializer
+{
+    public Initializer(IGameFactory&lt;IGame&gt; gameFactory)
+    {
+        gameFactory.Type = GameType.RPG;
+        IGame game1 = gameFactory.Create();
+        game1.Play();
+        gameFactory.Type = GameType.Platform;
+        IGame game2 = gameFactory.Create();
+        game2.Play();
+    }
+}
+</code></pre>
+
+<h2 id="withunittests">With unit tests</h2>
+
+<p><em>Unity</em> will help us to write our unit tests by realizing mock objects. Here, we also use the <em>Moq</em> package.</p>
+
+<pre><code>[TestClass]
+public class InitializerTest
+{
+    /*********************/
+    /***** ATTRIBUTS *****/
+    /*********************/
+
+    /// &lt;param name="_instance"&gt;IInitializer object&lt;/param&gt;
+    /// &lt;param name="_container"&gt;_Unity_ Container&lt;/param&gt;
+
+    private IInitializer _instance;
+    private IUnityContainer _container;
+
+    /**************************************************/
+    /**************************************************/
+
+    /****************************/
+    /***** INITIALIZE TESTS *****/
+    /****************************/
+
+    [TestInitialize] 
+    public void InitializeTests()
+    {
+        _container = new UnityContainer();
+
+        var gameFactoryMock = new Mock&lt;IGameFactory&lt;IGame&gt;&gt;();
+        _container.RegisterInstance&lt;IGameFactory&lt;IGame&gt;&gt;(gameFactoryMock.Object);
+
+        _container.RegisterType&lt;IInitializer, Initializer&gt;();
+        _instance = _container.Resolve&lt;IInitializer&gt;();
+    }
+
+    /**************************************************/
+    /**************************************************/
+
+    /**************************/
+    /***** CHECK INSTANCE *****/
+    /**************************/
+
+    [TestMethod]
+    public void CheckInstance()
+    {
+        Assert.IsNotNull(_instance, "Instance of object Initializer should not be null.");
+    }
+}
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw how we can easily achieve <em>Dependency Injection</em> with <em>Unity</em>. We saw that we can use various methods to apply this pattern and how we can wrap our container. We also saw how it can help us through our unit tests.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

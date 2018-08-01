@@ -1,0 +1,266 @@
+<h1 id="creatinglistswithsharepointcsom">Creating lists with SharePoint CSOM</h1>
+
+<p>In this post, we are going to see how we can work with <em>SharePoint</em> lists using <em>CSOM</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Since <em>SharePoint</em> 2010, <em>SharePoint</em> provides us a way to interact with <em>SharePoint</em> sites called <em>Client Object Model</em>, or <em>CSOM</em>. So we are able to write scripts or <em>Add-Ins</em> without the need to program directly on the server where <em>SharePoint</em> is installed.</p>
+
+<p>Here, we are going to create a small program to see how we can use <em>SharePoint</em> <em>CSOM</em> to work with lists. For the sake of our example, we state that we are using a <em>SharePoint</em> <em>on-premise</em> installation.</p>
+
+<h2 id="timetocode">Time to code</h2>
+
+<p>First, let's create a method to connect to <em>SharePoint</em> using <em>CSOM</em>:</p>
+
+<pre><code>protected void _ConnectSPCSOM(string url, string user, SecureString password)
+{
+    using (ClientContext context = new ClientContext(url))
+    {
+        context.AuthenticationMode = ClientAuthenticationMode.Default;
+        context.Credentials = new System.Net.NetworkCredential(user, password);
+
+        try
+        {
+            Web web = context.Web;
+            context.Load(web);
+            context.ExecuteQuery();
+
+            _CreateList(context, list);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception.Message);
+        }
+    }
+}
+</code></pre>
+
+<p>Now, let's create another method to handle the creation of our list:</p>
+
+<pre><code>protected void _CreateList(ClientContext context, string list)
+{
+    if (!_CheckIfListExists(context, list))
+    {
+        _GenerateList(context);
+    }
+
+    _AddFields(context);
+    _AddData(context);
+}
+</code></pre>
+
+<p>Here, we call four other methods: one to check if the list already exists, another to generate it if necessary, one to add fields to the list and another one to add the data into the list.</p>
+
+<p>The method that checks if the list already exists could look like so:</p>
+
+<pre><code>protected bool _CheckIfListExists(ClientContext context, string listName)
+{
+    ListCollection listCollection = context.Web.Lists;
+    context.Load(listCollection, lists =&gt; lists.Include(list =&gt; list.Title).Where(list =&gt; list.Title == listName));
+    context.ExecuteQuery();
+
+    if (listCollection.Count == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+</code></pre>
+
+<p>We can now generate the list like so:</p>
+
+<pre><code>protected void _CreateList(ClientContext context, string list)
+{
+    Web web = context.Web;
+
+    ListCreationInformation listCreationInformation = new ListCreationInformation();
+    listCreationInformation.Title = list;
+    listCreationInformation.TemplateType = (int)ListTemplateType.NoListTemplate;
+    List newList = web.Lists.Add(listCreationInformation);
+    context.ExecuteQuery();
+}
+</code></pre>
+
+<p>We can have another version of our method. In fact, sometimes, for example, in the case of a site using the "<em>Team-Site</em>" template, we can encounter an error saying that the list template is invalid. In such a case, we have to make a little variation:</p>
+
+<pre><code>protected void _CreateList(ClientContext context, string list)
+{
+    Web web = context.Web;
+
+    ListTemplate listTemplate = web.ListTemplates.GetByName("My template name");
+    context.Load(listTemplate);
+    context.ExecuteQuery();
+
+    ListCreationInformation listCreationInformation = new ListCreationInformation();
+    listCreationInformation.Title = list;
+    listCreationInformation.TemplateType = listTemplate.ListTemplateTypeKind;
+    List newList = web.Lists.Add(listCreationInformation);
+    context.ExecuteQuery();
+}
+</code></pre>
+
+<p>Now, before we add fields to our list, let's imagine a simple <em>Struct</em> that will help us to handle them:</p>
+
+<pre><code>public struct ListField
+{
+    public string Name { get; set; }
+    public string DisplayName { get; set; }
+    public string Type { get; set; }
+    public string Extra { get; set; }
+    public string ChoicesString { get; set; }
+    public bool DisplayMainView { get; set; }
+    public AddFieldOptions DefaultValue { get; set; }
+}
+</code></pre>
+
+<p>We can now add our fields like so and check if they already exist:</p>
+
+<pre><code>protected void _AddFields(ClientContext context, string listName)
+{
+    Web web = context.Web;
+    List list = web.Lists.GetByTitle(listName);
+    context.Load(list);
+    context.ExecuteQuery();
+
+    List&lt;ListField&gt; fieldsList = new List&lt;ListField&gt;();
+    fieldsList.Add(new ListField() { Name = "Field1", DisplayName = "Field1", Type = "Text", Extra = "", ChoicesString = "", DisplayMainView = true, DefaultValue = AddFieldOptions.DefaultValue });
+    fieldsList.Add(new ListField() { Name = "Field2", DisplayName = "Field2", Type = "Text", Extra = "", ChoicesString = "", DisplayMainView = true, DefaultValue = AddFieldOptions.DefaultValue });
+    fieldsList.Add(new ListField() { Name = "Field3", DisplayName = "Field3", Type = "Choice", Extra = "Format='Dropdown' FillInChoice='false'", ChoicesString = "&lt;Default&gt;None&lt;/Default&gt;&lt;CHOICES&gt;&lt;CHOICE&gt;None&lt;/CHOICE&gt;&lt;CHOICE&gt;Choice 1&lt;/CHOICE&gt;&lt;CHOICE&gt;Choice 2&lt;/CHOICE&gt;&lt;CHOICE&gt;Choice 3&lt;/CHOICE&gt;&lt;CHOICE&gt;Choice 4&lt;/CHOICE&gt;&lt;/CHOICES&gt;", DisplayMainView = true, DefaultValue = AddFieldOptions.DefaultValue });
+
+    foreach (ListField field in fieldsList)
+    {
+        if (_CheckIfFieldExistsInList(field.Name, list))
+        {
+            continue;
+        }
+
+        string str;
+
+        if (field.Type == "Choice")
+        {
+            str = "&lt;Field Type='" + field.Type + "' DisplayName='" + field.DisplayName + "' Name='" + field.Name + "' " + field.Extra + " &gt;";
+            str += field.ChoicesString;
+            str += "&lt;/Field&gt;";
+        }
+        else
+        {
+            str = "&lt;Field Type='" + field.Type + "' DisplayName='" + field.DisplayName + "' Name='" + field.Name + "'/&gt;";
+        }
+
+        Field addedField = list.Fields.AddFieldAsXml(str, field.DisplayMainView, field.DefaultValue);
+    }
+
+    context.ExecuteQuery();
+}
+
+protected bool _CheckIfFieldExistsInList(string fieldName, List list)
+{
+    foreach (Field field in list.Fields)
+    {
+        if (field.Title.Equals(fieldName))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+</code></pre>
+
+<p>Now it is time to add some data to our list. First, for the sake of our example, let's imagine another really simple <em>Struct</em> that represents that data we want to add. Of course, this will change depending on our situation. Here, it is just for the example.</p>
+
+<pre><code>public struct WeData
+{
+    public string Title { get; set; }
+    public string Subtitle { get; set; }
+    public string Url { get; set; }
+    public string Type { get; set; }
+}
+</code></pre>
+
+<p>We can now write our method to add or data:</p>
+
+<pre><code>protected void _AddData(ClientContext context)
+{
+    foreach(WebData item in _data)
+    {
+        ListItem listItem = _CheckIfItemExists(context, item);
+
+        if (listItem == null)
+        {
+            _InsertItem(context, item);
+            continue;
+        }
+
+        _UpdateItem(context, item, listItem);
+    }
+}
+</code></pre>
+
+<p>Here, as we can see, we suppose that our data is stocked in a variable named "<em>data</em>" which is a list("<em>List<WebData></em>"). Here, we check if each item of this list already exists in our <em>SharePoint</em> list.</p>
+
+<pre><code>protected ListItem _CheckIfItemExists(ClientContext context, WebData item)
+{
+    Web web = context.Web;
+    List list = web.Lists.GetByTitle(_targetList);
+
+    CamlQuery query = new CamlQuery
+    {
+        ViewXml = "&lt;View&gt;&lt;Query&gt;&lt;Where&gt;&lt;Eq&gt;&lt;FieldRef Name='Field1' /&gt;&lt;Value Type='Text'&gt;" + item.Title + "&lt;/Value&gt;&lt;/Eq&gt;&lt;/Where&gt;&lt;/Query&gt;&lt;/View&gt;"
+    };
+
+    ListItemCollection items = list.GetItems(query);
+    context.Load(items);
+    context.ExecuteQuery();
+
+    if (items.Count == 0)
+    {
+        return null;
+    }
+
+    return items[0];
+}
+</code></pre>
+
+<p>To query our item and check its existence, we use a <em>CAML Query</em>. This check helps us to decide if we have to insert a new item in our <em>SharePoint</em> list or if we have to update an existing one.</p>
+
+<pre><code>protected void _InsertItem(ClientContext context, WebData item)
+{
+    Web web = context.Web;
+    List list = web.Lists.GetByTitle(_targetList);
+
+    ListItemCreationInformation itemCreateInfo = new ListItemCreationInformation();
+    ListItem listItem = list.AddItem(itemCreateInfo);
+    context.ExecuteQuery();
+
+    _SetDataItem(context, item, listItem);
+}
+
+protected void _UpdateItem(ClientContext context, WebData item, ListItem listItem)
+{
+    Web web = context.Web;
+    _SetDataItem(context, item, listItem);
+}
+</code></pre>
+
+<p>Finally, we can update our <em>SharePoint</em> list like so:</p>
+
+<pre><code>protected void _SetDataItem(ClientContext context, WebData item, ListItem listItem)
+{
+    listItem["Title"] = item.Title;
+    listItem["Field1"] = item.Subtitle;
+    listItem["Field2"] = item.Url;
+    listItem["Field3"] = item.Type;
+
+    listItem.Update();
+    context.ExecuteQuery();
+}
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this post, we saw how we can work with <em>SharePoint</em> lists using <em>CSOM</em>. We had an overview of the different operations we can achieve using the <em>API</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
