@@ -1,0 +1,278 @@
+<h1 id="hostnamedsitecollectionmanagedpathsandappcatalogwithsharepoint2016">Host-Named Site Collection, Managed Paths and App Catalog with SharePoint 2016</h1>
+
+<p>In this article, we are going to set up a <em>Host-Name Site Collection</em>, <em>Managed Paths</em> and create a private <em>App Catalog</em> using <em>SharePoint 2016 on-premise</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Host-Named Site Collections</em> enable us to assign a unique <em>DNS</em> name to <em>Site Collections</em>. So, it means that we can deploy many sites with unique <em>DNS</em> names in the same <em>Web Application</em> and it allows us to scale our environment to many customers. In other words, we can have something like http://sitea.domain.com and http://siteb.domain.com.</p>
+
+<p>For the sake of our example, let's imagine that we need to set a development environment with multiple <em>Collections</em>, each for a different purpose, and a private <em>App Catalog</em> for our <em>Add-Ins</em>.</p>
+
+<p>Here, we are not going to see how to configure the domain names in <em>DNS</em> and everything that is related to this part. So, of course, we have to check with the system administrator what could be done.</p>
+
+<h2 id="creatingthehnsc">Creating the HNSC</h2>
+
+<p>Because <em>Host-Named Site Collections</em> can only be created with <em>PowerShell</em> and not from the <em>Central Administration</em>, we are going to build a <em>PowerShell</em> script that will create what we need: an <em>Application Pool</em>, a <em>Web Application</em>, a <em>Root Site Collection</em> and our <em>Host-Named Site Collection</em>.</p>
+
+<p>First, we need the <em>Application Pool</em>:</p>
+
+<pre><code>New-SPServiceApplicationPool -Name $applicationPool -Account $managedAccount
+</code></pre>
+
+<p>We can now set our <em>Web Application</em> and create the required binding for <em>IIS</em>:</p>
+
+<pre><code>New-SPWebApplication -Name $webAppName -hostHeader -$webAppHostHeader -port $port -Url $webAppUrl -ApplicationPool $applicationPool -ApplicationPoolAccount (Get-SPManagedAccount $managedAccount) -AuthenticationProvider (New-SPAuthenticationProvider -UseWindowsIntegratedAuthentication) -DatabaseName $dataBase
+New-WebBinding -Name $webAppName -IPAddress "*" -Port $port -Protocol http 
+</code></pre>
+
+<p>Then, we can create the <em>Root Site Collection</em>:</p>
+
+<pre><code>New-SPSite -Url $rootCollectionUrl -HostHeaderWebApplication (Get-SPWebApplication $webAppName) -Name $rootCollectionName -Description $rootCollectionDescription -OwnerAlias $ownerAlias
+</code></pre>
+
+<p>Now, let's set up our <em>Host-Named Site Collection</em>:</p>
+
+<pre><code>New-SPSite -Url $collectionUrl -HostHeaderWebApplication (Get-SPWebApplication $webAppName) -Name $collectionName -Description $collectionDescription -OwnerAlias $ownerAlias -language $language -Template $template
+</code></pre>
+
+<p>Finally, we can create a <em>Collection</em> using a <em>Managed Path</em>:</p>
+
+<pre><code>New-SPManagedPath -RelativeURL $managedPath -HostHeader -Explicit
+$url = $collectionUrl + "/" + $managedPath
+New-SPSite -Url $url -HostHeaderWebApplication $collectionUrl -Name $managedPathCollectionName -Description $managedPathCollectionDescription -OwnerAlias $ownerAlias -language $language -Template $template
+</code></pre>
+
+<p>Our <em>PowerShell</em> script could look something like this:</p>
+
+<pre><code>#******************#
+#***** PARAMS *****#
+#******************#
+
+Param(
+    [string] $webAppName,
+    [string] $webAppUrl,
+    [string] $webAppHostHeader,
+    [string] $applicationPool,
+    [int] $port = 80,
+    [string] $managedAccount,
+    [string] $dataBase,
+    [string] $rootCollectionUrl,
+    [string] $rootCollectionName,
+    [string] $rootCollectionDescription,
+    [string] $collectionUrl,
+    [string] $collectionName,
+    [string] $collectionDescription,
+    [string] $ownerAlias,
+    [int] $language = 1033,
+    [string] $template = "STS#0",
+    [bool] $createAppPool = $true,
+    [bool] $createWebApp = $true,
+    [bool] $createRootCollection = $true,
+    [bool] $createHostNameCollection = $true,
+    [bool] $createManagedPathCollection = $true,
+    [string] $managedPath,
+    [string] $managedPathCollectionName,
+    [string] $managedPathCollectionDescription
+)
+
+#****************************************#
+#****************************************#
+
+#********************#
+#***** INCLUDES *****#
+#********************#
+
+Add-PSSnapin Microsoft.SharePoint.PowerShell -ErrorAction SilentlyContinue
+
+#****************************************#
+#****************************************#
+
+#***********************************#
+#***** CREATE APPLICATION POOL *****#
+#***********************************#
+
+function CreateApplicationPool()
+{
+    Write-Host "...creating application pool"
+    New-SPServiceApplicationPool -Name $applicationPool -Account $managedAccount
+    Write-Host "Application Pool created." -ForegroundColor Green
+    Write-Host ""
+}
+
+#****************************************#
+#****************************************#
+
+#**********************************#
+#***** CREATE WEB APPLICATION *****#
+#**********************************#
+
+function CreateWebApplication()
+{
+    Write-Host "...creating web application"
+
+    New-SPWebApplication -Name $webAppName -hostHeader -$webAppHostHeader -port $port -Url $webAppUrl -ApplicationPool $applicationPool -ApplicationPoolAccount (Get-SPManagedAccount $managedAccount) -AuthenticationProvider (New-SPAuthenticationProvider -UseWindowsIntegratedAuthentication) -DatabaseName $dataBase
+    New-WebBinding -Name $webAppName -IPAddress "*" -Port $port -Protocol http      
+    Write-Host "Web Application created." -ForegroundColor Green
+    Write-Host ""
+}
+
+#****************************************#
+#****************************************#
+
+#**********************************#
+#***** CREATE ROOT COLLECTION *****#
+#**********************************#
+
+function CreateRootCollection()
+{
+    Write-Host "...creating root collection"
+
+    New-SPSite -Url $rootCollectionUrl -HostHeaderWebApplication (Get-SPWebApplication $webAppName) -Name $rootCollectionName -Description $rootCollectionDescription -OwnerAlias $ownerAlias
+    Write-Host "Root Collection created." -ForegroundColor Green
+    Write-Host ""    
+}
+
+#****************************************#
+#****************************************#
+
+#****************************************#
+#***** CREATE HOST-NAMED COLLECTION *****#
+#****************************************#
+
+function CreateHostNamedCollection()
+{
+    Write-Host "...creating host-named collection"
+
+    New-SPSite -Url $collectionUrl -HostHeaderWebApplication (Get-SPWebApplication $webAppName) -Name $collectionName -Description $collectionDescription -OwnerAlias $ownerAlias -language $language -Template $template
+    Write-Host "Host-Named Collection created." -ForegroundColor Green
+    Write-Host ""
+}
+
+#****************************************#
+#****************************************#
+
+#******************************************#
+#***** CREATE MANAGED PATH COLLECTION *****#
+#******************************************#
+
+function CreateManagedPathCollection() 
+{
+    Write-Host "...creating managed path collection"
+
+    New-SPManagedPath -RelativeURL $managedPath -HostHeader -Explicit
+    Write-Host "Managed Path added." -ForegroundColor Green
+    Write-Host ""
+
+    $url = $collectionUrl + "/" + $managedPath
+    New-SPSite -Url $url -HostHeaderWebApplication $collectionUrl -Name $managedPathCollectionName -Description $managedPathCollectionDescription -OwnerAlias $ownerAlias -language $language -Template $template
+    Write-Host "Managed Path Collection created." -ForegroundColor Green
+    Write-Host ""
+}
+
+#****************************************#
+#****************************************#
+
+#****************#
+#***** MAIN *****#
+#****************#
+
+function Main()
+{
+    Write-Host "****************************************"
+    Write-Host "***** CREATE HOST NAMED COLLECTION *****"
+    Write-Host "****************************************"
+    Write-Host " "
+
+    Write-Host "***** START *****" -ForegroundColor Green
+    Write-Host " "
+
+    if ($createAppPool) {
+        CreateApplicationPool
+    }
+
+    if ($createWebApp) {
+        CreateWebApplication
+    }
+
+    if ($createRootCollection) {
+        CreateRootCollection
+    }
+
+    if ($createHostNameCollection) {
+        CreateHostNamedCollection
+    }
+
+    if ($createManagedPathCollection) {
+        CreateManagedPathCollection
+    }
+
+    Write-Host " "
+    Write-Host "***** END *****" -ForegroundColor Green
+    Write-Host " "
+
+    Read-Host -Prompt "Press ENTER to continue"
+    exit
+}
+
+#****************************************#
+#****************************************#
+
+#******************#
+#***** SCRIPT *****#
+#******************#
+
+Main
+</code></pre>
+
+<p>We can now use our script like so:</p>
+
+<pre><code>.\create-host-named-collection.ps1 -webAppName "sp16dev1.com" -webAppUrl "http://sp16dev1.com" -webAppHostHeader "sp16dev1.com" -applicationPool "SharePoint - sp16dev1.com" -port 80 -managedAccount Domain\serviceAccount -dataBase WSS_Content_DevSP -rootCollectionUrl "http://rootsp16dev.com" -rootCollectionName "rootsp16dev" -rootCollectionDescription "Root collection" -collectionUrl "http://sp16dev.com" -collectionName "sp16dev" -collectionDescription "Main collection for development" -ownerAlias serviceAccount@domain.com -language 1033 -managedPath "addins-dev" -managedPathCollectionName "sp16dev-addins" -managedPathCollectionDescription "Collection for add-ins"
+</code></pre>
+
+<p>We could probably clean up a bit the number of arguments and add security checks to our script, but for now, it will be fine. If everything is alright, we should see our <em>Wep Application</em> and our <em>Collections</em> in the <em>Central Administration</em>.</p>
+
+<h2 id="creatingtheappcatalog">Creating the App Catalog</h2>
+
+<p>We are now going to set up our <em>App Catalog</em>. First, we need to go in the <em>Central Administration</em>, then "<em>System Settings</em>", "<em>Manage services in this farm</em>". We have to click on "<em>Enable Auto Provision</em>" for "<em>Microsoft SharePoint Foundation Subscription Settings Service</em>".</p>
+
+<p>Next, we have to create the "<em>Subscription Settings</em>" service application and proxy:</p>
+
+<pre><code>$SubscriptionSvcApp = New-SPSubscriptionSettingsServiceApplication -ApplicationPool 'SharePoint Web Services Default' -Name 'Subscriptions Settings Service Application' -DatabaseName 'Subscription'
+$SubscriptionSvcProxy = New-SPSubscriptionSettingsServiceApplicationProxy -ServiceApplication $SubscriptionSvcApp
+</code></pre>
+
+<p>We may also need to create a "<em>App Management Service Application</em>". It can be done under "<em>Manage Service Applications</em>". We have to click on "<em>New</em>" then "<em>App Management Service</em>". We can choose "<em>SharePoint Web Services Default</em>" for the "<em>Application Pool</em>".</p>
+
+<p>We now have to head to the "<em>Apps</em>" page, click on the "<em>Configure App URLs</em>" link. In the "<em>App domain</em>" field, we have to enter the domain that we chose to host our apps and in the <em>"App prefix</em>" field, we need to specify which prefix we want to use. So, at the end of the day, we should have a <em>URL</em> for an app would be something like so "<em>app-12345678ABCDEF.apps.sp16dev.com</em>".</p>
+
+<p>Using <em>PowerShell</em>, we now have to configure our app <em>URLs</em> for our tenant:</p>
+
+<pre><code>Set-SPAppDomain apps.sp16dev.com
+Set-SPAppSiteSubscriptionName -Name "app" -Confirm:$false
+</code></pre>
+
+<p>Now, let's head back to the <em>Central Administration</em>, then "<em>Application Management</em>", "<em>Manage Web applications</em>" and select our web application. On the ribbon, let's click on "<em>Manage Features</em>" and activate the "<em>Apps that require accessible internet facing endpoints</em>" feature.</p>
+
+<p>We can now also enable sideloading on our dev site if needed:</p>
+
+<pre><code>Enable-SPFeature -identity "EnableAppSideLoading" -URL http://sp16dev.com/addins-dev
+</code></pre>
+
+<p>Finally, we can create our app catalog:</p>
+
+<pre><code>New-SPSite -Url "http://sp16dev.com/apps" -HostHeaderWebApplication "http://sp16dev.com" -Name "apps" -Description "App Catalog" -OwnerAlias serviceAccount@domain.com -language 1033 -Template "APPCATALOG#0"
+</code></pre>
+
+<p>If everything is alright, we can navigate to "http://sp16dev.com/apps" where we can upload our well-crafted <em>Add-Ins</em> and make them accessible in our different sites through the <em>App Catalog</em>.</p>
+
+<h2 id="sidenote">Side note</h2>
+
+<p>We may have trouble with our catalog. Maybe this last one will tell us that there is nothing from our organization even though there are deployed apps. <a href="https://blogs.technet.microsoft.com/sharepointdevelopersupport/2018/02/19/sharepoint-2016-apps-from-your-organization-there-is-nothing-here-yet/">This post from <em>Microsoft</em></a> could be the answer to this problem.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this post, we saw what <em>Host-Named Site Collections</em> are and how we can set up our environment by using them. We also took a look at how can create a private <em>App Catalog</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

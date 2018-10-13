@@ -1,0 +1,79 @@
+<h1 id="deployingwebpartsbuiltwithspfxonsharepointonpremise">Deploying WebParts built with SPFx on SharePoint on-premise</h1>
+
+<p>Through this article, we are going to see how we can build a <em>WebPart</em> using the <em>SharePoint Framework</em> (<em>SPFx</em>) and deploy it on a <em>SharePoint 2016 on-premise</em> installation.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <em>SharePoint Framework</em>, aka <em>SPFx</em>, is a page and extension model that allows us to develop front-end apps using client-side code. Here, we are going to see how we can quickly build a <em>WebPart</em> and deploy it on a <em>SharePint 2016 on-premise</em> environment.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before going any further, we have to check if the "<em>September 2017 Public Update for SharePoint 2016</em>" is installed on our server, otherwise, we can't use <em>SPFx</em>. The "<em>Configuration database</em>" version must be equal or greater than <em>16.0.4588.1000</em>. We also need to have our own custom <em>App Catalog</em>.</p>
+
+<p>We also need to have <em>Node</em> and <em>npm</em> installed on our machine. Depending on the <em>Node</em> version that we use, we may encounter an error like "<em>ERR_SSL_PROTOCOL_ERROR</em>". In such a case, setting the environment variable "<em>NODE_NO_HTTP2</em>" to "<em>1</em>" or disabling the "<em>https</em>" parameter in the "<em>serve.json</em>" file that we will get later, can fix the problem.</p>
+
+<h2 id="settingupourproject">Setting up our project</h2>
+
+<p>First we need to install <em>Gulp</em> and <em>Yeoman</em> globally like so:</p>
+
+<pre><code>npm install -g yo gulp
+</code></pre>
+
+<p>We are then going to initialize our project like so:</p>
+
+<pre><code>npm init
+npm install @microsoft/generator-sharepoint --save-dev
+</code></pre>
+
+<p>Here, we chose to install the "<em>Yeoman SharePoint generator</em>" locally and not globally because it offers us the ability to switch between different projects using different versions of the "<em>Yeoman SharePoint generator</em>". We can now run the generator like so:</p>
+
+<pre><code>yo @microsoft/sharepoint
+</code></pre>
+
+<p>A few questions will be prompted. We have to specify that we want to use the <em>SharePoint 2016</em> version and we want to create a <em>WebPart</em>. For the sake of our example, we also need to select the "<em>No JavaScript framework</em>" option.</p>
+
+<p>When the installation is done, we have to install the <em>Developer certificate</em> like so: </p>
+
+<pre><code>gulp trust-dev-cert
+</code></pre>
+
+<p>Now, if we run the following command, a series of <em>Gulp</em> tasks will be executed and our browser will launch, so we can preview our <em>WebPart</em> in our local dev environment:</p>
+
+<pre><code>gulp serve
+</code></pre>
+
+<h2 id="deploying">Deploying</h2>
+
+<p>Our WebPart is just a simple "<em>HelloWorld</em>" <em>WebPart</em>, but it is enough for the exercise. Here, we are not going to see how to use <em>SharePoint REST APIs</em> or how we can improve our development. </p>
+
+<p>So, it is now time to deploy our <em>WebPart</em>. First, let's head to the "<em>config/write-manifests.json</em>" file and let's edit it like so:</p>
+
+<pre><code>{
+"$schema": "https://dev.office.com/json-schemas/spfx-build/write-manifests.schema.json",
+"cdnBasePath": "https://tenant-name.com/accessible/folder"
+}
+</code></pre>
+
+<p>Here, we specify where we host our files. It could be <em>SharePoint</em>, <em>Azure</em> or whatever we want.</p>
+
+<p>We can now generate the files that we want to deploy:</p>
+
+<pre><code>gulp bundle -–ship
+</code></pre>
+
+<p>If everything is alright, we now have two folders: "<em>dist</em>", where unminified bundles are, and "<em>temp/deploy</em>", where optimized bundles are placed.</p>
+
+<p>Now we can generate the "<em>sppkg</em>" package like so:</p>
+
+<pre><code>gulp package-solution -–ship
+</code></pre>
+
+<p>To finish the process, we have to upload the files placed in "<em>temp/deploy</em>" to the place we specified in our "<em>config/write-manifests.json</em>" file. Then, we can upload our package to the <em>App Catalog</em>. When it is done, we can simply add our app to a site like any other <em>SharePoint app</em>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this post, we saw how we can quickly start a project using <em>SPFx</em> and how we can deploy our app when we have an on-premise environment. However, we did not see the development part and of course, we could go further by setting up a process where our application is built, packaged and deployed automatically (but this is another subject).</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
