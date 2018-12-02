@@ -1,0 +1,112 @@
+<h1 id="initializingaprojectwithparcel">Initializing a project with Parcel</h1>
+
+<p>Through this small post, we are going to see how to initialize a project with <em>Parcel</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>There are many tools that help us to build our application or our website. Some are really complex and sometimes tedious to set up just for a small project. This is where we can use <em>Parcel</em>.</p>
+
+<p>Parcel is a bundler that requires almost zero configuration to achieve or goal. Our example is going to be pretty straightforward.</p>
+
+<h2 id="installing">Installing</h2>
+
+<p>Before going any further, we need to install <em>Node.js</em> and <em>npm</em>. Then, we can install <em>Parcel</em> globally like so:</p>
+
+<pre><code>npm install -g parcel-bundler
+</code></pre>
+
+<p>Now, let's initialize our project:</p>
+
+<pre><code>npm init
+</code></pre>
+
+<p>We can now install a few dependencies:</p>
+
+<pre><code>npm install -save bootstrap jquery popper.js
+</code></pre>
+
+<p>And now, a few dev dependencies:</p>
+
+<pre><code>npm install --save-dev sass
+</code></pre>
+
+<h2 id="addingafewfiles">Adding a few files</h2>
+
+<p>Let's create the following files:</p>
+
+<pre><code>src/
+    assets/
+        img/
+            foo-img.jpg
+        scripts/
+            main.js
+        styles/
+            main.scss
+index.html
+</code></pre>
+
+<p>We can now fill our different files like so:</p>
+
+<pre><code>require('bootstrap');
+require('../img/*.*');
+</code></pre>
+
+<p><small><em>main.js</em></small></p>
+
+<pre><code>@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+</code></pre>
+
+<p><small><em>main.scss</em></small></p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"&gt;
+        &lt;link rel="stylesheet" href="assets/styles/style.scss"&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+
+        &lt;div class="container-fluid"&gt;
+            &lt;div class="row"&gt;
+
+                &lt;div class="col"&gt;
+                    &lt;h1&gt;Using Parcel&lt;/h1&gt;
+                    &lt;p&gt;Foo content!&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;script src="assets/scripts/main.js"&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p><small><em>index.html</em></small></p>
+
+<h2 id="packagejson">Package.json</h2>
+
+<p>In our <em>package.json</em> file, we can now add the following lines:</p>
+
+<pre><code>"main": "src/index.html",
+"scripts": {
+    "serve": "parcel src/index.html --out-dir dist",
+    "watch": "parcel watch src/index.html --out-dir dist",
+    "build": "parcel build src/index.html --out-dir dist"
+}
+</code></pre>
+
+<p>We can now run the following command</p>
+
+<pre><code>npm run serve
+</code></pre>
+
+<p>If everything is alright, our website will be available at http://localhost:1234. </p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this small article, we saw how we can use <em>Parcel</em> to set up quickly a simple project. As we saw, there is almost no configuration to do to achieve our goal.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

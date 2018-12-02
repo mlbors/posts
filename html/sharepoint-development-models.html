@@ -1,0 +1,63 @@
+<h1 id="sharepointdevelopmentmodels">SharePoint Development Models</h1>
+
+<p>Through this article, we are going to have an overview of the different <em>SharePoint</em> development models. Let's get into it!</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Before building an application, we have a large amount things to think: needs, goals, architecture, infrastructure, frameworks and so on. Developing for <em>SharePoint</em> add an additional layer of complexity because we have to choose between various ways to work.</p>
+
+<p>Each <em>SharePoint</em> development model has its purposes, advantages and difficulties. Here, we are going to have an overview of those different models.</p>
+
+<h2 id="farmsolutions">Farm Solutions</h2>
+
+<p>Also known as <em>Full Trust Solutions</em>, they require to be developed on a <em>SharePoint</em> server and have access to full server-side <em>SharePoint API</em>. They are supported in <em>SharePoint</em> on-premise installations and have to be deployed by a <em>Farm Administrator</em> and the various features they can contain are then available to the entire farm.</p>
+
+<p><em>Farms Solutions</em> are distributed as <em>wsp</em> packages and can have different scope: <em>Farm</em>, <em>Web Application</em>, <em>Site Collection</em> or <em>Website</em>. They support things like <em>Features</em>, <em>Event Receivers</em>, <em>Timer Jobs</em>, <em>WebParts</em>, <em>Modules</em> and so on.</p>
+
+<p>When we deploy a <em>Farm Solution</em>, we have to keep in mind that an <em>IIS Reset</em> will be performed.</p>
+
+<h2 id="sandboxsolutions">Sandbox Solutions</h2>
+
+<p>Because <em>Farm Solutions</em> are very permissive, <em>Microsoft</em> introduced another kind of solution: <em>Sandbox Solutions</em>. Their scope is smaller because they can only target the <em>Site Collection</em> and have access to a small subset of the server-side <em>API</em>.</p>
+
+<p>The <em>wsp</em> packages can be deployed to a <em>Solutions Gallery</em> and they don't force the server to reset and while a <em>Farm Solution</em> can bring down the whole farm, a <em>Sandbox Solution</em> has only impact on a <em>Site Collection</em>. They are very useful to deploy assets or <em>Content Types</em> and <em>Lists</em>.</p>
+
+<p><em>Sandbox Solutions</em> are now deprecated, but they can still be used.</p>
+
+<h2 id="addins">Add-Ins</h2>
+
+<p>Also known as <em>Apps</em>, <em>SharePoint Add-Ins</em> are deployed in the <em>App Catalog</em>, in the form of an <em>.app</em> file, public or private, and provide a way to develop an application without any server-side code executing on the <em>SharePoint</em> server. This means that <em>Add-Ins</em> run either in the context of the client browser or on another server.</p>
+
+<p>This model introduced with the concept of the <em>Office Store</em> and Cloud-related things in mind, provides a high level of isolation. <em>Add-Ins</em> require working with the <em>Client Side Object Model</em> (<em>CSOM</em>) or the <em>REST API</em>.</p>
+
+<p><em>Microsoft</em> claims that a <em>Farm Solution</em> can be converted into one or various <em>Add-Ins</em>. However, create things that could easily be done with a <em>Farm Solution</em> with an <em>Add-In</em> can be tricky.</p>
+
+<p><em>SharePoint Add-Ins</em> come in various flavors:</p>
+
+<ul>
+<li>SharePoint-Hosted</li>
+
+<li>Provider-Hosted</li>
+</ul>
+
+<p><em>SharePoint-Hosted Add-Ins</em> are installed on a <em>SharePoint Website</em>, called the <em>Host Web</em> while their resources are hosted on an isolated subsite called the <em>App Web</em>. They only support <em>JavaScript</em>, a few <em>ASPX</em> files and <em>XML</em>. <em>SharePoint-Hosted Add-Ins</em> can access data and resources that are outside of the <em>App Web</em> by using one of the following techniques to bypass the browser's same origin policy: a special <em>JavaScript</em> cross-domain library or a specific <em>JavaScript WebProxy</em> class.</p>
+
+<p><em>Provider-Hosted Add-Ins</em> include components that are deployed on another server while they are installed on the <em>Host Web</em>. It means that we are able to run server-side code on another server and to communicate with <em>SharePoint</em> using <em>CSOM</em>. They offer a great flexibility to develop the various elements we need.</p>
+
+<p>If we can create <em>WepParts</em> with <em>Farm Solutions</em>, <em>Add-Ins</em> offer something similar called <em>Add-In Parts</em>, or <em>Client WebPart</em>. This concept is similar to <em>WebPart</em>, but it implies that the <em>Add-In Part</em> displays a webpage that we specify by using an <em>IFrame</em> in a page in the <em>Host Web</em>.</p>
+
+<p><em>SharePoint Add-Ins</em> are security principals that need to be authenticated and authorized and this can be done in various ways. An <em>Add-In</em> uses permission requests to ask for the permissions it needs. The permission requests specify the rights that the <em>Add-In</em> needs and the scope at which it needs the rights.</p>
+
+<h2 id="sharepointframework">SharePoint Framework</h2>
+
+<p>Also known as <em>SPFx</em>, the <em>SharePoint Framework</em> is the most recent addition to the SharePoint developer toolbox. It provides full support for client-side development it grows with the development of <em>SharePoint Online</em>. It allows us to develop components using modern web technologies such as <em>React</em>. For now, the support of this framework is more advanced in <em>SharePoint Online</em> and it is only possible to develop <em>WebParts</em> and <em>Extensions</em>.</p>
+
+<p>One advantage of this framework is that we don't need <em>SharePoint</em> to be installed on our machine to develop. We just have to download a few <em>Node</em> packages and to run our server using <em>Gulp</em>. When we compile what we developed, we also get an <em>.app</em> file.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we saw the various existing ways to develop for and with <em>SharePoint</em>. We saw the main idea behind each model, what they have in common and how they differ. We saw that <em>Solutions</em> use server-side <em>API</em> and <em>Add-Ins</em> aim to execute in a client context. We also had a small overview of the <em>SharePoint Framework</em>.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

@@ -1,0 +1,160 @@
+<h1 id="whataresets">What are Sets?</h1>
+
+<p>In this small article, we are going to take a look at <em>Sets</em> to understand what they are and how they work.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In computer science, a <em>Set</em> is a data structure. It can store unique values of the same type without any particular order. However, the stored objects have to be comparable.</p>
+
+<p>A <em>Set</em> is an implementation of the mathematical concept of a finite set.</p>
+
+<p>Here, we are going to build our own <em>Set</em> class using <em>C#</em> and <em>.NET Framework</em> to understand how it works. First, we are going to see the basic set up for our class. Then, we are going to examine the specific operations <em>Union</em>, <em>Intersection</em>, <em>Difference</em> and <em>Symmetric Difference</em>. Nevertheless, this <em>Set</em> class is not going to be a production quality data structure.</p>
+
+<h2 id="setclass">Set Class</h2>
+
+<p>Let's imagine the following code:</p>
+
+<pre><code>public class Set&lt;T&gt; : IEnumerable&lt;T&gt; where T: IComparable&lt;T&gt;
+{
+    private readonly List&lt;T&gt; _items = new List&lt;T&gt;();
+
+    public Set()
+    {
+    }
+
+    public Set(IEnumerable&lt;T&gt; items)
+    {
+        AddRange(items);
+    }
+
+    public void Add(T item)
+    {
+        if (Contains(item))
+        {
+            return;
+        }
+
+        _items.Add(item);
+    }
+
+    public void AddRange(IEnumerable&lt;T&gt; items)
+    {
+        foreach (T item in items)
+        {
+            Add(item);
+        }
+    }
+
+    public bool Remove(T item)
+    {
+        return _items.Remove(item);
+    }
+
+    public bool Contains(T item)
+    {
+        return _items.Contains(item);
+    }
+
+    public int Count
+    {
+        get
+        {
+            return _items.Count;
+        }
+    }
+
+    public Set&lt;T&gt; Union(Set&lt;T&gt; otherSet)
+    {
+        Set&lt;T&gt; result = new Set&lt;T&gt;(_items);
+        result.AddRange(otherSet._items);
+
+        return result;
+    }
+
+    public Set&lt;T&gt; Intersection(Set&lt;T&gt; otherSet)
+    {
+        Set&lt;T&gt; result = new Set&lt;T&gt;();
+
+        foreach (T item in _items)
+        {
+            if (otherSet._items.Contains(item))
+            {
+                result.Add(item);
+            }
+        }
+
+        return result;
+    }
+
+    public Set&lt;T&gt; Difference(Set&lt;T&gt; otherSet)
+    {
+        Set&lt;T&gt; result = new Set&lt;T&gt;(_items);
+
+        foreach (T item in otherSet._items)
+        {
+            result.Remove(item);
+        }
+
+        return result;
+    }
+
+    public Set&lt;T&gt; SymmetricDifference(Set&lt;T&gt; otherSet)
+    {
+        Set&lt;T&gt; intersection = Intersection(otherSet);
+        Set&lt;T&gt; union = Union(otherSet);
+        return union.Difference(intersection);
+    }
+
+    public IEnumerator&lt;T&gt; GetEnumerator()
+    {
+        return _items.GetEnumerator();
+    }
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+        return _items.GetEnumerator();
+    }
+}
+</code></pre>
+
+<p>As we can see, we implemented our own <em>Set</em> class. Let's examine it in detail.</p>
+
+<h2 id="constraintsmembersandconstruct">Constraints, members and Construct</h2>
+
+<p>As we can see, our class is a generic class. We also decided that our class has to implement the <em>IEnumerable</em> interface. Finally, we added a constraint to tell that "<em>T</em>" has to be a comparable object.</p>
+
+<p>We chose to use the "<em>List</em>" data structure to store our values, but if we wanted, we could have done it with an array.</p>
+
+<p>We declared two constructs, one without any arguments, and another one that lets us initialize our <em>Set</em> with a collection of values.</p>
+
+<h2 id="basicoperations">Basic operations</h2>
+
+<p>Let's see the basic operations we need to use our Set.</p>
+
+<p>First, the <em>Add</em> method simply checks if the value we want to add to our <em>Set</em> is already in our list of items. If it is not, it adds this value to the list.</p>
+
+<p><em>Remove</em> and <em>Contains</em> do what they are supposed to do. Here, we just use the methods provided by the "<em>List</em>" class. We also do the same for the <em>Count</em> method.</p>
+
+<h2 id="union">Union</h2>
+
+<p><em>Union</em> compares two <em>Sets</em> and returns a third <em>Set</em> that contains all of the unique elements in both <em>Sets</em>. So, for example the <em>Union</em> of {1,3,4,9} and {3,6,7} is {1,3,4,6,7,9}.</p>
+
+<h2 id="intersection">Intersection</h2>
+
+<p><em>Intersection</em> compares two <em>Sets</em> and returns a third <em>Set</em> that contains all the values shared by both <em>Sets</em>. The <em>Intersection</em> of {1,2,7} and {2,4,7,9} is {2,7}.</p>
+
+<h2 id="difference">Difference</h2>
+
+<p><em>Difference</em> compares two <em>Sets</em> and returns a third <em>Set</em> that contains the values that are only in the first Set. So, the <em>Difference</em> of {1,3,5,6} and {2,3,6,7} is {1,5}.</p>
+
+<h2 id="symmetricdifference">Symmetric Difference</h2>
+
+<p><em>Symmetric Difference</em> is the <em>Difference</em> of the <em>Union</em> and the <em>Intersection</em>. In other words, it compares two <em>Sets</em> and returns a third <em>Set</em> that contains values that are only in one <em>Set</em>. So the <em>Symmetric Difference</em> of {1,2,4,6,7} and {1,3,4,5,9} is {2,3,5,6,7}.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this small post, we saw what <em>Sets</em> are and how they work. We saw how we can implement our own <em>Set</em> class and which concepts lie behind this data structure.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
