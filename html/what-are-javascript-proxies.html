@@ -1,0 +1,70 @@
+<h1 id="whatarejavascriptproxies">What are JavaScript Proxies?</h1>
+
+<p>In this post, we are going to see what <em>JavaScript Proxies</em> are, how they work and how we can use them.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em>Proxies</em> were introduced in <em>ES6</em> and are useful to define a custom behaviour for fundamental operations. In other words, a <em>Proxy</em> is an object that stands between an object and what we could call the outside world. It means that we can wrap an existing object and intercept any access to its attributes or its methods.</p>
+
+<h2 id="howitworks">How it works?</h2>
+
+<p>Three components are important when we talk about <em>Proxies</em>:</p>
+
+<ul>
+<li><strong>Target:</strong> the object that will be wrapped (it can be any sort)</li>
+
+<li><strong>Traps:</strong> the methods that provide property access </li>
+
+<li><strong>Handler:</strong> the placeholder object that which contains <em>Traps</em></li>
+</ul>
+
+<p>As we said before, we can use a <em>Proxy</em> to define a custom behaviour whenever the properties or the methods of an object, the <em>Target</em>, are accessed. It allows us to provide a custom functionality to a basic operation that can be performed on an object. We achieve this by using <em>Traps</em>. The <em>Handler</em> object passes the <em>Target</em> and the requested element to the concerned <em>Trap</em>. A complete list of the various <em>Traps</em> can be found <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy#Methods_of_the_handler_object">here</a>.</p>
+
+<h2 id="asimpleexample">A simple example</h2>
+
+<p>Let's start with a simple example. First, we define an object</p>
+
+<pre><code>const mario = {
+    name: 'mario',
+    profession: 'plumber'
+}
+</code></pre>
+
+<p>Now, let's do the following things:</p>
+
+<pre><code>console.log(mario.name) // output: mario
+console.log(mario.profession) // output: plumber
+console.log(mario.power) // output: undefined
+</code></pre>
+
+<p>As we can see, our object has only two properties and we want to access a third one that doesn't exist. Sadly, we receive "<em>undefined</em>" in that case. How can we return a default value instead when we try to access a property that doesn't exist? We can do this by using the <em>GET Trap</em>. We can now define a <em>Handler</em> and a <em>Proxy</em>:</p>
+
+<pre><code>const handler = {
+    get: function(target, name) {
+        return name in target ? target[name] : 'none'
+    }
+}
+
+const p = new Proxy(mario, handler)
+</code></pre>
+
+<p>Let's try to access the properties of our object through the <em>Proxy</em>:</p>
+
+<pre><code>console.log(p.name) // output: mario
+console.log(p.profession) // output: plumber
+console.log(p.power) // output: none
+</code></pre>
+
+<h2 id="whentouseaproxy">When to use a Proxy?</h2>
+
+<p>We can imagine using a <em>Proxy</em> when we want to enforce value validation in <em>JavaScript</em> object. We can, for example, simply check if the value we want to set is correct or if the affected property can be modified.</p>
+
+<p>We can also use a <em>Proxy</em> to revoke the access to an object or simplify a data structure querying process.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this brief article, we saw what <em>JavaScript Proxies</em> are. We saw that a <em>Proxy</em> is an object that is used to define custom behaviour for fundamental operations. There are three important terms when we talk about <em>Proxies</em>: <em>Target</em>, <em>Traps</em> and <em>Handler</em>. </p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>

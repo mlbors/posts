@@ -1,0 +1,45 @@
+<h1 id="somethoughtsaboutsharepointandunittesting">Some thoughts about SharePoint and Unit Testing</h1>
+
+<p>Through this post, we are going to try to have a reflection about <em>SharePoint</em> and <em>Unit Testing</em>.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Let's be honest: here, we are not going to picture the perfect solution to write good unit tests easily when we use <em>SharePoint</em> as a development platform. Writing unit tests when we develop something for <em>SharePoint</em> can be really hard and discouraging. However, we are going to overview a few options to achieve this and to have a better conscience (or not).</p>
+
+<p>Whatever development model we choose, we will face some problems and scratch our head to the bone. Some even say that <em>SharePoint</em> was not designed with testability in mind. However, let's see various ways we can explore.</p>
+
+<h2 id="option1avoidunittesting">Option 1: avoid Unit Testing</h2>
+
+<p>This option is pretty radical and simple. It depends on whether we can live with it our not.</p>
+
+<h2 id="option2usethirdpartytoolsdedicatedtosharepoint">Option 2: use third-party tools dedicated to SharePoint</h2>
+
+<p>There are several tools dedicated to <em>SharePoint</em> that can help us to achieve <em>Unit Testing</em> against <em>SharePoint</em>. However, good ones required to use our credit card and don't assure that everything will go smoothly.</p>
+
+<h2 id="option3wrapsharepointobjects">Option 3: wrap SharePoint objects</h2>
+
+<p>When we develop using the <em>.NET Framework</em> and want to write our various tests, it is really common to use tools such as Moq to create fake objects to easily isolate what we want to test. Now, with <em>SharePoint</em>, our main problem is the code that depends on <em>SharePoint</em>. Using Moq to mock <em>SharePoint</em> will most of the time lead us to a dead end. <em>SharePoint</em> classes are often sealed and some objects cannot be instantiated without an <em>HTTP Context</em>. Maybe we will succeed to mock a few things, but the result won't be satisfying and will probably be messy.</p>
+
+<p>One workaround to that problem is to wrap the values of the various <em>SharePoint</em> objects we need in classes or structs that we control and can easily mock. This will require to create extra classes, but, if we use these various wrappers, it can ease <em>Unit Testing</em>.</p>
+
+<h2 id="option4createanotherlayer">Option 4: create another layer</h2>
+
+<p>This option makes use of "<em>Option 3</em>" and leads us to create another layer between our code and <em>SharePoint</em>. It means that instead of using the various <em>SharePoint</em> APIs directly, we create one or more objects (<em>Services</em>, <em>Proxies</em> or whatever we want to call it) that we will work with. These objects will then work with the various <em>SharePoint</em> APIs, directly or through Repositories, it depends on how we want to implement this concept, and return wrapped objects.</p>
+
+<p>With this solution, it means that we can concentrate usage of <em>SharePoint</em> objects in a restricted area and decouple our code from <em>SharePoint</em> APIs. So, it means in things like <em>Event Receivers</em> or code behind <em>Control Templates</em>, instead of using <em>SharePoint</em> classes we use our different <em>Services</em>. It makes our code more testable and avoid code duplication.</p>
+
+<p>However, most of the methods exposed by <em>SharePoint</em> objects don't have a return value. So, if we have a <em>Service</em> that communicates with a <em>Repository</em>, how can we know that <em>SharePoint</em> failed or succeeded in achieving the requested operation? Well, sadly, we have to find workarounds. For example, when we add an <em>SPItem</em> to an <em>SPList</em>, we can count the number of items before and after the operation and check if the item exists in the updated collection and return a boolean value depending on the scenario. This leads to extra code and to extend the time of the operation, but we will have an answer.</p>
+
+<p>Of course, this option could lead to over-engineering problems and there will always be a point where we will face <em>SharePoint</em> objects. We also have to take extra care of the <em>SPContext</em>, <em>SPSite</em> and <em>SPWeb</em> objects handling because it could raise sever exceptions if we do it without caution.</p>
+
+<h2 id="option5createaconsoleapplication">Option 5: create a console application</h2>
+
+<p>This is not really <em>Unit Testing</em>. However, we can imagine creating a small console application using <em>C#</em> or <em>PowerShell</em> that will check, after we deployed our package, if our various <em>Features</em> were installed and activated or if our <em>Lists</em> are in the right place. It involves the whole <em>SharePoint</em> installation and "real" data.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Through this article, we explored some options we have when we want to <em>Unit Testing</em> against <em>SharePoint</em>. We can see that <em>Unit Testing</em>, in such a case, is not really easy and can bring us pain and suffering, and maybe more than if we would do it with another platform or framework. However, we have a few possibilities than can make us more secured with our development. It is up to us to decide which solution is the best depending on what we want to achieve and to accept that some things can only best test by hand and to remember this good old "<em>try...catch</em>" thing is here for us.</p>
+
+<h2 id="onelastword">One last word</h2>
+
+<p>If you like this article, you can consider supporting and helping me on <a href="https://www.patreon.com/mlbors">Patreon</a>! It would be awesome! Otherwise, you can find my other posts on <a href="https://medium.com/@mlbors">Medium</a> and <a href="https://mlbors.tumblr.com/">Tumblr</a>. You will also know more about myself on <a href="https://www.mlbors.com">my personal website</a>. Until next time, happy headache!</p>
